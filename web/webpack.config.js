@@ -8,7 +8,7 @@ module.exports = (env, options) => {
     return {
         mode: isDevelopment ? "development" : "production",
         entry: {
-            main: './src/js/main.js',
+            main: './src/js/main.ts',
         },
         output: {
             path: path.resolve(__dirname, 'dist'),
@@ -19,14 +19,12 @@ module.exports = (env, options) => {
         module: {
             rules: [
                 {
-                    test: /\.jsx?$/,
-                    // resolve: {
-                    //   fullySpecified: false
-                    // },
+                    test: /\.tsx?$/,
                     use: [
                         'babel-loader',
-                        // 'source-map-loader'
+                        'ts-loader',
                     ],
+                    exclude: /node_modules/,
                 },
                 {
                     test: /\.html$/,
@@ -109,6 +107,9 @@ module.exports = (env, options) => {
                     type: "asset/resource",
                 }
             ]
+        },
+        resolve: {
+            extensions: ['.tsx', '.ts', '.js'],
         },
         devtool: isDevelopment ? 'eval-source-map' : 'source-map',
         plugins: [
