@@ -8,7 +8,7 @@ module.exports = (env, options) => {
     return {
         mode: isDevelopment ? "development" : "production",
         entry: {
-            main: './src/js/main.ts',
+            main: './src/App.tsx',
         },
         output: {
             path: path.resolve(__dirname, 'dist'),
