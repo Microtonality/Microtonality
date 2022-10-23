@@ -7,6 +7,7 @@ import {
   NavLink
 } from "react-router-dom";
 import * as React from 'react';
+import Play from './pages/Play';
 
 export default function App() {
   return (
@@ -45,10 +46,6 @@ function Learn() {
   return (
     <h2 style={{color: 'white'}}>Learn</h2>
   )
-}
-
-function Play() {
-  return <h2 style={{color: 'white'}}>Play</h2>
 }
 
 function Download() {
