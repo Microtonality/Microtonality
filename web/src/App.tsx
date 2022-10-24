@@ -7,7 +7,7 @@ import {
   NavLink
 } from "react-router-dom";
 import * as React from 'react';
-import Play from './pages/Play';
+import Play from './pages/play/Play';
 
 export default function App() {
   return (
