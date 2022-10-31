@@ -1,26 +1,28 @@
+let midiInput: WebMidi.MIDIInput[] = [];
+let midiOutput: WebMidi.MIDIOutput[] = [];
+
 function connectToInstrument() {
-    if (navigator.requestMIDIAccess) {
-        navigator.requestMIDIAccess().then(
-            onMIDISuccess, onMIDIFailure
-        )
-    } else {
-        alert("No MIDI support in your browser.")
+    navigator.requestMIDIAccess().then(
+        (midi) => initDevices(midi),
+        (err) => console.warn('unable to connect to midi', err)
+    )
+}
+
+function initDevices(midi: WebMidi.MIDIAccess) {
+    midiInput = []
+    midiOutput = []
+
+    for (let input of midi.inputs.values()) {
+        midiInput.push(input)
     }
-}
 
-function onMIDISuccess(midiAccess: WebMidi.MIDIAccess) {
-    console.log('MIDI Access Object: ' + midiAccess)
-
-    for (let input of midiAccess.inputs.values()) {
-        input.onmidimessage = getMIDIMessage;
+    for (let output of midi.outputs.values()) {
+        midiOutput.push(output)
     }
+
 }
 
-function onMIDIFailure(e: Error) {
-    console.log('MIDI Access Failed! Error: ' + e)
-}
-
-function getMIDIMessage(message: WebMidi.MIDIMessageEvent) {
+function onMIDIMessage(message: WebMidi.MIDIMessageEvent) {
     let command = message.data[0];
     let note = message.data[1];
     let velocity = (message.data.length > 2) ? message.data[2] : 0;
