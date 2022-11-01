@@ -38,6 +38,21 @@ body {
   color: #FFD059;
 }
 
+.freqBar {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 2%;
+}
+
+#piano {
+  margin-left: 28%;
+}
+
+#controlPanel {
+  margin-left: 28%;
+  width: 1000px;
+}
+
 #navTitle {
   margin-left: 3%;
   display:inline-flex;
