@@ -1,11 +1,13 @@
 import './index.css';
 import {
   BrowserRouter,
-  Routes,
   Route,
-  Outlet,
   NavLink
 } from "react-router-dom";
+import {
+  Routes,
+  Outlet
+} from "react-router";
 import * as React from 'react';
 import Play from './pages/play/Play';
 
