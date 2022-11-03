@@ -11,6 +11,9 @@ import {
 import * as React from 'react';
 import Play from './pages/play/Play';
 
+const activeLink = "text-xl font-agrandirwide leading-relaxed inline-block mr-4 px-5 py-2 whitespace-nowrap uppercase text-gold underline"
+const inactiveLink = "text-xl font-agrandirwide leading-relaxed inline-block mr-4 px-5 py-2 whitespace-nowrap uppercase text-white hover:underline"
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -29,15 +32,15 @@ export default function App() {
 const Layout = () => {
   return (
     <>
-      <div className="navBar">
-        <span id="navTitle">MICROTONAL SYNTHESIZER PROJECT</span>
-          <span id="navText">
-            <NavLink to="/" className="linkText">LEARN</NavLink>
-            <NavLink to="/play" className="linkText">PLAY</NavLink>
-            <NavLink to="/download" className="linkText">DOWNLOAD</NavLink>
-            <NavLink to="/contact" className="linkText">CONTACT</NavLink>
+      <nav className="relative flex flex-wrap items-center justify-between px-2 py-7 bg-bglight mb-3 border-b-2 border-gold">
+        <span className="text-xl font-agrandirwide leading-relaxed inline-block mr-4 px-5 py-2 whitespace-nowrap uppercase text-white">MICROTONAL SYNTHESIZER PROJECT</span>
+          <span className="mr-10">
+            <NavLink to="/" end className={({isActive}) => isActive ? activeLink : inactiveLink}>LEARN</NavLink>
+            <NavLink to="/play" className={({isActive}) => isActive ? activeLink : inactiveLink}>PLAY</NavLink>
+            <NavLink to="/download" className={({isActive}) => isActive ? activeLink : inactiveLink}>DOWNLOAD</NavLink>
+            <NavLink to="/contact" className={({isActive}) => isActive ? activeLink : inactiveLink}>CONTACT</NavLink>
           </span>
-      </div>
+      </nav>
 
       <Outlet />
     </>
@@ -46,14 +49,14 @@ const Layout = () => {
 
 function Learn() {
   return (
-    <h2 style={{color: 'white'}}>Learn</h2>
+    <h2 className="text-white">Learn</h2>
   )
 }
 
 function Download() {
-  return <h2 style={{color: 'white'}}>Download</h2>
+  return <h2 className="text-white">Download</h2>
 }
 
 function Contact() {
-  return <h2 style={{color: 'white'}}>Contact</h2>
+  return <h2 className="text-white">Contact</h2>
 }
