@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Grid, ListItem, Slider } from '@mui/material';
+import { Grid, Popper, Fade, Slider, Tooltip } from '@mui/material';
 import { Piano, KeyboardShortcuts, MidiNumbers } from 'react-piano';
-import 'react-piano/dist/styles.css';
+import './piano.css';
 import { useState, useEffect } from 'react';
 
 export default function Play() {
@@ -13,18 +13,23 @@ export default function Play() {
 
     }
 
-    const [freqBarValue, setFreqBarValue] = useState(12);
-    const [freqComp, setFreqComp] = useState([]);
+    //Frequency bar values
+    const [freqBarValue, setFreqBarValue] = useState(12); //number of frequencies
+    const [freqComp, setFreqComp] = useState([]); //array of frequency buttons to be rendered
+    const [activeFreq, setActiveFreq] = useState(new Map()); //map of frequencies, ex: 1->a
+    const [activeFreqKeys, setActiveFreqKeys] = useState(new Map()); //inverse map of frequencies, ex: a->1
 
-    //Map of numbers to keys: 1=>A
-    const [activeFreq, setActiveFreq] = useState(new Map());
-
-    //Map of keys to numbers: A=>1
-    const [activeFreqKeys, setActiveFreqKeys] = useState(new Map());
-
-    const readKey = () => new Promise(resolve => window.addEventListener('keypress', resolve, { once: true }));
+    //Records keypress for frequency assignment
+    const readKey = () => new Promise(resolve => window.addEventListener('keydown', resolve, { once: true }));
     const homerow = ['a', 'w', 's', 'e', 'd', 'f', 't', 'g', 'y', 'h', 'u', 'j']
 
+    //Popper constants
+    const [open, setOpen] = React.useState(false); //opens and closes popper
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null); //sets position of popper under the clicked button
+    const canBeOpen = open && Boolean(anchorEl); //boolean, if popper meets requirements to open, used in id
+    const id = canBeOpen ? 'transition-popper' : undefined; //id for poppers
+
+    //Assigns default frequencies on page load
     useEffect(() => {
         let defaultMap = activeFreq
         let defaultMapKeys = activeFreqKeys
@@ -33,7 +38,6 @@ export default function Play() {
             defaultMap.set(defaultKeys[i][0], defaultKeys[i][1])
             defaultMapKeys.set(defaultKeys[i][1], defaultKeys[i][0])
         }
-        console.log(defaultMap)
         setActiveFreq(defaultMap)
         setActiveFreqKeys(defaultMapKeys)
         changeFreq()
@@ -50,16 +54,16 @@ export default function Play() {
         changeFreq();
     };
 
-    const activeButton = "btn h-12 w-12 text-md text-black bg-gold border-b-2 border-r-2 border-black uppercase"
-    const inactiveButton = 'btn h-12 w-12 text-md text-black bg-white border-b-2 border-r-2 border-black hover:bg-gray-100'
+    const activeButton = "btn h-13 w-13 font-agrandir text-md text-black bg-gold border-b-2 border-r-2 border-black uppercase"
+    const inactiveButton = 'btn h-13 w-13 font-agrandir text-md text-black bg-white border-b-2 border-r-2 border-black hover:bg-gray-200'
 
     //creates freq bar with the number of boxes = value
     function changeFreq() {
-        //console.log("Scale generated with " + freqBarValue + " notes")
         let freqBarArr = []
         for (let i = 0; i < freqBarValue; i++) {
             freqBarArr.push(
             <button 
+                aria-describedby={id}
                 key={i}
                 className={`${activeFreq.has(i+1) ? activeButton : inactiveButton} + ${i == 0 ? 'rounded-l-md': ""} + ${i == (freqBarValue - 1) ? 'rounded-r-md' : ""}`} 
                 onClick={(e) => assignFreq(e)}>
@@ -72,6 +76,7 @@ export default function Play() {
     }
 
     async function assignFreq(e: any) {
+        setAnchorEl(e.currentTarget);
 
         //Unassigns a frequency if clicking on it after it's already assigned
         let tempVal = Number(e.target.innerText.split('\n')[0])
@@ -81,23 +86,39 @@ export default function Play() {
             return;
         }
 
+        //Opens popper
+        setOpen(true);
+
         let tempArr, tempKeys = new Map();
         tempArr = activeFreq;
         tempKeys = activeFreqKeys;
         let pianoKey: any;
-
+        
         //After clicking frequency, waits for key press to assign it
-        pianoKey = await readKey();
-
-        //Only allows piano shortcut keys to be assigned
+        //Loops until homerow key is mapped
         let containFlag = 0;
-        for (let i = 0; i < homerow.length; i++) {
-            if (pianoKey.key == homerow[i]) {
-                containFlag = 1;
-                break;
+        while (containFlag == 0) {
+
+            pianoKey = await readKey();
+
+            //closes popper on escape key press
+            if (pianoKey.key === "Escape") {
+                setOpen(false);
+                setAnchorEl(null)
+                return
+            }
+
+            for (let i = 0; i < homerow.length; i++) {
+                if (pianoKey.key == homerow[i]) {
+                    containFlag = 1;
+                    break;
+                }
             }
         }
-        if (containFlag == 0) return;
+
+        //Closes popper after valid key press
+        setOpen(false);
+        setAnchorEl(null)
 
         //If key is already assigned to a frequency -> reassigns to new frequency if pressed again
         if (tempKeys.has(pianoKey.key)) {
@@ -142,17 +163,27 @@ export default function Play() {
                 <button className="btn h-10 w-40 bg-white text-black rounded-md hover:bg-gray-100 mb-10" onClick={playSound}>Play Sound</button>
             </div>
 
+            <Popper id={id} open={open} anchorEl={anchorEl} transition className="w-35 h-10 bg-white rounded-md font-agrandir text-black text-center">
+            {({ TransitionProps }) => (
+                <Fade {...TransitionProps} timeout={350}>
+                    <p className="mt-2 mx-2">Assign key...</p>
+                </Fade>
+            )}
+            </Popper>
             <Grid container direction="row" justifyContent="center" alignItems="center">
+                
                 {freqComp.map(item => item)}
+                <Tooltip describeChild title="Click a frequency box and then press the key on your keyboard you want it to correspond to">
+                    <button className="btn h-8 w-8 bg-white text-black rounded-3xl hover:bg-gray-100 ml-2">?</button>
+                </Tooltip>
             </Grid>
 
-            <div className="container mx-auto mt-10 mb-10">
+            <div className="container mx-auto my-auto mt-13 mb-13 h-450 w-1000 ">
                 <Piano
-                    className="mx-auto"
+                    className="mx-auto my-auto"
                     noteRange={{ first: firstNote, last: lastNote }}
                     playNote={(midiNumber: any) => {}}
                     stopNote={(midiNumber: any) => {}}
-                    width={1000}
                     keyboardShortcuts={keyboardShortcuts}
                 />
             </div>
@@ -173,7 +204,5 @@ export default function Play() {
                 />
             </div>
         </div>
-
-        
     );
 }
