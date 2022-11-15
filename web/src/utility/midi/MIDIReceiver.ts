@@ -27,6 +27,8 @@ function onMIDIMessage(message: WebMidi.MIDIMessageEvent) {
     let note = message.data[1];
     let velocity = (message.data.length > 2) ? message.data[2] : 0;
 
+
+
     switch (command) {
         case 144: // noteOn
             noteOn(note, velocity);
