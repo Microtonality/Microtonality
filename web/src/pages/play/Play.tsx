@@ -1,4 +1,6 @@
-import * as React from 'react';
+import * as React from 'react'
+import {connectToInstrument} from "../../utility/midi/MIDIReceiver";
+
 
 export default function Play() {
     function createMIDINote() {
