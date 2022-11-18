@@ -1,3 +1,5 @@
+const defaultTheme = require('tailwindcss/defaultTheme');
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -7,8 +9,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        agrandirwide: ["Agrandir-Wide"],
-        agrandir: ["Agrandir-Reg"]
+        'agrandir-wide': ["Agrandir-Wide", ...defaultTheme.fontFamily.sans],
+        agrandir: ["Agrandir-Reg", ...defaultTheme.fontFamily.sans]
       },
       colors: {
         bgdark: '#212121',

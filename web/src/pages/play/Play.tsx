@@ -15,7 +15,8 @@ export default function Play() {
 
     //Frequency bar values
     const [freqBarValue, setFreqBarValue] = useState(12); //number of frequencies
-    const [freqComp, setFreqComp] = useState([]); //array of frequency buttons to be rendered
+    const [allFrequencies, setAllFrequencies] = useState([]) //all frequency values in bar
+    const [freqBar, setFreqBar] = useState([]); //array of frequency buttons to be rendered
     const [activeFreq, setActiveFreq] = useState(new Map()); //map of frequencies, ex: 1->a
     const [activeFreqKeys, setActiveFreqKeys] = useState(new Map()); //inverse map of frequencies, ex: a->1
 
@@ -23,7 +24,7 @@ export default function Play() {
     const readKey = () => new Promise(resolve => window.addEventListener('keydown', resolve, { once: true }));
     const homerow = ['a', 'w', 's', 'e', 'd', 'f', 't', 'g', 'y', 'h', 'u', 'j']
 
-    //Popper constants
+    //Assign-key popper values
     const [open, setOpen] = React.useState(false); //opens and closes popper
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null); //sets position of popper under the clicked button
     const canBeOpen = open && Boolean(anchorEl); //boolean, if popper meets requirements to open, used in id
@@ -31,58 +32,86 @@ export default function Play() {
 
     //Assigns default frequencies on page load
     useEffect(() => {
-        let defaultMap = activeFreq
-        let defaultMapKeys = activeFreqKeys
-        let defaultKeys = [[1, 'a'], [2, 'w'], [3, 's'], [4, 'e'], [5, 'd'], [6, 'f'], [7, 't'], [8, 'g'], [9, 'y'], [10, 'h'], [11, 'u'], [12, 'j']]
-        for (let i = 0; i < 12; i++) {
-            defaultMap.set(defaultKeys[i][0], defaultKeys[i][1])
-            defaultMapKeys.set(defaultKeys[i][1], defaultKeys[i][0])
-        }
-        setActiveFreq(defaultMap)
-        setActiveFreqKeys(defaultMapKeys)
-        changeFreq()
+        updateAllFrequencies()
+        createFrequencyBar()
     }, []);
 
     //Updates the value of the frequency bar as you slide it around
-    const changeValue = (event: any, value: any) => {
+    const changeSliderValue = (event: any, value: number) => {
         setFreqBarValue(value); 
     };
 
     //Finalizes the value of the frequency bar when you release your mouse, 
-    const changeValueCommitted = (event: any, value: any) => {
+    const changeSliderValueCommitted = (event: any, value: number) => {
         setFreqBarValue(value);
-        changeFreq();
+        updateAllFrequencies();
+        createFrequencyBar();
     };
+
+    //Updates array of all frequencies when slider is changed
+    function updateAllFrequencies() {
+        let freqArr = allFrequencies
+        let ratio = Math.pow(2, 1/freqBarValue)
+        let currFreq = 261.6256
+        for (let i = 0; i < freqBarValue; i++) {
+            freqArr[i] = currFreq
+            currFreq = currFreq*ratio
+        }
+        setAllFrequencies(freqArr)
+        setActiveKeys()
+    }
+
+    //Sets the default active keys when slider is changed
+    function setActiveKeys() {
+        let tempMap1 = activeFreq
+        let tempMap2 = activeFreqKeys
+        tempMap1.clear();
+        tempMap2.clear();
+        let val = freqBarValue/12.0
+        for (let i = 0; i < 12; i++) {
+            tempMap1.set(allFrequencies[Math.floor(val*i)], homerow[i])
+            tempMap2.set(homerow[i], allFrequencies[Math.floor(val*i)])
+        }
+        setActiveFreq(tempMap1)
+        setActiveFreqKeys(tempMap2)
+    }
 
     const activeButton = "btn h-13 w-13 font-agrandir text-md text-black bg-gold border-b-2 border-r-2 border-black uppercase"
     const inactiveButton = 'btn h-13 w-13 font-agrandir text-md text-black bg-white border-b-2 border-r-2 border-black hover:bg-gray-200'
 
-    //creates freq bar with the number of boxes = value
-    function changeFreq() {
+    //creates freq bar with the number of boxes set by the slider value
+    function createFrequencyBar() {
         let freqBarArr = []
         for (let i = 0; i < freqBarValue; i++) {
-            freqBarArr.push(
-            <button 
-                aria-describedby={id}
-                key={i}
-                className={`${activeFreq.has(i+1) ? activeButton : inactiveButton} + ${i == 0 ? 'rounded-l-md': ""} + ${i == (freqBarValue - 1) ? 'rounded-r-md' : ""}`} 
-                onClick={(e) => assignFreq(e)}>
-                    {i + 1}
-                    {<br/>}
-                    {activeFreq.get(i+1)}
-            </button>)
+            freqBarArr.push
+            (
+            <Tooltip describeChild title={allFrequencies[i]} key={i} placement="top">
+                <button 
+                    aria-describedby={id}
+                    key={i}
+                    i-key = {i}
+                    className={`${activeFreq.has(allFrequencies[i]) ? activeButton : inactiveButton} + ${i == 0 ? 'rounded-l-md': ""} + ${i == (freqBarValue - 1) ? 'rounded-r-md' : ""}`} 
+                    onClick={(e) => assignFreq(e)}>
+                        {Math.floor(allFrequencies[i])}
+                        {<br/>}
+                        {activeFreq.get(allFrequencies[i])}
+                </button>
+            </Tooltip>
+            )
         }
-        setFreqComp(freqBarArr)
+        
+        setFreqBar(freqBarArr)
     }
 
     async function assignFreq(e: any) {
         setAnchorEl(e.currentTarget);
 
         //Unassigns a frequency if clicking on it after it's already assigned
-        let tempVal = Number(e.target.innerText.split('\n')[0])
+        let tempVal = allFrequencies[e.currentTarget.getAttribute('i-key')]
+        console.log(tempVal)
         if (activeFreq.has(tempVal)) {
             activeFreq.delete(tempVal)
-            changeFreq();
+            createFrequencyBar();
             return;
         }
 
@@ -120,24 +149,23 @@ export default function Play() {
         setOpen(false);
         setAnchorEl(null)
 
-        //If key is already assigned to a frequency -> reassigns to new frequency if pressed again
+        //If key is already assigned to a frequency -> reassigns to new frequency if pressed again, otherwise just assigns to key
         if (tempKeys.has(pianoKey.key)) {
             tempArr.delete(tempKeys.get(pianoKey.key))
             tempArr.set(tempVal, pianoKey.key)
             tempKeys.set(pianoKey.key, tempVal)
             setActiveFreq(tempArr)
             setActiveFreqKeys(tempKeys)
-            changeFreq();
-            return;
+            createFrequencyBar();
         }
 
-        //Assigns key to frequency
-        tempArr.set(tempVal, pianoKey.key)
-        tempKeys.set(pianoKey.key, tempVal)
-        setActiveFreq(tempArr)
-        setActiveFreqKeys(tempKeys)
-        console.log(activeFreq)
-        changeFreq();
+        else {
+            tempArr.set(tempVal, pianoKey.key)
+            tempKeys.set(pianoKey.key, tempVal)
+            setActiveFreq(tempArr)
+            setActiveFreqKeys(tempKeys)
+            createFrequencyBar();
+        }
     }
 
     //Sets the piano range from c3 -> b3, a single octave
@@ -172,7 +200,7 @@ export default function Play() {
             </Popper>
             <Grid container direction="row" justifyContent="center" alignItems="center">
                 
-                {freqComp.map(item => item)}
+                {freqBar.map(item => item)}
                 <Tooltip describeChild title="Click a frequency box and then press the key on your keyboard you want it to correspond to">
                     <button className="btn h-8 w-8 bg-white text-black rounded-3xl hover:bg-gray-100 ml-2">?</button>
                 </Tooltip>
@@ -199,8 +227,8 @@ export default function Play() {
                     max={32}
                     valueLabelDisplay="auto"
                     value={freqBarValue}
-                    onChange={changeValue}
-                    onChangeCommitted={changeValueCommitted}
+                    onChange={changeSliderValue}
+                    onChangeCommitted={changeSliderValueCommitted}
                 />
             </div>
         </div>

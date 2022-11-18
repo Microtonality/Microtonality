@@ -65,18 +65,18 @@
   background: #3ac8da;
 }
 
-.ReactPiano__Key--active.ReactPiano__Key--accidental {
+/* .ReactPiano__Key--active.ReactPiano__Key--accidental {
   border: 1px solid #fff;
   border-top: 1px solid #3ac8da;
-  /* Slight height reduction for "pushed-down" effect */
+  /* Slight height reduction for "pushed-down" effect 
   height: 60%;
 }
 
 .ReactPiano__Key--active.ReactPiano__Key--natural {
   border: 1px solid #3ac8da;
-  /* Slight height reduction for "pushed-down" effect */
+  /* Slight height reduction for "pushed-down" effect 
   height: 98%;
-}
+} */
 
 /*
  * Styles for disabled state

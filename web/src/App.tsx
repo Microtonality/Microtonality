@@ -11,8 +11,8 @@ import {
 import * as React from 'react';
 import Play from './pages/play/Play';
 
-const activeLink = "text-xl font-agrandirwide leading-relaxed inline-block mr-4 px-5 py-2 whitespace-nowrap uppercase text-gold underline"
-const inactiveLink = "text-xl font-agrandirwide leading-relaxed inline-block mr-4 px-5 py-2 whitespace-nowrap uppercase text-white hover:underline"
+const activeLink = "text-xl font-agrandir-wide leading-relaxed inline-block mr-4 px-5 py-2 whitespace-nowrap uppercase text-gold underline"
+const inactiveLink = "text-xl font-agrandir-wide leading-relaxed inline-block mr-4 px-5 py-2 whitespace-nowrap uppercase text-white hover:underline"
 
 export default function App() {
   return (
@@ -32,8 +32,8 @@ export default function App() {
 const Layout = () => {
   return (
     <>
-      <nav className="relative flex flex-wrap items-center justify-between px-2 py-7 bg-bglight mb-3 border-b-2 border-gold">
-        <span className="text-xl font-agrandirwide leading-relaxed inline-block mr-4 px-5 py-2 whitespace-nowrap uppercase text-white">MICROTONAL SYNTHESIZER PROJECT</span>
+      <nav className="relative flex flex-wrap items-center justify-between px-2 py-7 bg-bglight border-b-2 border-gold">
+        <span className="text-xl font-agrandir-wide leading-relaxed inline-block mr-4 px-5 py-2 whitespace-nowrap uppercase text-white">MICROTONAL SYNTHESIZER PROJECT</span>
           <span className="mr-10">
             <NavLink to="/" end className={({isActive}) => isActive ? activeLink : inactiveLink}>LEARN</NavLink>
             <NavLink to="/play" className={({isActive}) => isActive ? activeLink : inactiveLink}>PLAY</NavLink>
