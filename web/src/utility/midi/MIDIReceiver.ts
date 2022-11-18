@@ -30,6 +30,7 @@ function onMIDIMessage(message: WebMidi.MIDIMessageEvent) {
     switch (command) {
         case 144: // noteOn
             noteOn(note, velocity)
+            document.getElementById("note_viewer").innerHTML = `${note} at velocity ${velocity}`
             break
         case 128: // noteOff
             noteOff(note);

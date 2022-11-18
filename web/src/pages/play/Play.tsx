@@ -17,7 +17,7 @@ export default function Play() {
                 <h1>MIDI Input</h1>
                 <button onClick={createMIDINote}>Create MIDI Note</button>
                 <button onClick={connectToInstrument}>Connect MIDI Instrument</button>
-                <p>Note Played: </p>
+                <p id="note_viewer">Note Played: </p>
             </div>
             <div className='audio'>
                 <h1>MIDI Input</h1>
