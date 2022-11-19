@@ -1,10 +1,31 @@
 import * as React from 'react';
 import { Grid, Slider } from '@mui/material';
-import { Piano, KeyboardShortcuts, MidiNumbers } from 'react-piano';
+import { Piano, KeyboardShortcuts } from 'react-piano';
 import 'react-piano/dist/styles.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Synthesizer } from './Synthesizer';
+import { NoteToMidi, KeyToMidiConverter } from '../../utility/midi/NoteToMidiConverter';
 
 export default function Play() {
+    
+    const synthesizer = new Synthesizer();
+
+    function handleKeyDown(event: any): void {
+        synthesizer.NoteOn(KeyToMidiConverter(event.key, synthesizer.audioConfiguration.currentOctave));
+    }
+
+    function handleKeyUp(event: any): void {
+        synthesizer.NoteOff(KeyToMidiConverter(event.key, synthesizer.audioConfiguration.currentOctave));
+    }
+
+    function octaveUp() {
+        synthesizer.audioConfiguration.OctaveUp();
+    }
+
+    function octaveDown() {
+        synthesizer.audioConfiguration.OctaveDown();
+    }
+
     function createMIDINote() {
 
     }
@@ -16,6 +37,16 @@ export default function Play() {
     //Sets the value of the frequency bar slider
     const [freqBarValue, setFreqBarValue] = useState(12);
     const [freqComp, setFreqComp] = useState([])
+
+    useEffect(() => {
+        document.addEventListener('keydown', handleKeyDown);
+        document.addEventListener('keyup', handleKeyUp);
+
+        return function cleanUpListeners() {
+            document.removeEventListener('keydown', handleKeyDown);
+            document.removeEventListener('keyup', handleKeyUp);
+        }
+    }, []);
 
     //Updates the value of the frequency bar as you slide it around
     const changeValue = (event: any, value: any) => {
@@ -40,8 +71,8 @@ export default function Play() {
 
     //Sets the piano range from c3 -> b3, a single octave
     //Assigns keyboard shortcuts
-    const firstNote = MidiNumbers.fromNote('c3');
-    const lastNote = MidiNumbers.fromNote('b3');
+    const firstNote = NoteToMidi('c3');
+    const lastNote = NoteToMidi('b3');
     const keyboardShortcuts = KeyboardShortcuts.create({
         firstNote: firstNote,
         lastNote: lastNote,
@@ -59,6 +90,10 @@ export default function Play() {
             <div className='audio'>
                 <h1>MIDI Input</h1>
                 <button onClick={playSound}>Play Sound</button>
+            </div>
+            <div className='TODO'>
+                <button onClick={octaveDown}>Octave Down</button>
+                <button onClick={octaveUp}>Octave Up</button>
             </div>
 
             <Grid id="freqBarGrid" container direction="row" justifyContent="center" alignItems="center">
