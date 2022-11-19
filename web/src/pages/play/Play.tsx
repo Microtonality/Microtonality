@@ -3,8 +3,22 @@ import { Grid, Popper, Fade, Slider, Tooltip } from '@mui/material';
 import { Piano, KeyboardShortcuts, MidiNumbers } from 'react-piano';
 import './piano.css';
 import { useState, useEffect } from 'react';
+import { Synthesizer } from './Synthesizer';
+import { NoteToMidi, KeyToMidiConverter } from '../../utility/midi/NoteToMidiConverter';
+
 
 export default function Play() {
+
+    const synthesizer = new Synthesizer();
+
+    function octaveUp() {
+        synthesizer.audioConfiguration.OctaveUp();
+    }
+
+    function octaveDown() {
+        synthesizer.audioConfiguration.OctaveDown();
+    }
+
     function createMIDINote() {
 
     }
@@ -170,12 +184,35 @@ export default function Play() {
 
     //Sets the piano range from c3 -> b3, a single octave
     //Assigns keyboard shortcuts
-    const firstNote = MidiNumbers.fromNote('c3');
-    const lastNote = MidiNumbers.fromNote('b3');
+    const firstNote = NoteToMidi('c3');
+    const lastNote = NoteToMidi('b3');
+    const firstHiddenNote = NoteToMidi('c4')
+    const lastHiddenNote = NoteToMidi('f4');
     const keyboardShortcuts = KeyboardShortcuts.create({
         firstNote: firstNote,
         lastNote: lastNote,
         keyboardConfig: KeyboardShortcuts.HOME_ROW,
+    });
+    const hiddenKeyboardShortcuts = KeyboardShortcuts.create({
+        firstNote: firstHiddenNote,
+        lastNote: lastHiddenNote,
+        keyboardConfig: [{
+            natural: 'k',
+            flat: 'i',
+            sharp: 'o'
+          }, {
+            natural: 'l',
+            flat: 'o',
+            sharp: 'p'
+          }, {
+            natural: ';',
+            flat: 'p',
+            sharp: '['
+          }, {
+            natural: "'",
+            flat: '[',
+            sharp: ']'
+          }]
     });
 
     return (
@@ -189,6 +226,13 @@ export default function Play() {
             <div className="text-white">
                 <h1>MIDI Input</h1>
                 <button className="btn h-10 w-40 bg-white text-black rounded-md hover:bg-gray-100 mb-10" onClick={playSound}>Play Sound</button>
+            </div>
+            
+            <div>
+                <button className="btn h-10 w-40 bg-white text-black rounded-md hover:bg-gray-100 mb-10" onClick={octaveUp}>Octave Up</button>
+            </div>
+            <div>
+                <button className="btn h-10 w-40 bg-white text-black rounded-md hover:bg-gray-100 mb-10" onClick={octaveDown}>Octave Down</button>
             </div>
 
             <Popper id={id} open={open} anchorEl={anchorEl} transition className="w-35 h-10 bg-white rounded-md font-agrandir text-black text-center">
@@ -206,12 +250,12 @@ export default function Play() {
                 </Tooltip>
             </Grid>
 
-            <div className="container mx-auto my-auto mt-13 mb-13 h-450 w-1000 ">
+            <div className="container mx-auto my-auto mt-13 mb-13 h-450 w-1000">
                 <Piano
                     className="mx-auto my-auto"
                     noteRange={{ first: firstNote, last: lastNote }}
-                    playNote={(midiNumber: any) => {}}
-                    stopNote={(midiNumber: any) => {}}
+                    playNote={synthesizer.NoteOn}
+                    stopNote={synthesizer.NoteOff}
                     keyboardShortcuts={keyboardShortcuts}
                 />
             </div>
@@ -229,6 +273,16 @@ export default function Play() {
                     value={freqBarValue}
                     onChange={changeSliderValue}
                     onChangeCommitted={changeSliderValueCommitted}
+                />
+            </div>
+
+            <div className="container mx-auto my-auto invisible">
+                <Piano
+                    className="mx-auto my-auto"
+                    noteRange={{ first: firstHiddenNote, last: lastHiddenNote }}
+                    playNote={synthesizer.NoteOn}
+                    stopNote={synthesizer.NoteOff}
+                    keyboardShortcuts={hiddenKeyboardShortcuts}
                 />
             </div>
         </div>
