@@ -33,42 +33,29 @@ export class Synthesizer {
         return oscillator;
     }
 
-    NoteOn(note: number | string) {
+    NoteOn = (note: number) => {
 
         let frequency: number;
-        let midiInput: number;
-        
-        if (typeof note === 'number')
-            midiInput = note;
-        else if (typeof note === 'string')
-            midiInput = NoteToMidi(note);
 
-        if (midiInput === -1 || this.oscillators[midiInput] !== undefined)
+        if (note === -1 || this.oscillators[note] !== undefined)
             return;
 
-        frequency = this.audioConfiguration.currentScale.frequencies[midiInput];
+        frequency = this.audioConfiguration.currentScale.frequencies[note];
 
         var oscillator: OscillatorNode = this.CreateOscillator(frequency);
         oscillator.start();
 
-        this.oscillators[midiInput] = oscillator;
+        this.oscillators[note] = oscillator;
     }
 
-    NoteOff(note: number | string) {
-
-        let midiInput: number;
+    NoteOff = (note: number) => {
         
-        if (typeof note === 'number')
-            midiInput = note;
-        else if (typeof note === 'string')
-            midiInput = NoteToMidi(note);
-
-        if (midiInput === -1 || this.oscillators[midiInput] === undefined)
+        if (note === -1 || this.oscillators[note] === undefined)
             return;
 
-        var oscillator: OscillatorNode = this.oscillators[midiInput];
+        var oscillator: OscillatorNode = this.oscillators[note];
         oscillator.stop();
 
-        this.oscillators[midiInput] = undefined;
+        this.oscillators[note] = undefined;
     }
 }

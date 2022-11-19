@@ -10,14 +10,6 @@ export default function Play() {
     
     const synthesizer = new Synthesizer();
 
-    function handleKeyDown(event: any): void {
-        synthesizer.NoteOn(KeyToMidiConverter(event.key, synthesizer.audioConfiguration.currentOctave));
-    }
-
-    function handleKeyUp(event: any): void {
-        synthesizer.NoteOff(KeyToMidiConverter(event.key, synthesizer.audioConfiguration.currentOctave));
-    }
-
     function octaveUp() {
         synthesizer.audioConfiguration.OctaveUp();
     }
@@ -37,16 +29,6 @@ export default function Play() {
     //Sets the value of the frequency bar slider
     const [freqBarValue, setFreqBarValue] = useState(12);
     const [freqComp, setFreqComp] = useState([])
-
-    useEffect(() => {
-        document.addEventListener('keydown', handleKeyDown);
-        document.addEventListener('keyup', handleKeyUp);
-
-        return function cleanUpListeners() {
-            document.removeEventListener('keydown', handleKeyDown);
-            document.removeEventListener('keyup', handleKeyUp);
-        }
-    }, []);
 
     //Updates the value of the frequency bar as you slide it around
     const changeValue = (event: any, value: any) => {
@@ -103,8 +85,8 @@ export default function Play() {
             <div id="piano">
                 <Piano
                     noteRange={{ first: firstNote, last: lastNote }}
-                    playNote={(midiNumber: any) => {}}
-                    stopNote={(midiNumber: any) => {}}
+                    playNote={synthesizer.NoteOn}
+                    stopNote={synthesizer.NoteOff}
                     width={1000}
                     keyboardShortcuts={keyboardShortcuts}
                 />
