@@ -25,50 +25,25 @@ function NoteToMidi(note: string): number {
     return midiNum;
 }
 
-function KeyToMidiConverter(key: string, octave: number): number {
+function NotesFromOctave(octave: number): {[key: string]: number} {
+    let firstNoteVal: number = NoteToMidi('c' + octave);
+    let lastNoteVal: number = NoteToMidi('b' + octave);
+    let firstHiddenNoteVal: number = NoteToMidi('c' + (octave + 1));
+    let lastHiddenNoteVal: number = NoteToMidi('f' + (octave + 1))
 
-    const offsetFromC = KEYBOARD_MAPPING[key];
-
-    if (offsetFromC === undefined)
-        return -1;
-
-    const cIndexInOctave = (octave * NOTES_IN_OCTAVE) + NOTES_IN_OCTAVE;
-
-    const midiNum: number = offsetFromC + cIndexInOctave;
-
-    // console.log("key: " + midiNum);
-
-    return midiNum;
+    return {
+        'firstNote': firstNoteVal,
+        'lastNote': lastNoteVal,
+        'firstHiddenNote': firstHiddenNoteVal,
+        'lastHiddenNote': lastHiddenNoteVal
+    }
 }
 
-type StringNumMap = {
+type PitchMap = {
     [key: string]: number;
 }
 
-const KEYBOARD_MAPPING: StringNumMap = {
-    'a': 0,
-    'w': 1,
-    's': 2,
-    'e': 3,
-    'd': 4,
-    'f': 5,
-    't': 6,
-    'g': 7,
-    'y': 8,
-    'h': 9,
-    'u': 10,
-    'j': 11,
-    'k': 12,
-    'o': 13,
-    'l': 14,
-    'p': 15,
-    ';': 16,
-    '\'': 17,
-    ']': 18,
-    '\\': 20
-}
-
-const PITCH_INDEXES: StringNumMap = {
+const PITCH_INDEXES: PitchMap = {
     'C': 0,
     'C#': 1,
     'Db': 1,
@@ -90,7 +65,7 @@ const PITCH_INDEXES: StringNumMap = {
 
 export {
     NoteToMidi,
-    KeyToMidiConverter,
+    NotesFromOctave,
     MIDI_MIN,
     MIDI_MAX
 }

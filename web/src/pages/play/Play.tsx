@@ -1,22 +1,26 @@
 import * as React from 'react';
 import { Grid, Popper, Fade, Slider, Tooltip } from '@mui/material';
-import { Piano, KeyboardShortcuts, MidiNumbers } from 'react-piano';
+import { Piano, KeyboardShortcuts } from 'react-piano';
 import './piano.css';
 import { useState, useEffect } from 'react';
 import { Synthesizer } from './Synthesizer';
-import { NoteToMidi, KeyToMidiConverter } from '../../utility/midi/NoteToMidiConverter';
+import { NoteToMidi, NotesFromOctave } from '../../utility/midi/NoteToMidiConverter';
 
+// TODO: When a user is holding down a note and changes the octave,
+// the note remains downpressed on the original octave.
+// You then need to press the note twice to play it.
+const synthesizer = new Synthesizer();
 
 export default function Play() {
 
-    const synthesizer = new Synthesizer();
-
-    function octaveUp() {
-        synthesizer.audioConfiguration.OctaveUp();
+    function octaveUp(): void {
+        synthesizer.OctaveUp();
+        updateOnScreenKeyboard();
     }
 
-    function octaveDown() {
-        synthesizer.audioConfiguration.OctaveDown();
+    function octaveDown(): void {
+        synthesizer.OctaveDown();
+        updateOnScreenKeyboard();
     }
 
     function createMIDINote() {
@@ -34,6 +38,43 @@ export default function Play() {
     const [activeFreq, setActiveFreq] = useState(new Map()); //map of frequencies, ex: 1->a
     const [activeFreqKeys, setActiveFreqKeys] = useState(new Map()); //inverse map of frequencies, ex: a->1
 
+    // On-Screen Keyboard Configuration
+    // MIDI numbers range from 0 to 128 (C-1 to G#9).
+    // However, react-piano only allows MIDI numbers from 12 to 128 (C0 to G#9).
+    // Therefore, the user can only play the react-piano's range when using the on-screen keyboard, 
+    // but can still play the full MIDI range with a MIDI controller. (TODO: test this)
+    // Starts at C3
+    const [firstNote, setFirstNote] = useState(NoteToMidi('c' + synthesizer.audioConfiguration.currentOctave));
+    const [lastNote, setLastNote] = useState(NoteToMidi('b' + synthesizer.audioConfiguration.currentOctave));
+    const [firstHiddenNote, setFirstHiddenNote] = useState(NoteToMidi('c' + (synthesizer.audioConfiguration.currentOctave + 1)));
+    const [lastHiddenNote, setLastHiddenNote] = useState(NoteToMidi('b' + (synthesizer.audioConfiguration.currentOctave + 1)));
+    const [keyboardShortcuts, setKeyboardShortcuts] = useState(KeyboardShortcuts.create({
+        firstNote: firstNote,
+        lastNote: lastNote,
+        keyboardConfig: KeyboardShortcuts.HOME_ROW,
+    }));
+    const [hiddenKeyboardShortcuts, setHiddenKeyboardShortcuts] = useState(KeyboardShortcuts.create({
+        firstNote: firstHiddenNote,
+        lastNote: lastHiddenNote,
+        keyboardConfig: [{
+            natural: 'k',
+            flat: 'i',
+            sharp: 'o'
+          }, {
+            natural: 'l',
+            flat: 'o',
+            sharp: 'p'
+          }, {
+            natural: ';',
+            flat: 'p',
+            sharp: '['
+          }, {
+            natural: "'",
+            flat: '[',
+            sharp: ']'
+          }]
+    }));
+
     //Records keypress for frequency assignment
     const readKey = () => new Promise(resolve => window.addEventListener('keydown', resolve, { once: true }));
     const homerow = ['a', 'w', 's', 'e', 'd', 'f', 't', 'g', 'y', 'h', 'u', 'j']
@@ -46,9 +87,48 @@ export default function Play() {
 
     //Assigns default frequencies on page load
     useEffect(() => {
+        updateOnScreenKeyboard()
         updateAllFrequencies()
         createFrequencyBar()
     }, []);
+
+    function updateOnScreenKeyboard() {
+
+        var notes: {[key: string]: number} = NotesFromOctave(synthesizer.audioConfiguration.currentOctave);
+
+        setFirstNote(notes['firstNote']);
+        setLastNote(notes['lastNote']);
+        setFirstHiddenNote(notes['firstHiddenNote']);
+        setLastHiddenNote(notes['lastHiddenNote']);
+
+        setKeyboardShortcuts(KeyboardShortcuts.create({
+            firstNote: notes['firstNote'],
+            lastNote: notes['lastNote'],
+            keyboardConfig: KeyboardShortcuts.HOME_ROW,
+        }));
+
+        setHiddenKeyboardShortcuts(KeyboardShortcuts.create({
+            firstNote: notes['firstHiddenNote'],
+            lastNote: notes['lastHiddenNote'],
+            keyboardConfig: [{
+                natural: 'k',
+                flat: 'i',
+                sharp: 'o'
+              }, {
+                natural: 'l',
+                flat: 'o',
+                sharp: 'p'
+              }, {
+                natural: ';',
+                flat: 'p',
+                sharp: '['
+              }, {
+                natural: "'",
+                flat: '[',
+                sharp: ']'
+              }]
+        }));
+    }
 
     //Updates the value of the frequency bar as you slide it around
     const changeSliderValue = (event: any, value: number) => {
@@ -181,39 +261,6 @@ export default function Play() {
             createFrequencyBar();
         }
     }
-
-    //Sets the piano range from c3 -> b3, a single octave
-    //Assigns keyboard shortcuts
-    const firstNote = NoteToMidi('c3');
-    const lastNote = NoteToMidi('b3');
-    const firstHiddenNote = NoteToMidi('c4')
-    const lastHiddenNote = NoteToMidi('f4');
-    const keyboardShortcuts = KeyboardShortcuts.create({
-        firstNote: firstNote,
-        lastNote: lastNote,
-        keyboardConfig: KeyboardShortcuts.HOME_ROW,
-    });
-    const hiddenKeyboardShortcuts = KeyboardShortcuts.create({
-        firstNote: firstHiddenNote,
-        lastNote: lastHiddenNote,
-        keyboardConfig: [{
-            natural: 'k',
-            flat: 'i',
-            sharp: 'o'
-          }, {
-            natural: 'l',
-            flat: 'o',
-            sharp: 'p'
-          }, {
-            natural: ';',
-            flat: 'p',
-            sharp: '['
-          }, {
-            natural: "'",
-            flat: '[',
-            sharp: ']'
-          }]
-    });
 
     return (
         <div>
