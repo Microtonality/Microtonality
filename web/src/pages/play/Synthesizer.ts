@@ -5,10 +5,12 @@ export class Synthesizer {
 
     oscillators: Array<OscillatorNode>;
     audioConfiguration: AudioConfiguration;
+    activeNotes: Array<number>;
 
     constructor() {
         this.oscillators = new Array<OscillatorNode>(MIDI_MAX + 1);
         this.audioConfiguration = new AudioConfiguration();
+        this.activeNotes = new Array<number>();
     }
 
     CreateOscillator(frequency: number): OscillatorNode {
@@ -41,6 +43,7 @@ export class Synthesizer {
         oscillator.start();
 
         this.oscillators[note] = oscillator;
+        this.activeNotes.push(note);
     }
 
     NoteOff = (note: number) => {
@@ -52,6 +55,10 @@ export class Synthesizer {
         oscillator.stop();
 
         this.oscillators[note] = undefined;
+        let index: number = this.activeNotes.indexOf(note, 0);
+        if (index > -1) {
+            this.activeNotes.splice(index, 1);
+        }
     }
 
     UpdateVolume = (volume: number) => {
@@ -73,11 +80,13 @@ export class Synthesizer {
 
     OctaveUp(): void {
         this.ClearOscillators();
+        this.activeNotes = [];
         this.audioConfiguration.OctaveUp();
     }
 
     OctaveDown(): void {
         this.ClearOscillators();
+        this.activeNotes = [];
         this.audioConfiguration.OctaveDown();
     }
 }
