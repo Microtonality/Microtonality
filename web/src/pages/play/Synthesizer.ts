@@ -1,61 +1,95 @@
 import { AudioConfiguration } from './AudioConfiguration';
-import { NoteToMidi, MIDI_MAX } from '../../utility/midi/NoteToMidiConverter';
+import { MIDI_MIN, MIDI_MAX } from '../../utility/midi/NoteToMidiConverter';
 
+// TODO: fix snapping by introducing a layer of gain nodes to each oscillator (wrapper object to hold both?)
 export class Synthesizer {
 
-    audioContext: AudioContext;
-    gainNode: GainNode;
     oscillators: Array<OscillatorNode>;
     audioConfiguration: AudioConfiguration;
+    activeNotes: Array<number>;
 
     constructor() {
         this.oscillators = new Array<OscillatorNode>(MIDI_MAX + 1);
         this.audioConfiguration = new AudioConfiguration();
+        this.activeNotes = new Array<number>();
     }
 
     CreateOscillator(frequency: number): OscillatorNode {
 
-        if (this.audioContext === undefined) {
-
-            this.audioContext = new (window.AudioContext)();
-
-            // TODO: Connect other nodes for effects.
-            this.gainNode = new GainNode(this.audioContext);
-            this.gainNode.gain.setValueAtTime(0.05, 0);
-            this.gainNode.connect(this.audioContext.destination);
+        if (this.audioConfiguration.audioContext === undefined) {
+            this.audioConfiguration.InitializeContextAndNodes();
         }
 
         var oscillator: OscillatorNode;
-        oscillator = new OscillatorNode(this.audioContext);
+        oscillator = new OscillatorNode(this.audioConfiguration.audioContext);
         oscillator.frequency.value = frequency;
-        oscillator.connect(this.gainNode);
+
+        this.audioConfiguration.Connect(oscillator);
 
         return oscillator;
     }
 
+    // Takes in a MIDI number input and starts a new oscillator
     NoteOn = (note: number) => {
 
-        let frequency: number;
-
-        if (note === -1 || this.oscillators[note] !== undefined)
+        if (this.oscillators[note] !== undefined)
             return;
 
-        frequency = this.audioConfiguration.currentScale.frequencies[note];
+        let frequency: number = this.audioConfiguration.currentScale.frequencies[note];
+
+        if (frequency === undefined)
+            return;
 
         var oscillator: OscillatorNode = this.CreateOscillator(frequency);
         oscillator.start();
 
         this.oscillators[note] = oscillator;
+        this.activeNotes.push(note);
     }
 
     NoteOff = (note: number) => {
-        
-        if (note === -1 || this.oscillators[note] === undefined)
+
+        if (this.oscillators[note] === undefined)
             return;
 
         var oscillator: OscillatorNode = this.oscillators[note];
         oscillator.stop();
+        oscillator.disconnect();
 
         this.oscillators[note] = undefined;
+        let index: number = this.activeNotes.indexOf(note, 0);
+        if (index > -1) {
+            this.activeNotes.splice(index, 1);
+        }
+    }
+
+    UpdateVolume = (volume: number) => {
+        this.audioConfiguration.UpdateVolume(volume);
+    }
+
+    ClearOscillators(): void {
+
+        let i: number;
+        for (i = MIDI_MIN; i <= MIDI_MAX; i++)
+        {
+            if (this.oscillators[i] !== undefined)
+            {
+                this.oscillators[i].stop();
+                this.oscillators[i].disconnect();
+                this.oscillators[i] = undefined;
+            }
+        }
+    }
+
+    OctaveUp(): void {
+        this.ClearOscillators();
+        this.activeNotes = [];
+        this.audioConfiguration.OctaveUp();
+    }
+
+    OctaveDown(): void {
+        this.ClearOscillators();
+        this.activeNotes = [];
+        this.audioConfiguration.OctaveDown();
     }
 }

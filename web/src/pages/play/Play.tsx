@@ -1,21 +1,26 @@
 import * as React from 'react';
-import { Grid, Slider } from '@mui/material';
+import { Grid, Popper, Fade, Slider, Tooltip } from '@mui/material';
 import { Piano, KeyboardShortcuts } from 'react-piano';
-import 'react-piano/dist/styles.css';
+import './piano.css';
 import { useState, useEffect } from 'react';
 import { Synthesizer } from './Synthesizer';
-import { NoteToMidi, KeyToMidiConverter } from '../../utility/midi/NoteToMidiConverter';
+import { NoteToMidi, NotesFromOctave } from '../../utility/midi/NoteToMidiConverter';
+
+// TODO: When a user is holding down a note and changes the octave,
+// the note remains downpressed on the original octave.
+// You then need to press the note twice to play it.
+const synthesizer = new Synthesizer();
 
 export default function Play() {
-    
-    const synthesizer = new Synthesizer();
 
-    function octaveUp() {
-        synthesizer.audioConfiguration.OctaveUp();
+    function octaveUp(): void {
+        synthesizer.OctaveUp();
+        updateOnScreenKeyboard();
     }
 
-    function octaveDown() {
-        synthesizer.audioConfiguration.OctaveDown();
+    function octaveDown(): void {
+        synthesizer.OctaveDown();
+        updateOnScreenKeyboard();
     }
 
     function createMIDINote() {
@@ -26,76 +31,286 @@ export default function Play() {
 
     }
 
-    //Sets the value of the frequency bar slider
-    const [freqBarValue, setFreqBarValue] = useState(12);
-    const [freqComp, setFreqComp] = useState([])
+    //Frequency bar values
+    const [freqBarValue, setFreqBarValue] = useState(12); //number of frequencies
+    const [allFrequencies, setAllFrequencies] = useState([]) //all frequency values in bar
+    const [freqBar, setFreqBar] = useState([]); //array of frequency buttons to be rendered
+    const [activeFreq, setActiveFreq] = useState(new Map()); //map of frequencies, ex: 1->a
+    const [activeFreqKeys, setActiveFreqKeys] = useState(new Map()); //inverse map of frequencies, ex: a->1
 
-    //Updates the value of the frequency bar as you slide it around
-    const changeValue = (event: any, value: any) => {
-        setFreqBarValue(value);
-    };
-
-    //Finalizes the value of the frequency bar when you release your mouse, 
-    const changeValueCommitted = (event: any, value: any) => {
-        setFreqBarValue(value);
-        changeFreq();
-    };
-
-    //creates freq bar with the number of boxes = value
-    function changeFreq() {
-        console.log("Scale generated with " + freqBarValue + " notes")
-        let freqBarArr = []
-        for (let i = 0; i < freqBarValue; i++) {
-            freqBarArr.push(<button className="freqBar">200</button>)
-        }
-        setFreqComp(freqBarArr)
-    }
-
-    //Sets the piano range from c3 -> b3, a single octave
-    //Assigns keyboard shortcuts
-    const firstNote = NoteToMidi('c3');
-    const lastNote = NoteToMidi('b3');
-    const keyboardShortcuts = KeyboardShortcuts.create({
+    // On-Screen Keyboard Configuration
+    // MIDI numbers range from 0 to 128 (C-1 to G#9).
+    // However, react-piano only allows MIDI numbers from 12 to 128 (C0 to G#9).
+    // Therefore, the user can only play the react-piano's range when using the on-screen keyboard, 
+    // but can still play the full MIDI range with a MIDI controller. (TODO: test this)
+    // Starts at C3
+    const [firstNote, setFirstNote] = useState(NoteToMidi('c' + synthesizer.audioConfiguration.currentOctave));
+    const [lastNote, setLastNote] = useState(NoteToMidi('b' + synthesizer.audioConfiguration.currentOctave));
+    const [firstHiddenNote, setFirstHiddenNote] = useState(NoteToMidi('c' + (synthesizer.audioConfiguration.currentOctave + 1)));
+    const [lastHiddenNote, setLastHiddenNote] = useState(NoteToMidi('b' + (synthesizer.audioConfiguration.currentOctave + 1)));
+    const [keyboardShortcuts, setKeyboardShortcuts] = useState(KeyboardShortcuts.create({
         firstNote: firstNote,
         lastNote: lastNote,
         keyboardConfig: KeyboardShortcuts.HOME_ROW,
-    });
+    }));
+    const [hiddenKeyboardShortcuts, setHiddenKeyboardShortcuts] = useState(KeyboardShortcuts.create({
+        firstNote: firstHiddenNote,
+        lastNote: lastHiddenNote,
+        keyboardConfig: [{
+            natural: 'k',
+            flat: 'i',
+            sharp: 'o'
+          }, {
+            natural: 'l',
+            flat: 'o',
+            sharp: 'p'
+          }, {
+            natural: ';',
+            flat: 'p',
+            sharp: '['
+          }, {
+            natural: "'",
+            flat: '[',
+            sharp: ']'
+          }]
+    }));
+
+    //Records keypress for frequency assignment
+    const readKey = () => new Promise(resolve => window.addEventListener('keydown', resolve, { once: true }));
+    const homerow = ['a', 'w', 's', 'e', 'd', 'f', 't', 'g', 'y', 'h', 'u', 'j']
+
+    //Assign-key popper values
+    const [open, setOpen] = React.useState(false); //opens and closes popper
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null); //sets position of popper under the clicked button
+    const canBeOpen = open && Boolean(anchorEl); //boolean, if popper meets requirements to open, used in id
+    const id = canBeOpen ? 'transition-popper' : undefined; //id for poppers
+
+    //Assigns default frequencies on page load
+    useEffect(() => {
+        updateOnScreenKeyboard()
+        updateAllFrequencies()
+        createFrequencyBar()
+    }, []);
+
+    function updateOnScreenKeyboard() {
+
+        var notes: {[key: string]: number} = NotesFromOctave(synthesizer.audioConfiguration.currentOctave);
+
+        setFirstNote(notes['firstNote']);
+        setLastNote(notes['lastNote']);
+        setFirstHiddenNote(notes['firstHiddenNote']);
+        setLastHiddenNote(notes['lastHiddenNote']);
+
+        setKeyboardShortcuts(KeyboardShortcuts.create({
+            firstNote: notes['firstNote'],
+            lastNote: notes['lastNote'],
+            keyboardConfig: KeyboardShortcuts.HOME_ROW,
+        }));
+
+        setHiddenKeyboardShortcuts(KeyboardShortcuts.create({
+            firstNote: notes['firstHiddenNote'],
+            lastNote: notes['lastHiddenNote'],
+            keyboardConfig: [{
+                natural: 'k',
+                flat: 'i',
+                sharp: 'o'
+              }, {
+                natural: 'l',
+                flat: 'o',
+                sharp: 'p'
+              }, {
+                natural: ';',
+                flat: 'p',
+                sharp: '['
+              }, {
+                natural: "'",
+                flat: '[',
+                sharp: ']'
+              }]
+        }));
+    }
+
+    //Updates the value of the frequency bar as you slide it around
+    const changeSliderValue = (event: any, value: number) => {
+        setFreqBarValue(value); 
+    };
+
+    //Finalizes the value of the frequency bar when you release your mouse, 
+    const changeSliderValueCommitted = (event: any, value: number) => {
+        setFreqBarValue(value);
+        updateAllFrequencies();
+        createFrequencyBar();
+    };
+
+    //Updates array of all frequencies when slider is changed
+    function updateAllFrequencies() {
+        let freqArr = allFrequencies
+        let ratio = Math.pow(2, 1/freqBarValue)
+        let currFreq = 261.6256
+        for (let i = 0; i < freqBarValue; i++) {
+            freqArr[i] = currFreq
+            currFreq = currFreq*ratio
+        }
+        setAllFrequencies(freqArr)
+        setActiveKeys()
+    }
+
+    //Sets the default active keys when slider is changed
+    function setActiveKeys() {
+        let tempMap1 = activeFreq
+        let tempMap2 = activeFreqKeys
+        tempMap1.clear();
+        tempMap2.clear();
+        let val = freqBarValue/12.0
+        for (let i = 0; i < 12; i++) {
+            tempMap1.set(allFrequencies[Math.floor(val*i)], homerow[i])
+            tempMap2.set(homerow[i], allFrequencies[Math.floor(val*i)])
+        }
+        setActiveFreq(tempMap1)
+        setActiveFreqKeys(tempMap2)
+    }
+
+    const activeButton = "btn h-13 w-13 font-agrandir text-md text-black bg-gold border-b-2 border-r-2 border-black uppercase"
+    const inactiveButton = 'btn h-13 w-13 font-agrandir text-md text-black bg-white border-b-2 border-r-2 border-black hover:bg-gray-200'
+
+    //creates freq bar with the number of boxes set by the slider value
+    function createFrequencyBar() {
+        let freqBarArr = []
+        for (let i = 0; i < freqBarValue; i++) {
+            freqBarArr.push
+            (
+            <Tooltip describeChild title={allFrequencies[i]} key={i} placement="top">
+                <button 
+                    aria-describedby={id}
+                    key={i}
+                    i-key = {i}
+                    className={`${activeFreq.has(allFrequencies[i]) ? activeButton : inactiveButton} + ${i == 0 ? 'rounded-l-md': ""} + ${i == (freqBarValue - 1) ? 'rounded-r-md' : ""}`} 
+                    onClick={(e) => assignFreq(e)}>
+                        {Math.floor(allFrequencies[i])}
+                        {<br/>}
+                        {activeFreq.get(allFrequencies[i])}
+                </button>
+            </Tooltip>
+            )
+        }
+        
+        setFreqBar(freqBarArr)
+    }
+
+    async function assignFreq(e: any) {
+        setAnchorEl(e.currentTarget);
+
+        //Unassigns a frequency if clicking on it after it's already assigned
+        let tempVal = allFrequencies[e.currentTarget.getAttribute('i-key')]
+        console.log(tempVal)
+        if (activeFreq.has(tempVal)) {
+            activeFreq.delete(tempVal)
+            createFrequencyBar();
+            return;
+        }
+
+        //Opens popper
+        setOpen(true);
+
+        let tempArr, tempKeys = new Map();
+        tempArr = activeFreq;
+        tempKeys = activeFreqKeys;
+        let pianoKey: any;
+        
+        //After clicking frequency, waits for key press to assign it
+        //Loops until homerow key is mapped
+        let containFlag = 0;
+        while (containFlag == 0) {
+
+            pianoKey = await readKey();
+
+            //closes popper on escape key press
+            if (pianoKey.key === "Escape") {
+                setOpen(false);
+                setAnchorEl(null)
+                return
+            }
+
+            for (let i = 0; i < homerow.length; i++) {
+                if (pianoKey.key == homerow[i]) {
+                    containFlag = 1;
+                    break;
+                }
+            }
+        }
+
+        //Closes popper after valid key press
+        setOpen(false);
+        setAnchorEl(null)
+
+        //If key is already assigned to a frequency -> reassigns to new frequency if pressed again, otherwise just assigns to key
+        if (tempKeys.has(pianoKey.key)) {
+            tempArr.delete(tempKeys.get(pianoKey.key))
+            tempArr.set(tempVal, pianoKey.key)
+            tempKeys.set(pianoKey.key, tempVal)
+            setActiveFreq(tempArr)
+            setActiveFreqKeys(tempKeys)
+            createFrequencyBar();
+        }
+
+        else {
+            tempArr.set(tempVal, pianoKey.key)
+            tempKeys.set(pianoKey.key, tempVal)
+            setActiveFreq(tempArr)
+            setActiveFreqKeys(tempKeys)
+            createFrequencyBar();
+        }
+    }
 
     return (
-        <div className='play'>
-            <div className='midi-input'>
+        <div>
+            <div className="text-white">
                 <h1>MIDI Input</h1>
-                <button onClick={createMIDINote}>Create MIDI Note</button>
+                <button className="btn h-10 w-40 bg-white text-black rounded-md hover:bg-gray-100" onClick={createMIDINote}>Create MIDI Note</button>
                 {/* <button onClick={connectToInstrument}>Connect MIDI Instrument</button> */}
                 <p>Note Played: </p>
             </div>
-            <div className='audio'>
+            <div className="text-white">
                 <h1>MIDI Input</h1>
-                <button onClick={playSound}>Play Sound</button>
+                <button className="btn h-10 w-40 bg-white text-black rounded-md hover:bg-gray-100 mb-10" onClick={playSound}>Play Sound</button>
             </div>
-            <div className='TODO'>
-                <button onClick={octaveDown}>Octave Down</button>
-                <button onClick={octaveUp}>Octave Up</button>
+            
+            <div>
+                <button className="btn h-10 w-40 bg-white text-black rounded-md hover:bg-gray-100 mb-10" onClick={octaveUp}>Octave Up</button>
+            </div>
+            <div>
+                <button className="btn h-10 w-40 bg-white text-black rounded-md hover:bg-gray-100 mb-10" onClick={octaveDown}>Octave Down</button>
             </div>
 
-            <Grid id="freqBarGrid" container direction="row" justifyContent="center" alignItems="center">
-                    {freqComp.map(item => item)}
+            <Popper id={id} open={open} anchorEl={anchorEl} transition className="w-35 h-10 bg-white rounded-md font-agrandir text-black text-center">
+            {({ TransitionProps }) => (
+                <Fade {...TransitionProps} timeout={350}>
+                    <p className="mt-2 mx-2">Assign key...</p>
+                </Fade>
+            )}
+            </Popper>
+            <Grid container direction="row" justifyContent="center" alignItems="center">
+                
+                {freqBar.map(item => item)}
+                <Tooltip describeChild title="Click a frequency box and then press the key on your keyboard you want it to correspond to">
+                    <button className="btn h-8 w-8 bg-white text-black rounded-3xl hover:bg-gray-100 ml-2">?</button>
+                </Tooltip>
             </Grid>
 
-            <div id="piano">
+            <div className="container mx-auto my-auto mt-13 mb-13 h-450 w-1000">
                 <Piano
+                    activeNotes={synthesizer.activeNotes}
+                    className="mx-auto my-auto"
                     noteRange={{ first: firstNote, last: lastNote }}
                     playNote={synthesizer.NoteOn}
                     stopNote={synthesizer.NoteOff}
-                    width={1000}
                     keyboardShortcuts={keyboardShortcuts}
                 />
             </div>
 
-            <div id="controlPanel">
-                <h1 style={{color: 'white'}}>Frequency Bar Adjustment</h1>
+            <div className="container mx-auto">
+                <p className="text-xl font-agrandirwide text-white">NOTES PER OCTAVE</p>
                 <Slider
-                    id="freqBarSlider"
                     aria-label="Small steps"
                     defaultValue={12}
                     step={1}
@@ -104,11 +319,20 @@ export default function Play() {
                     max={32}
                     valueLabelDisplay="auto"
                     value={freqBarValue}
-                    onChange={changeValue}
-                    onChangeCommitted={changeValueCommitted}
+                    onChange={changeSliderValue}
+                    onChangeCommitted={changeSliderValueCommitted}
+                />
+            </div>
+
+            <div className="container mx-auto my-auto invisible">
+                <Piano
+                    className="mx-auto my-auto"
+                    noteRange={{ first: firstHiddenNote, last: lastHiddenNote }}
+                    playNote={synthesizer.NoteOn}
+                    stopNote={synthesizer.NoteOff}
+                    keyboardShortcuts={hiddenKeyboardShortcuts}
                 />
             </div>
         </div>
-        
     );
 }
