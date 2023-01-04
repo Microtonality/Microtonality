@@ -1,6 +1,7 @@
 import { AudioConfiguration } from './AudioConfiguration';
 import { MIDI_MIN, MIDI_MAX } from '../../utility/midi/NoteToMidiConverter';
 
+// TODO: fix snapping by introducing a layer of gain nodes to each oscillator (wrapper object to hold both?)
 export class Synthesizer {
 
     oscillators: Array<OscillatorNode>;
@@ -53,6 +54,7 @@ export class Synthesizer {
 
         var oscillator: OscillatorNode = this.oscillators[note];
         oscillator.stop();
+        oscillator.disconnect();
 
         this.oscillators[note] = undefined;
         let index: number = this.activeNotes.indexOf(note, 0);
@@ -73,6 +75,7 @@ export class Synthesizer {
             if (this.oscillators[i] !== undefined)
             {
                 this.oscillators[i].stop();
+                this.oscillators[i].disconnect();
                 this.oscillators[i] = undefined;
             }
         }

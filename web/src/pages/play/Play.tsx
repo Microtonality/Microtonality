@@ -299,7 +299,7 @@ export default function Play() {
 
             <div className="container mx-auto my-auto mt-13 mb-13 h-450 w-1000">
                 <Piano
-                    activeNotes={ synthesizer.activeNotes.length === 0 ? [] : synthesizer.activeNotes }
+                    activeNotes={synthesizer.activeNotes}
                     className="mx-auto my-auto"
                     noteRange={{ first: firstNote, last: lastNote }}
                     playNote={synthesizer.NoteOn}

@@ -3,7 +3,7 @@ import { MicrotonalScale } from "../../utility/microtonal/MicrotonalScale"
 export class AudioConfiguration {
 
     audioContext: AudioContext;
-    gainNode: GainNode;
+    masterGain: GainNode;
 
     currentScale: MicrotonalScale
     selectedNotes: Array<number>
@@ -42,9 +42,9 @@ export class AudioConfiguration {
         this.audioContext = new (window.AudioContext)();
 
         // TODO: Connect other nodes for effects.
-        this.gainNode = new GainNode(this.audioContext);
-        this.gainNode.gain.setValueAtTime(this.volume, 0);
-        this.gainNode.connect(this.audioContext.destination);
+        this.masterGain = new GainNode(this.audioContext);
+        this.masterGain.gain.setValueAtTime(this.volume, 0);
+        this.masterGain.connect(this.audioContext.destination);
     }
 
     Connect(oscillator: OscillatorNode): void {
@@ -52,7 +52,7 @@ export class AudioConfiguration {
         // TODO: Once we add other nodes, do we 
         // still want to connect oscillators
         // to this one?
-        oscillator.connect(this.gainNode);
+        oscillator.connect(this.masterGain);
     }
 
     UpdateVolume = (volume: number) => {
@@ -62,7 +62,7 @@ export class AudioConfiguration {
 
         this.volume = volume
 
-        this.gainNode.gain.setValueAtTime(this.volume, 0);
+        this.masterGain.gain.setValueAtTime(this.volume, 0);
     }
 
     //TODO: Synthesizer integration
