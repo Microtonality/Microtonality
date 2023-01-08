@@ -22,7 +22,7 @@ function initDevices(midi: WebMidi.MIDIAccess) {
     }
 }
 
-function onMIDIMessage(message: WebMidi.MIDIMessageEvent) {
+export function onMIDIMessage(message: WebMidi.MIDIMessageEvent) {
     let command = message.data[0]
     let note = message.data[1]
     let velocity = (message.data.length > 2) ? message.data[2] : 0
