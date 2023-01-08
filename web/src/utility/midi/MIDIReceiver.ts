@@ -22,7 +22,7 @@ function initDevices(midi: WebMidi.MIDIAccess) {
     }
 }
 
-export function onMIDIMessage(message: WebMidi.MIDIMessageEvent) {
+function onMIDIMessage(message: WebMidi.MIDIMessageEvent) {
     let command = message.data[0]
     let note = message.data[1]
     let velocity = (message.data.length > 2) ? message.data[2] : 0
@@ -40,7 +40,7 @@ export function onMIDIMessage(message: WebMidi.MIDIMessageEvent) {
     }
 }
 
-function noteOn(note: number, velocity: number) {
+export function noteOn(note: number, velocity: number) {
     // Find correct frequency for note
     let frequency = note;
 
