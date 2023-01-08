@@ -47,6 +47,8 @@ export function noteOn(note: number, velocity: number) {
     // Send new note w/ velocity to sound generator
 }
 
-function noteOff(note: number) {
+export function noteOff(note: number) {
+    // Fidn correct frequency for note
 
+    // Find new note to disable.
 }
