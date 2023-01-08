@@ -1,6 +1,10 @@
 let midiInput: WebMidi.MIDIInput[] = [];
 let midiOutput: WebMidi.MIDIOutput[] = [];
 
+const NOTE_ON_MESSAGE = 144;
+const NOTE_OFF_MESSAGE = 128;
+const PITCH_BEND_MESSAGE = 224;
+
 export function connectToInstrument() {
     navigator.requestMIDIAccess().then(
         (midi) => initDevices(midi),
@@ -24,19 +28,23 @@ function initDevices(midi: WebMidi.MIDIAccess) {
 
 function onMIDIMessage(message: WebMidi.MIDIMessageEvent) {
     let command = message.data[0]
-    let note = message.data[1]
-    let velocity = (message.data.length > 2) ? message.data[2] : 0
 
-    switch (command) {
-        case 144: // noteOn
-            noteOn(note, velocity)
-            document.getElementById("note_viewer").innerHTML = `${note} at velocity ${velocity}`
-            break
-        case 128: // noteOff
-            noteOff(note);
-            break
-        default:
-            console.warn("This MIDI Input is not supported yet!")
+    if (command == NOTE_ON_MESSAGE) {
+        let note = message.data[1]
+        let velocity = message.data[2]
+
+        noteOn(note, velocity)
+    } else if (command == NOTE_OFF_MESSAGE) {
+        let note = message.data[1]
+
+        noteOff(note)
+    } else if (command == PITCH_BEND_MESSAGE) {
+        let finePitchBend = message.data[1]
+        let coarsePitchBend = message.data[2]
+
+        setGlobalPitchBend(finePitchBend, coarsePitchBend)
+    } else {
+        console.warn("This MIDI Input is not supported yet!")
     }
 }
 
@@ -51,4 +59,8 @@ export function noteOff(note: number) {
     // Fidn correct frequency for note
 
     // Find new note to disable.
+}
+
+export function setGlobalPitchBend(finePitchBend: number, coarsePitchBend: number) {
+    // Probably move this to another class specifically for pitch bend calculation
 }
