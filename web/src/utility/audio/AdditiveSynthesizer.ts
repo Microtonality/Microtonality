@@ -1,12 +1,15 @@
 class AdditiveSynthesizer {
-    oscillators: Array<Oscillator> = [
-        new Oscillator(1, 1),
-        new Oscillator(2, 1),
-        new Oscillator(3, 1),
-        new Oscillator(4, 1),
-        new Oscillator(5, 1),
-        new Oscillator(6, 1),
+
+    currentOscillatorSettings: Array<OscillatorSettings> = [
+        new OscillatorSettings(1, 1, "sine"),
+        new OscillatorSettings(2, 1, "sine"),
+        new OscillatorSettings(3, 1, "sine"),
+        new OscillatorSettings(4, 1, "sine"),
+        new OscillatorSettings(5, 1, "sine"),
+        new OscillatorSettings(6, 1, "sine"),
         ]
+
+    oscillatorStacks: { [key: number]: OscillatorStack } = {}
 
     gain: number
 
@@ -16,14 +19,19 @@ class AdditiveSynthesizer {
     release: number = 1
 
     onPlayFrequency(frequency: number, velocity: number) {
-        for (let oscillator of this.oscillators) {
-            oscillator.beginPlay(frequency, velocity + this.gain)
-        }
+        this.oscillatorStacks[frequency] = new OscillatorStack(
+                this.currentOscillatorSettings,
+                frequency,
+                velocity,
+                )
+
+        this.oscillatorStacks[frequency].beginPlay()
     }
 
     onStopFrequency(frequency: number) {
-        for (let oscillator of this.oscillators) {
-            oscillator.endPlay(frequency)
-        }
+        this.oscillatorStacks[frequency].endPlay()
+        delete this.oscillatorStacks[frequency]
     }
+
+
 }
