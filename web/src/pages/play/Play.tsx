@@ -319,13 +319,13 @@ export default function Play() {
             
             
 
-            <Popper id={id} open={open} anchorEl={anchorEl} transition className="w-35 h-10 bg-white rounded-md font-agrandir text-black text-center">
+            {/* <Popper id={id} open={open} anchorEl={anchorEl} transition className="w-35 h-10 bg-white rounded-md font-agrandir text-black text-center">
             {({ TransitionProps }) => (
                 <Fade {...TransitionProps} timeout={350}>
                     <p className="mt-2 mx-2">Assign key...</p>
                 </Fade>
             )}
-            </Popper>
+            </Popper> */}
             <Grid container direction="row" justifyContent="center" alignItems="center">
                 
                 {freqBar.map(item => item)}
