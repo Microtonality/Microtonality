@@ -1,8 +1,8 @@
 import { Scale } from '../Scale'
 import { ScaleNote } from '../notes/ScaleNote'
-import { Ratio } from '../notes/Ratio'
-import { Cent } from '../notes/Cent'
-import { IntRatio } from '../notes/IntRatio';
+import { RatioNote } from '../notes/RatioNote'
+import { CentNote } from '../notes/CentNote'
+import { IntRatioNote } from '../notes/IntRatioNote';
 
 // TODO: TEST
 
@@ -88,13 +88,13 @@ export class ScalaParser {
                 throw Error('ScalaParser.ParsePitchValueLine(' + line + '): null note type.');
             
             case NoteType.CENT:
-                return new Cent(noteInfo.num, noteInfo.comments);
+                return new CentNote(noteInfo.num, noteInfo.comments);
             
             case NoteType.RATIO:
-                return new Ratio(noteInfo.num, noteInfo.comments);
+                return new RatioNote(noteInfo.num, noteInfo.comments);
 
             case NoteType.INTRATIO:
-                return new IntRatio(noteInfo.num, noteInfo.comments);
+                return new IntRatioNote(noteInfo.num, noteInfo.comments);
         }
     }
 

@@ -1,11 +1,18 @@
 export abstract class ScaleNote {
 
-    public abstract multiplier: number;
-    public abstract num: string;
-    public abstract comments: string;
+    public multiplier: number;
+    public num: string;
+    public comments: string;
 
-    protected abstract validateInput(num: string): any;
-    protected abstract calcMultiplier(num: string): number;
+    constructor(num: string, comments: string | null = null) {
+        this.multiplier = this.calcMultiplier(num);
+        this.num = num;
+        this.comments = comments;
+    }
+
+    protected calcMultiplier(num: string): number {
+        throw new Error("Not implemented")
+    }
 }
 
 export class InvalidNoteInputException extends Error {
