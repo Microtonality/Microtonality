@@ -37,7 +37,7 @@ class ScaleCore {
     private generateEqualTemperamentMultipliers(numOfTones: number): ScaleNote[] {
         let multipliers = [];
         for (let i=0; i<numOfTones; i++) {
-            multipliers.push(new CentNote((i * 100).toString()));
+            multipliers.push(new CentNote((i * (1200 / numOfTones)).toString()));
         }
         return multipliers;
     }

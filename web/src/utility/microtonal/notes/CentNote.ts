@@ -8,13 +8,13 @@ const twelfthRootOfTwo = Math.pow(2, 1 / 12);
 export class CentNote extends ScaleNote {
     protected calcMultiplier(num: string): number {
 
-        var centRegex: RegExp = new RegExp(/(\d+\.\d+)/);
-        var parsedCent: string[] = centRegex.exec(num);
+        // var centRegex: RegExp = new RegExp(/(\d+\.\d+)/);
+        // var parsedCent: string[] = centRegex.exec(num);
+        //
+        // if (parsedCent === null)
+        //     throw new InvalidNoteInputException('Cent.validateInput(' + num + '): parsedCent is null.');
 
-        if (parsedCent === null)
-            throw new InvalidNoteInputException('Cent.validateInput(' + num + '): parsedCent is null.');
-
-        let cents: number = parseFloat(parsedCent[1]);
+        let cents: number = parseFloat(num);
 
         if (isNaN(cents))
             throw new InvalidNoteInputException('Cent.validateInput(' + num + '): The string is not a number.');
