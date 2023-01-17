@@ -35,7 +35,7 @@ export class Synthesizer {
         if (this.oscillators[note] !== undefined)
             return;
 
-        let frequency: number = this.audioConfiguration.currentScale.frequencies[note];
+        let frequency: number = this.audioConfiguration.scaleCore.MIDINoteToFrequency(note);
 
         if (frequency === undefined)
             return;

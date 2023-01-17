@@ -7,10 +7,10 @@ export class Scale {
 
     public notes: ScaleNote[];
 
-    constructor(_title: string = "", _description: string = "", _notes: ScaleNote[]) {
+    constructor(title: string = "", description: string = "", notes: ScaleNote[]) {
 
-        this.title = _title;
-        this.description = _description;
-        this.notes = _notes;
+        this.title = title;
+        this.description = description;
+        this.notes = notes;
     }
 }

@@ -1,4 +1,5 @@
 import { MicrotonalScale } from "../../utility/microtonal/MicrotonalScale"
+import ScaleCore from "../../utility/microtonal/ScaleCore";
 
 export class AudioConfiguration {
 
@@ -6,6 +7,7 @@ export class AudioConfiguration {
     masterGain: GainNode;
     dynamicsCompressor: DynamicsCompressorNode;
 
+    scaleCore: ScaleCore;
     currentScale: MicrotonalScale
     selectedNotes: Array<number>
 
@@ -20,6 +22,7 @@ export class AudioConfiguration {
 
     constructor() {
         this.currentScale = new MicrotonalScale();
+        this.scaleCore = new ScaleCore();
         this.currentOctave = 3;
         this.volume = 0.05;
     }
