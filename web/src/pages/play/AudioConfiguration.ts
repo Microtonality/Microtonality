@@ -4,6 +4,7 @@ export class AudioConfiguration {
 
     audioContext: AudioContext;
     masterGain: GainNode;
+    dynamicsCompressor: DynamicsCompressorNode;
 
     currentScale: MicrotonalScale
     selectedNotes: Array<number>
@@ -45,6 +46,12 @@ export class AudioConfiguration {
         this.masterGain = new GainNode(this.audioContext);
         this.masterGain.gain.setValueAtTime(this.volume, 0);
         this.masterGain.connect(this.audioContext.destination);
+
+        // Attack and release
+        this.dynamicsCompressor = new DynamicsCompressorNode(this.audioContext);
+        this.dynamicsCompressor.attack.value = 0.9;
+        this.dynamicsCompressor.release.value = 0.9;
+        this.dynamicsCompressor.connect(this.masterGain);
     }
 
     Connect(oscillator: OscillatorNode): void {
