@@ -24,9 +24,7 @@ export class ScalaParser {
             // We want this before we look for comments,
             // since it is a comment and is always the first one.
             if (phase === ParserPhase.TITLE) {
-
                 if (line.startsWith('!')) {
-                    
                     line = line.substring(1); // Remove '!'
                     line = line.trim();
 
@@ -100,7 +98,6 @@ export class ScalaParser {
 
     public static ParsePitchValue(line: string): NoteInfo {
 
-        console.log(line);
         var type: NoteType = NoteType.NULL;
         let num: string = '';
         let comments: string = '';
@@ -162,7 +159,7 @@ enum ParserPhase {
     DONE = 4
 }
 
-class NoteInfo {
+export class NoteInfo {
 
     public type: NoteType;
     public num: string;
@@ -176,7 +173,7 @@ class NoteInfo {
     }
 }
 
-enum NoteType {
+export enum NoteType {
     NULL = 0,
     CENT = 1,
     RATIO = 2,

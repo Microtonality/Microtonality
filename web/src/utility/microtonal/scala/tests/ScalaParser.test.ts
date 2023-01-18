@@ -1,8 +1,7 @@
-import { Scale } from "../../Scale";
-import { ScaleNote } from "../../notes/ScaleNote";
-import { ScalaParser } from "../ScalaParser"
+import { Scale } from '../../Scale';
+import { ScaleNote } from '../../notes/ScaleNote';
+import { NoteInfo, NoteType, ScalaParser } from '../ScalaParser'
 
-// TODO test
 // Noteworthy test cases:
 //
 //   123 wow 7.8/10
@@ -13,7 +12,7 @@ import { ScalaParser } from "../ScalaParser"
 //   aassdfpop12/3.5 yep (12/3)
 //   asd.3.2 36.4 (3.2)
 
-test('scala parser reads file and returns Scale object with fields', () => {
+test('ScalaParser.ParseScalaFile(string)', () => {
     
     // Arrange
     let testFile: string = 
@@ -52,4 +51,28 @@ test('scala parser reads file and returns Scale object with fields', () => {
 
     // Assert
     expect(scale).toEqual(expectedScale);
+})
+
+jest.mock('../ScalaParser');
+
+test.skip('ScalaParser.ParsePitchValueLine(string) builds CentNote', () => {
+
+    // Arrange
+    const mockParser: jest.Mocked<typeof ScalaParser> = ScalaParser as jest.Mocked<typeof ScalaParser>;
+    let note: string = 'asdf';
+
+    mockParser.ParsePitchValue.mockImplementation((note) => new NoteInfo(NoteType.NULL, note, ''));
+
+    // Act and Assert
+    expect(mockParser.ParsePitchValueLine(note)).toThrow();
+})
+
+test.skip('ScalaParser.ParsePitchValueLine(string) throws Error from NULL NoteType', () => {
+
+    // Arrange
+    let note: string = 'asdf';
+
+    // Act
+
+    // Assert
 })
