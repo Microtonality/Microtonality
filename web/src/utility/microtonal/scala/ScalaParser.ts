@@ -80,11 +80,7 @@ export class ScalaParser {
         
         var noteInfo: NoteInfo = ScalaParser.ParsePitchValue(line);
 
-        switch (noteInfo.type) {
-
-            case NoteType.NULL:
-                throw Error('ScalaParser.ParsePitchValueLine(' + line + '): null note type.');
-            
+        switch (noteInfo.type) {            
             case NoteType.CENT:
                 return new CentNote(noteInfo.num, noteInfo.comments);
             
@@ -111,7 +107,7 @@ export class ScalaParser {
             if (isNaN(parseInt(char))) {
 
                 if (num.length === 0)
-                    continue;
+                    throw Error('ScalaParser.ParsePitchValue(' + line + '): You cannot have comments before a pitch value.');
 
                 if (!readSlashOrDecimal) {
 
@@ -144,6 +140,9 @@ export class ScalaParser {
         // For single digit integer ratios.
         if (!isNaN(parseInt(num)) && type === NoteType.NULL)
             type = NoteType.INTRATIO;
+
+        if (type === NoteType.NULL)
+            throw new Error('ScalaParser.ParsePitchValue(' + line + '): NoteType was still null.');
 
         comments = line.substring(i).trim();
 
