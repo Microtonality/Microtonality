@@ -1,5 +1,3 @@
-// TODO: TEST
-
 import { ScaleNote, InvalidNoteInputException } from "./ScaleNote";
 
 export class IntRatioNote extends ScaleNote {

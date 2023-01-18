@@ -4,7 +4,6 @@ export class Scale {
 
     public title: string;
     public description: string;
-
     public notes: ScaleNote[];
 
     constructor(title: string = "", description: string = "", notes: ScaleNote[]) {

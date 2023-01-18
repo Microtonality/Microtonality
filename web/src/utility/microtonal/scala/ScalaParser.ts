@@ -4,8 +4,6 @@ import { RatioNote } from '../notes/RatioNote'
 import { CentNote } from '../notes/CentNote'
 import { IntRatioNote } from '../notes/IntRatioNote';
 
-// TODO: TEST
-
 export class ScalaParser {
 
     public static ParseScalaFile(file: string): Scale {

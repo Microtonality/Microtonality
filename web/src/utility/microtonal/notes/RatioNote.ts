@@ -1,5 +1,4 @@
 // Some code adapted for our use case from https://github.com/snopeusz/scl_reader
-// TODO: TEST
 
 import { ScaleNote, InvalidNoteInputException } from "./ScaleNote";
 
