@@ -1,26 +1,33 @@
 import * as React from 'react';
-import { Grid, Popper, Fade, Slider, Tooltip, FormControl, InputLabel, Select, MenuItem, Box, Tabs, Tab, Typography, Button } from '@mui/material';
+import { Grid, Popper, Fade, Slider, Tooltip, FormControl, InputLabel, Select, MenuItem, Box, Tabs, Tab, Button, Menu } from '@mui/material';
 import { Piano, KeyboardShortcuts } from 'react-piano';
 import './piano.css';
 import { useState, useEffect } from 'react';
 import { Synthesizer } from './Synthesizer';
 import { NoteToMidi, NotesFromOctave } from '../../utility/midi/NoteToMidiConverter';
+import FrequencyBar from './FrequencyBar';
 
 // TODO: When a user is holding down a note and changes the octave,
 // the note remains downpressed on the original octave.
 // You then need to press the note twice to play it.
 const synthesizer = new Synthesizer();
 
+const frequencyBar = new FrequencyBar();
+
 export default function Play() {
 
     function octaveUp(): void {
         synthesizer.OctaveUp();
         updateOnScreenKeyboard();
+        frequencyBar.updateCurrentOctave(synthesizer.audioConfiguration.currentOctave);
+        createFrequencyBar();
     }
 
     function octaveDown(): void {
         synthesizer.OctaveDown();
         updateOnScreenKeyboard();
+        frequencyBar.updateCurrentOctave(synthesizer.audioConfiguration.currentOctave);
+        createFrequencyBar();
     }
 
     function createMIDINote() {
@@ -31,10 +38,7 @@ export default function Play() {
 
     //Frequency bar values
     const [freqBarValue, setFreqBarValue] = useState(12); //number of frequencies
-    const [allFrequencies, setAllFrequencies] = useState([]) //all frequency values in bar
     const [freqBar, setFreqBar] = useState([]); //array of frequency buttons to be rendered
-    const [activeFreq, setActiveFreq] = useState(new Map()); //map of frequencies, ex: 1->a
-    const [activeFreqKeys, setActiveFreqKeys] = useState(new Map()); //inverse map of frequencies, ex: a->1
 
     // On-Screen Keyboard Configuration
     // MIDI numbers range from 0 to 128 (C-1 to G#9).
@@ -75,7 +79,7 @@ export default function Play() {
 
     //Records keypress for frequency assignment
     const readKey = () => new Promise(resolve => window.addEventListener('keydown', resolve, { once: true }));
-    const homerow = ['a', 'w', 's', 'e', 'd', 'f', 't', 'g', 'y', 'h', 'u', 'j']
+    const homerow = ['A', 'W', 'S', 'E', 'D', 'F', 'T', 'G', 'Y', 'H', 'U', 'J']
 
     //Assign-key popper values
     const [open, setOpen] = React.useState(false); //opens and closes popper
@@ -86,7 +90,7 @@ export default function Play() {
     //Assigns default frequencies on page load
     useEffect(() => {
         updateOnScreenKeyboard()
-        updateAllFrequencies()
+        frequencyBar.createFrequencyBar(freqBarValue, synthesizer.audioConfiguration.currentOctave);
         createFrequencyBar()
     }, []);
 
@@ -135,58 +139,31 @@ export default function Play() {
 
     //Finalizes the value of the frequency bar when you release your mouse, 
     const changeSliderValueCommitted = (event: any, value: number) => {
-        setFreqBarValue(value);
-        updateAllFrequencies();
+        setFreqBarValue(value);        
+        frequencyBar.createFrequencyBar(freqBarValue, synthesizer.audioConfiguration.currentOctave);
         createFrequencyBar();
     };
-
-    //Updates array of all frequencies when slider is changed
-    function updateAllFrequencies() {
-        let freqArr = allFrequencies
-        let ratio = Math.pow(2, 1/freqBarValue)
-        let currFreq = 261.6256
-        for (let i = 0; i < freqBarValue; i++) {
-            freqArr[i] = currFreq
-            currFreq = currFreq*ratio
-        }
-        setAllFrequencies(freqArr)
-        setActiveKeys()
-    }
-
-    //Sets the default active keys when slider is changed
-    function setActiveKeys() {
-        let tempMap1 = activeFreq
-        let tempMap2 = activeFreqKeys
-        tempMap1.clear();
-        tempMap2.clear();
-        let val = freqBarValue/12.0
-        for (let i = 0; i < 12; i++) {
-            tempMap1.set(allFrequencies[Math.floor(val*i)], homerow[i])
-            tempMap2.set(homerow[i], allFrequencies[Math.floor(val*i)])
-        }
-        setActiveFreq(tempMap1)
-        setActiveFreqKeys(tempMap2)
-    }
-
+ 
     const activeButton = "btn h-13 w-13 font-agrandir text-md text-black bg-gold border-b-2 border-r-2 border-black uppercase"
     const inactiveButton = 'btn h-13 w-13 font-agrandir text-md text-black bg-white border-b-2 border-r-2 border-black hover:bg-gray-200'
 
     //creates freq bar with the number of boxes set by the slider value
     function createFrequencyBar() {
         let freqBarArr = []
-        for (let i = 0; i < freqBarValue; i++) {
+        
+        for (let i = 0; i < frequencyBar.notesPerOctave.valueOf(); i++) {
             freqBarArr.push
             (
-            <Tooltip describeChild title={allFrequencies[i]} key={i} placement="top">
+            <Tooltip describeChild title={frequencyBar.octaves[frequencyBar.currentOctave][i]} key={i} placement="top">
                 <button 
                     aria-describedby={id}
                     key={i}
                     i-key = {i}
-                    className={`${activeFreq.has(allFrequencies[i]) ? activeButton : inactiveButton} + ${i == 0 ? 'rounded-l-md': ""} + ${i == (freqBarValue - 1) ? 'rounded-r-md' : ""}`} 
-                    onClick={(e) => assignFreq(e)}>
-                        {Math.floor(allFrequencies[i])}
+                    className={`${frequencyBar.frequencyMappings.has(i) ? activeButton : inactiveButton} + ${i == 0 ? 'rounded-l-md': ""} + ${i == (freqBarValue - 1) ? 'rounded-r-md' : ""}`} 
+                    onClick={(e) => updateAssignedKey(e)}>
+                        {Math.floor(frequencyBar.octaves[frequencyBar.currentOctave][i])}
                         {<br/>}
-                        {activeFreq.get(allFrequencies[i])}
+                        {homerow[frequencyBar.frequencyMappings.get(i)]}
                 </button>
             </Tooltip>
             )
@@ -195,69 +172,10 @@ export default function Play() {
         setFreqBar(freqBarArr)
     }
 
-    async function assignFreq(e: any) {
-        setAnchorEl(e.currentTarget);
-
-        //Unassigns a frequency if clicking on it after it's already assigned
-        let tempVal = allFrequencies[e.currentTarget.getAttribute('i-key')]
-        console.log(tempVal)
-        if (activeFreq.has(tempVal)) {
-            activeFreq.delete(tempVal)
-            createFrequencyBar();
-            return;
-        }
-
-        //Opens popper
-        setOpen(true);
-
-        let tempArr, tempKeys = new Map();
-        tempArr = activeFreq;
-        tempKeys = activeFreqKeys;
-        let pianoKey: any;
-        
-        //After clicking frequency, waits for key press to assign it
-        //Loops until homerow key is mapped
-        let containFlag = 0;
-        while (containFlag == 0) {
-
-            pianoKey = await readKey();
-
-            //closes popper on escape key press
-            if (pianoKey.key === "Escape") {
-                setOpen(false);
-                setAnchorEl(null)
-                return
-            }
-
-            for (let i = 0; i < homerow.length; i++) {
-                if (pianoKey.key == homerow[i]) {
-                    containFlag = 1;
-                    break;
-                }
-            }
-        }
-
-        //Closes popper after valid key press
-        setOpen(false);
-        setAnchorEl(null)
-
-        //If key is already assigned to a frequency -> reassigns to new frequency if pressed again, otherwise just assigns to key
-        if (tempKeys.has(pianoKey.key)) {
-            tempArr.delete(tempKeys.get(pianoKey.key))
-            tempArr.set(tempVal, pianoKey.key)
-            tempKeys.set(pianoKey.key, tempVal)
-            setActiveFreq(tempArr)
-            setActiveFreqKeys(tempKeys)
-            createFrequencyBar();
-        }
-
-        else {
-            tempArr.set(tempVal, pianoKey.key)
-            tempKeys.set(pianoKey.key, tempVal)
-            setActiveFreq(tempArr)
-            setActiveFreqKeys(tempKeys)
-            createFrequencyBar();
-        }
+    async function updateAssignedKey(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+        let newAssignment = parseInt(e.currentTarget.getAttribute('i-key'))
+        await frequencyBar.changeAssignment(newAssignment)
+        createFrequencyBar();
     }
 
     interface TabPanelProps {
@@ -280,7 +198,7 @@ export default function Play() {
                 >
                 {value === index && (
                     <Box sx={{ p: 3 }}>
-                    <Typography >{children}</Typography>
+                    <div>{children}</div>
                     </Box>
                 )}
             </div>
@@ -335,7 +253,7 @@ export default function Play() {
             </Grid>
 
             <Grid container direction="row" justifyContent="center">
-                <Grid direction="column" wrap="nowrap">
+                <Grid>
                     <button className="btn h-10 w-40 bg-white text-black rounded-md hover:bg-gray-100 mb-10" onClick={octaveUp}>Octave Up</button>
                     <button className="btn h-10 w-40 bg-white text-black rounded-md hover:bg-gray-100 mb-10" onClick={octaveDown}>Octave Down</button>
                 </Grid>
@@ -362,7 +280,7 @@ export default function Play() {
                     </Box>
                     
                     <TabPanel value={leftTabValue} index={0}>
-                        <p className="text-xl font-agrandir-wide text-white">NOTES PER OCTAVE</p>
+                        <div className="text-xl font-agrandir-wide text-white">NOTES PER OCTAVE</div>
                         <Slider
                             className='max-w-2xl'
                             aria-label="Small steps"
@@ -378,17 +296,11 @@ export default function Play() {
                             sx={{color: 'white'}}
                         />
 
-                        <p className="text-xl font-agrandir-wide text-white">MIDI DEVICE</p>
+                        <div className="text-xl font-agrandir-wide text-white">MIDI DEVICE</div>
                         <FormControl fullWidth className="max-w-md">
-                            <InputLabel id="demo-simple-select-label">MIDI DEVICE</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                label="Age"
-                            >
-                                <MenuItem value={10}>Ten</MenuItem>
-                                <MenuItem value={20}>Twenty</MenuItem>
-                                <MenuItem value={30}>Thirty</MenuItem>
+                            <InputLabel>MIDI DEVICE</InputLabel>
+                            <Select value={0}>
+                                <MenuItem value={0}>MIDI Keyboard</MenuItem>
                             </Select>
                         </FormControl>
                     </TabPanel>
