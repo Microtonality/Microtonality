@@ -1,26 +1,35 @@
 import * as React from 'react';
-import { Grid, Popper, Fade, Slider, Tooltip, FormControl, InputLabel, Select, MenuItem, Box, Tabs, Tab, Typography, Button } from '@mui/material';
+import { Grid, Popper, Fade, Slider, Tooltip, FormControl, InputLabel, Select, MenuItem, Box, Tabs, Tab, Button, Menu } from '@mui/material';
 import { Piano, KeyboardShortcuts } from 'react-piano';
 import './piano.css';
 import { useState, useEffect } from 'react';
 import { Synthesizer } from './Synthesizer';
 import { NoteToMidi, NotesFromOctave } from '../../utility/midi/NoteToMidiConverter';
+import FrequencyBar from './FrequencyBar';
 
 // TODO: When a user is holding down a note and changes the octave,
 // the note remains downpressed on the original octave.
 // You then need to press the note twice to play it.
 const synthesizer = new Synthesizer();
+const frequencyBar = new FrequencyBar();
 
 export default function Play() {
+
+    const [openTab, setOpenTab] = React.useState(1);
+    const [openRightTab, setOpenRightTab] = React.useState(1);
 
     function octaveUp(): void {
         synthesizer.OctaveUp();
         updateOnScreenKeyboard();
+        frequencyBar.updateCurrentOctave(synthesizer.audioConfiguration.currentOctave);
+        createFrequencyBar();
     }
 
     function octaveDown(): void {
         synthesizer.OctaveDown();
         updateOnScreenKeyboard();
+        frequencyBar.updateCurrentOctave(synthesizer.audioConfiguration.currentOctave);
+        createFrequencyBar();
     }
 
     function createMIDINote() {
@@ -31,10 +40,7 @@ export default function Play() {
 
     //Frequency bar values
     const [freqBarValue, setFreqBarValue] = useState(12); //number of frequencies
-    const [allFrequencies, setAllFrequencies] = useState([]) //all frequency values in bar
     const [freqBar, setFreqBar] = useState([]); //array of frequency buttons to be rendered
-    const [activeFreq, setActiveFreq] = useState(new Map()); //map of frequencies, ex: 1->a
-    const [activeFreqKeys, setActiveFreqKeys] = useState(new Map()); //inverse map of frequencies, ex: a->1
 
     // On-Screen Keyboard Configuration
     // MIDI numbers range from 0 to 128 (C-1 to G#9).
@@ -75,7 +81,7 @@ export default function Play() {
 
     //Records keypress for frequency assignment
     const readKey = () => new Promise(resolve => window.addEventListener('keydown', resolve, { once: true }));
-    const homerow = ['a', 'w', 's', 'e', 'd', 'f', 't', 'g', 'y', 'h', 'u', 'j']
+    const homerow = ['A', 'W', 'S', 'E', 'D', 'F', 'T', 'G', 'Y', 'H', 'U', 'J']
 
     //Assign-key popper values
     const [open, setOpen] = React.useState(false); //opens and closes popper
@@ -86,8 +92,9 @@ export default function Play() {
     //Assigns default frequencies on page load
     useEffect(() => {
         updateOnScreenKeyboard()
-        updateAllFrequencies()
+        frequencyBar.createFrequencyBar(freqBarValue, synthesizer.audioConfiguration.currentOctave);
         createFrequencyBar()
+        console.log(window.innerHeight)
     }, []);
 
     function updateOnScreenKeyboard() {
@@ -135,58 +142,32 @@ export default function Play() {
 
     //Finalizes the value of the frequency bar when you release your mouse, 
     const changeSliderValueCommitted = (event: any, value: number) => {
-        setFreqBarValue(value);
-        updateAllFrequencies();
+        setFreqBarValue(value);        
+        frequencyBar.createFrequencyBar(freqBarValue, synthesizer.audioConfiguration.currentOctave);
         createFrequencyBar();
     };
-
-    //Updates array of all frequencies when slider is changed
-    function updateAllFrequencies() {
-        let freqArr = allFrequencies
-        let ratio = Math.pow(2, 1/freqBarValue)
-        let currFreq = 261.6256
-        for (let i = 0; i < freqBarValue; i++) {
-            freqArr[i] = currFreq
-            currFreq = currFreq*ratio
-        }
-        setAllFrequencies(freqArr)
-        setActiveKeys()
-    }
-
-    //Sets the default active keys when slider is changed
-    function setActiveKeys() {
-        let tempMap1 = activeFreq
-        let tempMap2 = activeFreqKeys
-        tempMap1.clear();
-        tempMap2.clear();
-        let val = freqBarValue/12.0
-        for (let i = 0; i < 12; i++) {
-            tempMap1.set(allFrequencies[Math.floor(val*i)], homerow[i])
-            tempMap2.set(homerow[i], allFrequencies[Math.floor(val*i)])
-        }
-        setActiveFreq(tempMap1)
-        setActiveFreqKeys(tempMap2)
-    }
-
-    const activeButton = "btn h-13 w-13 font-agrandir text-md text-black bg-gold border-b-2 border-r-2 border-black uppercase"
-    const inactiveButton = 'btn h-13 w-13 font-agrandir text-md text-black bg-white border-b-2 border-r-2 border-black hover:bg-gray-200'
+ 
+    const activeButton = "btn 2xl:h-13 2xl:w-13 xl:h-11 xl:w-11 lg:h-9 lg:w-9 md:h-8 md:w-8 sm:h-8 sm:w-8 xs:w-8 xs:h-8 font-agrandir text-md text-black bg-gold border-b-2 border-r-2 border-black uppercase"
+    const inactiveButton = 'btn 2xl:h-13 2xl:w-13 xl:h-11 xl:w-11 lg:h-9 lg:w-9 md:h-8 md:w-8 sm:h-8 sm:w-8 xs:w-8 xs:h-8 font-agrandir text-md text-black bg-white border-b-2 border-r-2 border-black hover:bg-gray-200'
 
     //creates freq bar with the number of boxes set by the slider value
     function createFrequencyBar() {
         let freqBarArr = []
-        for (let i = 0; i < freqBarValue; i++) {
+        
+        for (let i = 0; i < frequencyBar.notesPerOctave.valueOf(); i++) {
             freqBarArr.push
             (
-            <Tooltip describeChild title={allFrequencies[i]} key={i} placement="top">
+            <Tooltip describeChild title={frequencyBar.octaves[frequencyBar.currentOctave][i]} key={i} placement="top">
                 <button 
                     aria-describedby={id}
                     key={i}
                     i-key = {i}
-                    className={`${activeFreq.has(allFrequencies[i]) ? activeButton : inactiveButton} + ${i == 0 ? 'rounded-l-md': ""} + ${i == (freqBarValue - 1) ? 'rounded-r-md' : ""}`} 
-                    onClick={(e) => assignFreq(e)}>
-                        {Math.floor(allFrequencies[i])}
+                    className={`${frequencyBar.frequencyMappings.has(i) ? activeButton : inactiveButton} + ${i == 0 ? 'rounded-l-md': ""} + ${i == (freqBarValue - 1) ? 'rounded-r-md' : ""}` + 
+                    " 2xl:text-lg xl:text-md lg:text-sm md:text-xs sm:text-xs xs:text-xs"} 
+                    onClick={(e) => updateAssignedKey(e)}>
+                        {Math.floor(frequencyBar.octaves[frequencyBar.currentOctave][i])}
                         {<br/>}
-                        {activeFreq.get(allFrequencies[i])}
+                        {homerow[frequencyBar.frequencyMappings.get(i)]}
                 </button>
             </Tooltip>
             )
@@ -195,69 +176,10 @@ export default function Play() {
         setFreqBar(freqBarArr)
     }
 
-    async function assignFreq(e: any) {
-        setAnchorEl(e.currentTarget);
-
-        //Unassigns a frequency if clicking on it after it's already assigned
-        let tempVal = allFrequencies[e.currentTarget.getAttribute('i-key')]
-        console.log(tempVal)
-        if (activeFreq.has(tempVal)) {
-            activeFreq.delete(tempVal)
-            createFrequencyBar();
-            return;
-        }
-
-        //Opens popper
-        setOpen(true);
-
-        let tempArr, tempKeys = new Map();
-        tempArr = activeFreq;
-        tempKeys = activeFreqKeys;
-        let pianoKey: any;
-        
-        //After clicking frequency, waits for key press to assign it
-        //Loops until homerow key is mapped
-        let containFlag = 0;
-        while (containFlag == 0) {
-
-            pianoKey = await readKey();
-
-            //closes popper on escape key press
-            if (pianoKey.key === "Escape") {
-                setOpen(false);
-                setAnchorEl(null)
-                return
-            }
-
-            for (let i = 0; i < homerow.length; i++) {
-                if (pianoKey.key == homerow[i]) {
-                    containFlag = 1;
-                    break;
-                }
-            }
-        }
-
-        //Closes popper after valid key press
-        setOpen(false);
-        setAnchorEl(null)
-
-        //If key is already assigned to a frequency -> reassigns to new frequency if pressed again, otherwise just assigns to key
-        if (tempKeys.has(pianoKey.key)) {
-            tempArr.delete(tempKeys.get(pianoKey.key))
-            tempArr.set(tempVal, pianoKey.key)
-            tempKeys.set(pianoKey.key, tempVal)
-            setActiveFreq(tempArr)
-            setActiveFreqKeys(tempKeys)
-            createFrequencyBar();
-        }
-
-        else {
-            tempArr.set(tempVal, pianoKey.key)
-            tempKeys.set(pianoKey.key, tempVal)
-            setActiveFreq(tempArr)
-            setActiveFreqKeys(tempKeys)
-            createFrequencyBar();
-        }
+    async function updateAssignedKey(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+        let newAssignment = parseInt(e.currentTarget.getAttribute('i-key'))
+        await frequencyBar.changeAssignment(newAssignment)
+        createFrequencyBar();
     }
 
     interface TabPanelProps {
@@ -280,7 +202,7 @@ export default function Play() {
                 >
                 {value === index && (
                     <Box sx={{ p: 3 }}>
-                    <Typography >{children}</Typography>
+                    <div>{children}</div>
                     </Box>
                 )}
             </div>
@@ -305,7 +227,7 @@ export default function Play() {
     };
 
     return (
-        <div className="mt-13">
+        <div className="2xl:mt-13 xl:mt-11 lg:mt-9 md:mt-7 sm:mt-5 xs:mt-3">
             {/* <div className="text-white">
                 <h1>MIDI Input</h1>
                 <button className="btn h-10 w-40 bg-white text-black rounded-md hover:bg-gray-100" onClick={createMIDINote}>Create MIDI Note</button>
@@ -329,19 +251,18 @@ export default function Play() {
             <Grid container direction="row" justifyContent="center" alignItems="center">
                 
                 {freqBar.map(item => item)}
+                
                 <Tooltip describeChild title="Click a frequency box and then press the key on your keyboard you want it to correspond to">
-                    <button className="btn h-8 w-8 bg-white text-black rounded-3xl hover:bg-gray-100 ml-2">?</button>
+                    <button className="btn 2xl:h-8 2xl:w-8 xl:h-8 xl:w-8 lg:h-7 lg-w-7 md:h-7 md:w-7 sm:h-6 sm:w-6 xs:h-6 xs:w-6 bg-white text-black rounded-3xl hover:bg-gray-100 ml-2">?</button>
                 </Tooltip>
             </Grid>
 
-            <OctaveSettings></OctaveSettings>
-
             <Grid container direction="row" justifyContent="center">
-                <Grid direction="column" wrap="nowrap">
-                    <button className="btn h-10 w-40 bg-white text-black rounded-md hover:bg-gray-100 mb-10" onClick={octaveUp}>Octave Up</button>
-                    <button className="btn h-10 w-40 bg-white text-black rounded-md hover:bg-gray-100 mb-10" onClick={octaveDown}>Octave Down</button>
+                <Grid>
+                    <button className="btn bg-white text-black rounded-md hover:bg-gray-100 mb-10" onClick={octaveUp}>Octave Up</button>
+                    <button className="btn bg-white text-black rounded-md hover:bg-gray-100 mb-10" onClick={octaveDown}>Octave Down</button>
                 </Grid>
-                <div className="h-450 w-1000">
+                <div className="2xl:w-1000 2xl:h-450 xl:w-800 xl:h-360 lg:w-700 lg:h-315 md:w-500 md:h-225 sm:w-350 sm:h-150 xs:w-250 xs:h-100">
                     <Piano
                         activeNotes={synthesizer.activeNotes}
                         className="mx-auto my-auto"
@@ -353,160 +274,242 @@ export default function Play() {
                 </div>
             </Grid>
 
-            <Grid container className="flex absolute bottom-0">
+            <Grid container className="flex absolute 2xl:h-350 xl:h-275 lg:h-200 md:h-150 sm:h-100 xs:h-80 2xl:mt-13 xl:mt-11 lg:mt-9 md:mt-7 sm:mt-5 xs:mt-3">
+                <Grid item xs={4} className="container max-w-2xl border-gold border-t-2 border-r-2 rounded-tr-xl bg-bglight ml-auto ">
+                <div className="w-full">
+                <ul
+                    className="flex mb-0 list-none flex-wrap pt-3 pb-4 flex-row border-b-2 border-gold"
+                    role="tablist"
+                >
+                    <li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
+                    <a
+                        className={
+                        "2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide uppercase px-5 py-3 rounded block leading-normal hover:underline " +
+                        (openTab === 1 ? "text-gold underline" : "text-white")}
+                        onClick={e => {e.preventDefault(); setOpenTab(1)}}
+                        data-toggle="tab"
+                        href="#link1"
+                        role="tablist"
+                    >
+                        SETTINGS
+                    </a>
+                    </li>
+                    <li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
+                    <a
+                        className={
+                            "2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide uppercase px-5 py-3 rounded block leading-normal hover:underline " +
+                        (openTab === 2 ? "text-gold underline" : "text-white")}
+                        onClick={e => {e.preventDefault();setOpenTab(2)}}
+                        data-toggle="tab"
+                        href="#link2"
+                        role="tablist"
+                    >
+                        SCALA
+                    </a>
+                    </li>
+                </ul>
+                
+                <div className="container max-w-2xl bg-bglight mr-auto">
+                    <div className="px-4 py-5 flex-auto">
+                    <div className="tab-content tab-space">
+                        <div className={openTab === 1 ? "block" : "hidden"} id="link1">
+                        <div className="2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide text-white">NOTES PER OCTAVE</div>
+                                <Slider
+                                    className='max-w-2xl'
+                                    aria-label="Small steps"
+                                    defaultValue={12}
+                                    step={1}
+                                    marks
+                                    min={12}
+                                    max={32}
+                                    valueLabelDisplay="auto"
+                                    value={freqBarValue}
+                                    onChange={changeSliderValue}
+                                    onChangeCommitted={changeSliderValueCommitted}
+                                    sx={{color: 'white'}}
+                                />
+                            <div className="2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide text-white">MIDI DEVICE</div>
+                                    <FormControl fullWidth className="max-w-md" sx={{color: 'white'}}>
+                                        <Select value={0} sx={{background: 'white'}}>
+                                            <MenuItem value={0}>MIDI Keyboard</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                            </div>
+                        <div className={openTab === 2 ? "block" : "hidden"} id="link2">
+                            <Button 
+                                className="2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs"
+                                sx={{background: 'white', fontFamily: 'Agrandir-Wide', color: 'black', border: 1,'&:hover': {background: '#FFD059'}}}
+                                variant="contained"
+                                component="label"
+                                >
+                                IMPORT SCALA
+                                <input
+                                    type="file"
+                                    hidden
+                                />
+                            </Button>
+                            <Button 
+                                sx={{background: 'white', fontFamily: 'Agrandir-Wide', color: 'black', border: 1,'&:hover': {background: '#FFD059'}}}
+                                variant="contained"
+                                component="label"
+                                >
+                                EXPORT SCALA
+                            </Button>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </Grid>
+                
 
                 <Grid item xs={1}></Grid>
 
                 <Grid item xs={7} className="container max-w-8xl bottom-0 border-gold border-t-2 border-l-2 rounded-tl-xl bg-bglight ml-auto">
-                    <Box className="border-b-2 border-gold font-agrandirwide text-white">
-                        <Tabs TabIndicatorProps={{style: {background: '#ffd059', font: 'white'}}} value={rightTabValue} onChange={changeRightTab} centered>
-                            <Tab label="ADSR" {...allyProps(0)} sx={{fontFamily: 'Agrandir-Wide', fontSize: '20px', color: 'white', '&.Mui-selected': {color: '#FFD059'}}}/>
-                            <Tab label="1" {...allyProps(1)} sx={{fontFamily: 'Agrandir-Wide', fontSize: '20px', color: 'white', '&.Mui-selected': {color: '#FFD059'}}}/>
-                            <Tab label="2" {...allyProps(1)} sx={{fontFamily: 'Agrandir-Wide', fontSize: '20px', color: 'white', '&.Mui-selected': {color: '#FFD059'}}}/>
-                            <Tab label="3" {...allyProps(1)} sx={{fontFamily: 'Agrandir-Wide', fontSize: '20px', color: 'white', '&.Mui-selected': {color: '#FFD059'}}}/>
-                            <Tab label="4" {...allyProps(1)} sx={{fontFamily: 'Agrandir-Wide', fontSize: '20px', color: 'white', '&.Mui-selected': {color: '#FFD059'}}}/>
-                            <Tab label="5" {...allyProps(1)} sx={{fontFamily: 'Agrandir-Wide', fontSize: '20px', color: 'white', '&.Mui-selected': {color: '#FFD059'}}}/>
-                            <Tab label="6" {...allyProps(1)} sx={{fontFamily: 'Agrandir-Wide', fontSize: '20px', color: 'white', '&.Mui-selected': {color: '#FFD059'}}}/>
-                        </Tabs>
-                    </Box>
-
-                    <TabPanel value={rightTabValue} index={0}>
-                        ADSR
-                    </TabPanel>
-                    <TabPanel value={rightTabValue} index={1}>
-                        Synthesizer 1, horizontal slider
-                        <Slider
-                            //Odd, when the "notes per octave" slider is moved this is reset.
-                            //Presumably due to a lack of commit.
-                            //Possible feature (reset adjustments when editing keys)
-                            //Possible bug (adjustments lost when editing key amounts)
-                            //Discuss, do we Bethesda this?
-                            aria-label="Slider1"
-                            defaultValue={0}
-                            //getAriaValueText={valuetext}
-                            valueLabelDisplay="auto"
-                            step={10}
-                            marks
-                            min={0}
-                            max={100}
-                            sx={{color: 'white'}}
-                        />
-                    </TabPanel>
-                    <TabPanel value={rightTabValue} index={2}>
-                        Synthesizer 2, vertical slider. As you can see, it doesn't work.
-                        <Slider
-                        //Does not display right. Discuss on Friday!
-                        //Container issue?
-                            sx={{
-                                '& input[type="range"]': {
-                                WebkitAppearance: 'slider-vertical',
-                            },
-                            color: 'white'
-                            }}
-                            orientation="vertical"
-                            defaultValue={0}
-                            aria-label="Slider2"
-                            valueLabelDisplay="auto"
-                            //onKeyDown={preventHorizontalKeyboardNavigation}
-                        />
-                    </TabPanel>
-                    <TabPanel value={rightTabValue} index={3}>
-                        Synthesizer 3, multiple sliders and new colors.
-                        <Slider
-                            aria-label="Slider3"
-                            defaultValue={0}
-                            //getAriaValueText={valuetext}
-                            valueLabelDisplay="auto"
-                            step={10}
-                            marks
-                            min={0}
-                            max={100}
-                            sx={{color: 'orange'}}
-                        />
-                        Gold
-                        <Slider
-                            aria-label="Slider3_2"
-                            defaultValue={0}
-                            //getAriaValueText={valuetext}
-                            valueLabelDisplay="auto"
-                            step={10}
-                            marks
-                            min={0}
-                            max={100}
-                            sx={{color: 'gold'}}
-                        />
-                        Grey
-                        <Slider
-                            aria-label="Slider3_3"
-                            defaultValue={0}
-                            //getAriaValueText={valuetext}
-                            valueLabelDisplay="auto"
-                            step={10}
-                            marks
-                            min={0}
-                            max={100}
-                            sx={{color: 'grey'}}
-                        />
-                    </TabPanel>
-                    <TabPanel value={rightTabValue} index={4}>
-                        Synthesizer 4, notice how the bar moves up.
-                        <Slider
-                            aria-label="Slider3"
-                            defaultValue={0}
-                            //getAriaValueText={valuetext}
-                            valueLabelDisplay="auto"
-                            step={10}
-                            marks
-                            min={0}
-                            max={100}
-                            sx={{color: 'orange'}}
-                        />
-                        Gold
-                        <Slider
-                            aria-label="Slider3_2"
-                            defaultValue={0}
-                            //getAriaValueText={valuetext}
-                            valueLabelDisplay="auto"
-                            step={10}
-                            marks
-                            min={0}
-                            max={100}
-                            sx={{color: 'gold'}}
-                        />
-                        Grey
-                        <Slider
-                            aria-label="Slider3_3"
-                            defaultValue={0}
-                            //getAriaValueText={valuetext}
-                            valueLabelDisplay="auto"
-                            step={10}
-                            marks
-                            min={0}
-                            max={100}
-                            sx={{color: 'grey'}}
-                        />
-                         Blue
-                        <Slider
-                            aria-label="Slider3_4"
-                            defaultValue={0}
-                            //getAriaValueText={valuetext}
-                            valueLabelDisplay="auto"
-                            step={10}
-                            marks
-                            min={0}
-                            max={100}
-                            sx={{color: 'Blue'}}
-                        />
-                    </TabPanel>
-                    <TabPanel value={rightTabValue} index={5}>
-                        Synthesizer 5
-                    </TabPanel>
-                    <TabPanel value={rightTabValue} index={6}>
-                        Synthesizer 6
-                    </TabPanel>
+                <div className="w-full">
+                    <ul
+                        className="flex mb-0 list-none flex-wrap pt-3 pb-4 flex-row border-b-2 border-gold"
+                        role="tablist"
+                    >
+                        <li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
+                        <a
+                            className={
+                            "2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide uppercase px-5 py-3 rounded block leading-normal hover:underline " +
+                            (openRightTab === 1 ? "text-gold underline" : "text-white")}
+                            onClick={e => {e.preventDefault(); setOpenRightTab(1)}}
+                            data-toggle="tab"
+                            href="#rightlink1"
+                            role="tablist"
+                        >
+                            ADSR
+                        </a>
+                        </li>
+                        <li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
+                        <a
+                            className={
+                                "2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide uppercase px-5 py-3 rounded block leading-normal hover:underline " +
+                            (openRightTab === 2 ? "text-gold underline" : "text-white")}
+                            onClick={e => {e.preventDefault();setOpenRightTab(2)}}
+                            data-toggle="tab"
+                            href="#rightlink2"
+                            role="tablist"
+                        >
+                            SYNTH 1
+                        </a>
+                        </li>
+                        <li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
+                        <a
+                            className={
+                                "2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide uppercase px-5 py-3 rounded block leading-normal hover:underline " +
+                            (openRightTab === 3 ? "text-gold underline" : "text-white")}
+                            onClick={e => {e.preventDefault();setOpenRightTab(3)}}
+                            data-toggle="tab"
+                            href="#rightlink3"
+                            role="tablist"
+                        >
+                            SYNTH 2
+                        </a>
+                        </li>
+                        <li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
+                        <a
+                            className={
+                                "2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide uppercase px-5 py-3 rounded block leading-normal hover:underline " +
+                            (openRightTab === 4 ? "text-gold underline" : "text-white")}
+                            onClick={e => {e.preventDefault();setOpenRightTab(4)}}
+                            data-toggle="tab"
+                            href="#rightlink4"
+                            role="tablist"
+                        >
+                            SYNTH 3
+                        </a>
+                        </li>
+                        <li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
+                        <a
+                            className={
+                                "2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide uppercase px-5 py-3 rounded block leading-normal hover:underline " +
+                            (openRightTab === 5 ? "text-gold underline" : "text-white")}
+                            onClick={e => {e.preventDefault();setOpenRightTab(5)}}
+                            data-toggle="tab"
+                            href="#rightlink5"
+                            role="tablist"
+                        >
+                            SYNTH 4
+                        </a>
+                        </li>
+                        <li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
+                        <a
+                            className={
+                                "2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide uppercase px-5 py-3 rounded block leading-normal hover:underline " +
+                            (openRightTab === 6 ? "text-gold underline" : "text-white")}
+                            onClick={e => {e.preventDefault();setOpenRightTab(6)}}
+                            data-toggle="tab"
+                            href="#rightlink6"
+                            role="tablist"
+                        >
+                            SYNTH 5
+                        </a>
+                        </li>
+                        <li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
+                        <a
+                            className={
+                                "2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide uppercase px-5 py-3 rounded block leading-normal hover:underline " +
+                            (openRightTab === 7 ? "text-gold underline" : "text-white")}
+                            onClick={e => {e.preventDefault();setOpenRightTab(7)}}
+                            data-toggle="tab"
+                            href="#rightlink7"
+                            role="tablist"
+                        >
+                            SYNTH 6
+                        </a>
+                        </li>
+                    </ul>
+                    
+                    <div className="container max-w-2xl bg-bglight mr-auto">
+                        <div className="px-4 py-5 flex-auto">
+                        <div className="tab-content tab-space">
+                            <div className={openRightTab === 1 ? "block" : "hidden"} id="link1">
+                            
+                            </div>
+                            <div className={openRightTab === 2 ? "block" : "hidden"} id="link2">
+                                Vetical Slider. Doesn't work.
+                                <Slider
+                                //Does not display right.
+                                //Container issue?
+                                sx={{
+                                    '& input[type="range"]': {
+                                    WebkitAppearance: 'slider-vertical',
+                                },
+                                color: 'white'
+                                }}
+                                orientation="vertical"
+                                defaultValue={0}
+                                aria-label="Slider2"
+                                valueLabelDisplay="auto"
+                                //onKeyDown={preventHorizontalKeyboardNavigation}
+                                />
+                            </div>
+                            <div className={openRightTab === 3 ? "block" : "hidden"} id="link3">
+                                Horizontal slider. Does work.
+                                <Slider
+                                aria-label="Slider1"
+                                defaultValue={0}
+                                //getAriaValueText={valuetext}
+                                valueLabelDisplay="auto"
+                                step={10}
+                                marks
+                                min={0}
+                                max={100}
+                                sx={{color: 'white'}}
+                                />
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                                    
                 </Grid>
-            </Grid>
 
+            </Grid>
             <div className="container invisible">
                 <Piano
                     className="mx-auto my-auto"
@@ -519,3 +522,17 @@ export default function Play() {
         </div>
     );
 }
+
+/*
+Horizontal slider. Does work.
+                                <Slider
+                                aria-label="Slider1"
+                                defaultValue={0}
+                                //getAriaValueText={valuetext}
+                                valueLabelDisplay="auto"
+                                step={10}
+                                marks
+                                min={0}
+                                max={100}
+                                sx={{color: 'white'}}
+                        */
