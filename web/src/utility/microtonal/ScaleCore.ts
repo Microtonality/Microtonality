@@ -1,4 +1,4 @@
-class ScaleCore {
+export class ScaleCore {
     public tuningFrequency: number;
     public keysPerOctave: number;
     public multipliers: number[];

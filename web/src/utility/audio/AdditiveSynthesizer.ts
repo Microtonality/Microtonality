@@ -1,4 +1,4 @@
-class AdditiveSynthesizer {
+export class AdditiveSynthesizer {
 
     currentOscillatorSettings: Array<OscillatorSettings> = [
         new OscillatorSettings(1, 1, "sine"),

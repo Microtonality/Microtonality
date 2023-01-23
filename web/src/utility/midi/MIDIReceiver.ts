@@ -1,7 +1,13 @@
+import {ScaleCore} from "./../microtonal/ScaleCore"
+import {AdditiveSynthesizer} from "./../audio/AdditiveSynthesizer"
+
 export class MIDIReceiver {
 
     public midiInput: WebMidi.MIDIInput[] = [];
     public midiOutput: WebMidi.MIDIOutput[] = [];
+
+    public synth: AdditiveSynthesizer = new AdditiveSynthesizer()
+    public core: ScaleCore = new ScaleCore()
 
     private static NOTE_ON_MESSAGE: number = 144;
     private static NOTE_OFF_MESSAGE: number = 128;
@@ -51,16 +57,15 @@ export class MIDIReceiver {
     }
 
     public noteOn(note: number, velocity: number) {
-        // Find correct frequency for note
-        let frequency = note;
+        let frequency = this.core.MIDINotesToFrequency(note)
 
-        // Send new note w/ velocity to sound generator
+        this.synth.onPlayFrequency(frequency, velocity)
     }
 
     public noteOff(note: number) {
-        // Fidn correct frequency for note
+        let frequency = this.core.MIDINotesToFrequency(note)
 
-        // Find new note to disable.
+        this.synth.onStopFrequency(frequency)
     }
 
     public setGlobalPitchBend(finePitchBend: number, coarsePitchBend: number) {
