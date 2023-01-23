@@ -18,10 +18,10 @@ export default class FrequencyBar {
         this.homerowKeys = ['a', 'w', 's', 'e', 'd', 'f', 't', 'g', 'y', 'h', 'u', 'j']
     }
 
-    createFrequencyBar(sliderValue: number, currOctave: number) {
+    createFrequencyBar(sliderValue: number, currOctave: number, baseFreq: number) {
         this.updateNotesPerOctave(sliderValue);
         this.updateCurrentOctave(currOctave);
-        this.updateAllFrequencies();
+        this.updateAllFrequencies(baseFreq);
         this.updateOctaveFrequencies();
         this.setDefaultMapping();
     }
@@ -37,10 +37,10 @@ export default class FrequencyBar {
     }
 
     //Creates array of equal-tempered frequencies
-    updateAllFrequencies() {
+    updateAllFrequencies(baseFreq: number) {
         let temp = []
         let ratio = Math.pow(2, 1/this.notesPerOctave.valueOf())
-        let currFreq = 8.18;
+        let currFreq = baseFreq/(Math.pow(2, 4))
         for (let i = 0; i <=(this.notesPerOctave.valueOf()*10); i++) {
             temp.push(currFreq)
             currFreq = currFreq*ratio
@@ -88,7 +88,7 @@ export default class FrequencyBar {
 
         while (containFlag == 0) {
             pianoKey = await readKey();
-            if (pianoKey.key === "Escape") {
+            if (pianoKey.key == "Escape") {
                 return
             }
             for (let i = 0; i < 12; i++) {

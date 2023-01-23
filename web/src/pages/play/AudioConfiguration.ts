@@ -19,7 +19,7 @@ export class AudioConfiguration {
 
     constructor() {
         this.currentScale = new MicrotonalScale();
-        this.currentOctave = 3;
+        this.currentOctave = 4;
         this.volume = 0.05;
     }
 

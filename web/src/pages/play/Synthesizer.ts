@@ -1,5 +1,6 @@
 import { AudioConfiguration } from './AudioConfiguration';
 import { MIDI_MIN, MIDI_MAX } from '../../utility/midi/NoteToMidiConverter';
+import FrequencyBar from './FrequencyBar';
 
 // TODO: fix snapping by introducing a layer of gain nodes to each oscillator (wrapper object to hold both?)
 export class Synthesizer {
@@ -7,11 +8,13 @@ export class Synthesizer {
     oscillators: Array<OscillatorNode>;
     audioConfiguration: AudioConfiguration;
     activeNotes: Array<number>;
+    frequencyBar: FrequencyBar;
 
-    constructor() {
+    constructor(freqBar: FrequencyBar) {
         this.oscillators = new Array<OscillatorNode>(MIDI_MAX + 1);
         this.audioConfiguration = new AudioConfiguration();
         this.activeNotes = new Array<number>();
+        this.frequencyBar = freqBar
     }
 
     CreateOscillator(frequency: number): OscillatorNode {
@@ -35,7 +38,8 @@ export class Synthesizer {
         if (this.oscillators[note] !== undefined)
             return;
 
-        let frequency: number = this.audioConfiguration.currentScale.frequencies[note];
+        let frequency: number = this.frequencyBar.octaves[this.audioConfiguration.currentOctave][this.frequencyBar.frequencyMappingsReverse.get(note % 12)] //this.audioConfiguration.currentScale.frequencies[note];
+        console.log(frequency)
 
         if (frequency === undefined)
             return;

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Grid, Popper, Fade, Slider, Tooltip, FormControl, InputLabel, Select, MenuItem, Box, Tabs, Tab, Button, Menu } from '@mui/material';
+import { Grid, Popper, Fade, Slider, Tooltip, FormControl, InputLabel, Select, MenuItem, Box, Tabs, Tab, Button, Menu, TextField, } from '@mui/material';
 import { Piano, KeyboardShortcuts } from 'react-piano';
 import './piano.css';
 import { useState, useEffect } from 'react';
@@ -10,8 +10,18 @@ import FrequencyBar from './FrequencyBar';
 // TODO: When a user is holding down a note and changes the octave,
 // the note remains downpressed on the original octave.
 // You then need to press the note twice to play it.
-const synthesizer = new Synthesizer();
 const frequencyBar = new FrequencyBar();
+const synthesizer = new Synthesizer(frequencyBar);
+
+declare global {
+    namespace React {
+      interface DOMAttributes<T> {
+        onResize?: ReactEventHandler<T> | undefined;
+        onResizeCapture?: ReactEventHandler<T> | undefined;
+        nonce?: string | undefined;
+      }
+    }
+  }
 
 export default function Play() {
 
@@ -41,6 +51,7 @@ export default function Play() {
     //Frequency bar values
     const [freqBarValue, setFreqBarValue] = useState(12); //number of frequencies
     const [freqBar, setFreqBar] = useState([]); //array of frequency buttons to be rendered
+    const [baseFreq, setBaseFreq] = useState(261.63)
 
     // On-Screen Keyboard Configuration
     // MIDI numbers range from 0 to 128 (C-1 to G#9).
@@ -86,15 +97,14 @@ export default function Play() {
     //Assign-key popper values
     const [open, setOpen] = React.useState(false); //opens and closes popper
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null); //sets position of popper under the clicked button
-    const canBeOpen = open && Boolean(anchorEl); //boolean, if popper meets requirements to open, used in id
-    const id = canBeOpen ? 'transition-popper' : undefined; //id for poppers
+    const canBeOpen = Boolean(anchorEl); //boolean, if popper meets requirements to open, used in id
+    const id = canBeOpen ? 'simple-popover' : undefined; //id for poppers
 
     //Assigns default frequencies on page load
     useEffect(() => {
         updateOnScreenKeyboard()
-        frequencyBar.createFrequencyBar(freqBarValue, synthesizer.audioConfiguration.currentOctave);
+        frequencyBar.createFrequencyBar(freqBarValue, synthesizer.audioConfiguration.currentOctave, baseFreq);
         createFrequencyBar()
-        console.log(window.innerHeight)
     }, []);
 
     function updateOnScreenKeyboard() {
@@ -143,7 +153,7 @@ export default function Play() {
     //Finalizes the value of the frequency bar when you release your mouse, 
     const changeSliderValueCommitted = (event: any, value: number) => {
         setFreqBarValue(value);        
-        frequencyBar.createFrequencyBar(freqBarValue, synthesizer.audioConfiguration.currentOctave);
+        frequencyBar.createFrequencyBar(freqBarValue, synthesizer.audioConfiguration.currentOctave, baseFreq);
         createFrequencyBar();
     };
  
@@ -177,54 +187,31 @@ export default function Play() {
     }
 
     async function updateAssignedKey(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+        setAnchorEl(e.currentTarget)
+        setOpen(true)
         let newAssignment = parseInt(e.currentTarget.getAttribute('i-key'))
         await frequencyBar.changeAssignment(newAssignment)
+        setOpen(false)
+        setAnchorEl(null)
         createFrequencyBar();
+        
     }
 
-    interface TabPanelProps {
-        children?: React.ReactNode;
-        index: number;
-        value: number;
-    }
-        
-    function TabPanel(props: TabPanelProps) {
-        const { children, value, index, ...other } = props;
-        
-        return (
-            <div
-                role="tabpanel"
-                hidden={value !== index}
-                id={`simple-tabpanel-${index}`}
-                className="font-agrandirwide text-white text-xl"
-                aria-labelledby={`simple-tab-${index}`}
-                {...other}
-                >
-                {value === index && (
-                    <Box sx={{ p: 3 }}>
-                    <div>{children}</div>
-                    </Box>
-                )}
-            </div>
-        );
-    }
-        
-    function allyProps(index: number) {
-        return {
-            id: `simple-tab-${index}`,
-            'aria-controls': `simple-tabpanel-${index}`,
-        };
-    }
-
-    const [leftTabValue, setLeftTabValue] = React.useState(0);
-    const [rightTabValue, setRightTabValue] = React.useState(0);
-
-    const changeLeftTab = (event: React.SyntheticEvent, newValue: number) => {
-        setLeftTabValue(newValue);
+    function changeBaseFreq(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+        const amount = e.target.value
+    
+        if (!amount || amount.match(/^\d{1,}(\.\d{0,4})?$/)) {
+          setBaseFreq( parseFloat(amount) );
+          console.log(baseFreq)
+        }
     };
-    const changeRightTab = (event: React.SyntheticEvent, newValue: number) => {
-        setRightTabValue(newValue);
-    };
+
+    async function changeBaseFreqCommitted(e: React.KeyboardEvent) {
+        if (e.key === 'Enter') {
+            frequencyBar.createFrequencyBar(freqBarValue, synthesizer.audioConfiguration.currentOctave, baseFreq);
+            createFrequencyBar();
+        }
+    }
 
     return (
         <div className="2xl:mt-13 xl:mt-11 lg:mt-9 md:mt-7 sm:mt-5 xs:mt-3">
@@ -239,25 +226,18 @@ export default function Play() {
                 <button className="btn h-10 w-40 bg-white text-black rounded-md hover:bg-gray-100 mb-10" onClick={playSound}>Play Sound</button>
             </div> */}
             
-            
-
-            {/* <Popper id={id} open={open} anchorEl={anchorEl} transition className="w-35 h-10 bg-white rounded-md font-agrandir text-black text-center">
-            {({ TransitionProps }) => (
-                <Fade {...TransitionProps} timeout={350}>
-                    <p className="mt-2 mx-2">Assign key...</p>
-                </Fade>
-            )}
-            </Popper> */}
             <Grid container direction="row" justifyContent="center" alignItems="center">
                 
                 {freqBar.map(item => item)}
-                
+                <Popper id={id} open={open} anchorEl={anchorEl} className="w-35 h-10 bg-white rounded-md font-agrandir-wide text-black text-center">
+                    <p className="mt-2 mx-2">Assign key...</p>
+                </Popper>
                 <Tooltip describeChild title="Click a frequency box and then press the key on your keyboard you want it to correspond to">
                     <button className="btn 2xl:h-8 2xl:w-8 xl:h-8 xl:w-8 lg:h-7 lg-w-7 md:h-7 md:w-7 sm:h-6 sm:w-6 xs:h-6 xs:w-6 bg-white text-black rounded-3xl hover:bg-gray-100 ml-2">?</button>
                 </Tooltip>
             </Grid>
 
-            <Grid container direction="row" justifyContent="center">
+            <Grid container direction="row" justifyContent="center" className="mt-13">
                 <Grid>
                     <button className="btn bg-white text-black rounded-md hover:bg-gray-100 mb-10" onClick={octaveUp}>Octave Up</button>
                     <button className="btn bg-white text-black rounded-md hover:bg-gray-100 mb-10" onClick={octaveDown}>Octave Down</button>
@@ -313,28 +293,42 @@ export default function Play() {
                     <div className="px-4 py-5 flex-auto">
                     <div className="tab-content tab-space">
                         <div className={openTab === 1 ? "block" : "hidden"} id="link1">
-                        <div className="2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide text-white">NOTES PER OCTAVE</div>
-                                <Slider
-                                    className='max-w-2xl'
-                                    aria-label="Small steps"
-                                    defaultValue={12}
-                                    step={1}
-                                    marks
-                                    min={12}
-                                    max={32}
-                                    valueLabelDisplay="auto"
-                                    value={freqBarValue}
-                                    onChange={changeSliderValue}
-                                    onChangeCommitted={changeSliderValueCommitted}
-                                    sx={{color: 'white'}}
-                                />
-                            <div className="2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide text-white">MIDI DEVICE</div>
-                                    <FormControl fullWidth className="max-w-md" sx={{color: 'white'}}>
-                                        <Select value={0} sx={{background: 'white'}}>
-                                            <MenuItem value={0}>MIDI Keyboard</MenuItem>
+                            <div className="2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide text-white">NOTES PER OCTAVE</div>
+                                <FormControl fullWidth className="max-w-md font-agrandir-wide">
+                                    <Slider
+                                        className="ml-1"
+                                        aria-label="Small steps"
+                                        defaultValue={12}
+                                        step={1}
+                                        marks
+                                        min={12}
+                                        max={32}
+                                        valueLabelDisplay="auto"
+                                        value={freqBarValue}
+                                        onChange={changeSliderValue}
+                                        onChangeCommitted={changeSliderValueCommitted}
+                                        sx={{color: 'white'}}
+                                    />
+                                </FormControl>
+                            <div className="2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide text-white mt-2">MIDI DEVICE</div>
+                                    <FormControl fullWidth className="max-w-md font-agrandir-wide" sx={{color: 'white', fontFamily: 'Agrandir-Wide'}}>
+                                        <Select value={0} sx={{background: 'white', marginTop: '5px', fontFamily: 'Agrandir-Wide'}}>
+                                            <MenuItem value={0} sx={{fontFamily: 'Agrandir-Wide'}}>MIDI KEYBOARD</MenuItem>
                                         </Select>
                                     </FormControl>
+
+                            <div className="2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide text-white mt-3">BASE FREQUENCY</div>
+                                <TextField fullWidth className="max-w-md" 
+                                    sx={{marginTop: '5px', background: 'white', borderRadius: '4px', input: {color: 'black', fontFamily: 'Agrandir-Wide'}}}
+                                    type='number'
+                                    inputProps={{step: '0.0001'}}
+                                    value={baseFreq} 
+                                    onChange={changeBaseFreq}
+                                    onKeyDown={changeBaseFreqCommitted}
+                                />
                             </div>
+
+                            
                         <div className={openTab === 2 ? "block" : "hidden"} id="link2">
                             <Button 
                                 className="2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs"
@@ -394,72 +388,7 @@ export default function Play() {
                             href="#rightlink2"
                             role="tablist"
                         >
-                            SYNTH 1
-                        </a>
-                        </li>
-                        <li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
-                        <a
-                            className={
-                                "2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide uppercase px-5 py-3 rounded block leading-normal hover:underline " +
-                            (openRightTab === 3 ? "text-gold underline" : "text-white")}
-                            onClick={e => {e.preventDefault();setOpenRightTab(3)}}
-                            data-toggle="tab"
-                            href="#rightlink3"
-                            role="tablist"
-                        >
-                            SYNTH 2
-                        </a>
-                        </li>
-                        <li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
-                        <a
-                            className={
-                                "2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide uppercase px-5 py-3 rounded block leading-normal hover:underline " +
-                            (openRightTab === 4 ? "text-gold underline" : "text-white")}
-                            onClick={e => {e.preventDefault();setOpenRightTab(4)}}
-                            data-toggle="tab"
-                            href="#rightlink4"
-                            role="tablist"
-                        >
-                            SYNTH 3
-                        </a>
-                        </li>
-                        <li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
-                        <a
-                            className={
-                                "2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide uppercase px-5 py-3 rounded block leading-normal hover:underline " +
-                            (openRightTab === 5 ? "text-gold underline" : "text-white")}
-                            onClick={e => {e.preventDefault();setOpenRightTab(5)}}
-                            data-toggle="tab"
-                            href="#rightlink5"
-                            role="tablist"
-                        >
-                            SYNTH 4
-                        </a>
-                        </li>
-                        <li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
-                        <a
-                            className={
-                                "2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide uppercase px-5 py-3 rounded block leading-normal hover:underline " +
-                            (openRightTab === 6 ? "text-gold underline" : "text-white")}
-                            onClick={e => {e.preventDefault();setOpenRightTab(6)}}
-                            data-toggle="tab"
-                            href="#rightlink6"
-                            role="tablist"
-                        >
-                            SYNTH 5
-                        </a>
-                        </li>
-                        <li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
-                        <a
-                            className={
-                                "2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide uppercase px-5 py-3 rounded block leading-normal hover:underline " +
-                            (openRightTab === 7 ? "text-gold underline" : "text-white")}
-                            onClick={e => {e.preventDefault();setOpenRightTab(7)}}
-                            data-toggle="tab"
-                            href="#rightlink7"
-                            role="tablist"
-                        >
-                            SYNTH 6
+                            SYNTHESIZERS
                         </a>
                         </li>
                     </ul>
@@ -471,36 +400,24 @@ export default function Play() {
                             
                             </div>
                             <div className={openRightTab === 2 ? "block" : "hidden"} id="link2">
-                                Vetical Slider. Doesn't work.
-                                <Slider
-                                //Does not display right.
-                                //Container issue?
-                                sx={{
-                                    '& input[type="range"]': {
-                                    WebkitAppearance: 'slider-vertical',
-                                },
-                                color: 'white'
-                                }}
-                                orientation="vertical"
-                                defaultValue={0}
-                                aria-label="Slider2"
-                                valueLabelDisplay="auto"
-                                //onKeyDown={preventHorizontalKeyboardNavigation}
-                                />
-                            </div>
-                            <div className={openRightTab === 3 ? "block" : "hidden"} id="link3">
-                                Horizontal slider. Does work.
-                                <Slider
-                                aria-label="Slider1"
-                                defaultValue={0}
-                                //getAriaValueText={valuetext}
-                                valueLabelDisplay="auto"
-                                step={10}
-                                marks
-                                min={0}
-                                max={100}
-                                sx={{color: 'white'}}
-                                />
+                                <div className='container h-150'>
+                                    <Slider
+                                    //Does not display right.
+                                    //Container issue?
+                                    
+                                    sx={{
+                                        '& input[type="range"]': {
+                                        WebkitAppearance: 'slider-vertical',
+                                    },
+                                    color: 'white'
+                                    }}
+                                    orientation="vertical"
+                                    defaultValue={0}
+                                    aria-label="Slider2"
+                                    valueLabelDisplay="auto"
+                                    //onKeyDown={preventHorizontalKeyboardNavigation}
+                                    />
+                                </div>
                             </div>
                         </div>
                         </div>
