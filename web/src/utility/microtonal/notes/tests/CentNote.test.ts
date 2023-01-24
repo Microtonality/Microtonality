@@ -27,3 +27,17 @@ test.skip('CentNote.calcMultiplier(string) throws Error when parseFloat() return
     const ratioNote: CentNote = new CentNote(testNum);
 
 })
+
+test('CentNote.reverseCalc(number) returns cent value', () => {
+
+    // Arrange
+    let multiplier: number = (Math.random() * 1000.0) + 1;
+    
+    let expectedCents: number = 1200 * Math.log2(multiplier);
+
+    // Act
+    let test: string = CentNote.reverseCalc(multiplier);
+
+    // Assert
+    expect(parseFloat(test)).toEqual(expectedCents);
+})

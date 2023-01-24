@@ -3,7 +3,7 @@ import { CentNote } from '../../notes/CentNote';
 import { IntRatioNote } from '../../notes/IntRatioNote';
 import { RatioNote } from '../../notes/RatioNote';
 import { ScaleNote } from '../../notes/ScaleNote';
-import { NoteInfo, NoteType, ScalaParser } from '../ScalaParser'
+import { ScalaParser } from '../ScalaParser'
 
 // Noteworthy test cases:
 //
@@ -12,9 +12,12 @@ import { NoteInfo, NoteType, ScalaParser } from '../ScalaParser'
 //   123 blah v2.3 9.5/10
 //   22.2/3 asd/2 (22.2)
 //   5/5.5 oo4.5.6.6.3o 1.2 (5/5)
+// 
+// also check valid pitch value list from
+// https://www.huygens-fokker.org/scala/scl_format.html 
 
 // ScalaParser.ParseScalaFile(string)
-test('ScalaParser.ParseScalaFile(string)', () => {
+test('ScalaParser.ParseScalaFile(string) parses valid file.', () => {
     
     // Arrange
     let testFile: string = 
@@ -37,13 +40,13 @@ test('ScalaParser.ParseScalaFile(string)', () => {
         ' 2\n';
 
     // Create expected scale
-    let title: string = 'meanquar.scl';
+    let title: string = 'meanquar';
     let desc: string = '1/4-comma meantone scale. Pietro Aaron\'s temperament (1523)';
     let notes: ScaleNote[] = [];
     var pitchVals = ['76.04900', '193.15686', '310.26471', '5/4', '503.42157', '579.47057', '696.57843', '25/16', '889.73529', '1006.84314', '1082.89214', '2'];
     let val: string;
     for (val of pitchVals) {
-        var note: ScaleNote = ScalaParser.ParsePitchValueLine(val);
+        var note: ScaleNote = ScalaParser.ParsePitchValue(val);
         notes.push(note);
     }
     var expectedScale: Scale = new Scale(title, desc, notes);
@@ -55,8 +58,8 @@ test('ScalaParser.ParseScalaFile(string)', () => {
     expect(scale).toEqual(expectedScale);
 });
 
-// ScalaParser.ParsePitchValueLine(string)
-test('ScalaParser.ParsePitchValueLine(string) builds CentNote', () => {
+// ScalaParser.ParsePitchValue(string)
+test('ScalaParser.ParsePitchValue(string) builds CentNote.', () => {
 
     // Arrange
     let testValue: string = '1.0';
@@ -65,14 +68,14 @@ test('ScalaParser.ParsePitchValueLine(string) builds CentNote', () => {
     const expectedNote: CentNote = new CentNote(testValue, testComment);
 
     // Act
-    const note: ScaleNote = ScalaParser.ParsePitchValueLine(testLine);
+    const note: ScaleNote = ScalaParser.ParsePitchValue(testLine);
 
     // Assert
     expect(note).toBeInstanceOf(CentNote);
     expect(note).toEqual(expectedNote);
 });
 
-test('ScalaParser.ParsePitchValueLine(string) builds RatioNote', () => {
+test('ScalaParser.ParsePitchValue(string) builds RatioNote.', () => {
 
     // Arrange
     let testValue: string = '1/1';
@@ -81,14 +84,14 @@ test('ScalaParser.ParsePitchValueLine(string) builds RatioNote', () => {
     const expectedNote: RatioNote = new RatioNote(testValue, testComment);
 
     // Act
-    const note: ScaleNote = ScalaParser.ParsePitchValueLine(testLine);
+    const note: ScaleNote = ScalaParser.ParsePitchValue(testLine);
 
     // Assert
     expect(note).toBeInstanceOf(RatioNote);
     expect(note).toEqual(expectedNote);
 });
 
-test('ScalaParser.ParsePitchValueLine(string) builds IntRatioNote', () => {
+test('ScalaParser.ParsePitchValuestring) builds IntRatioNote.', () => {
 
     // Arrange
     let testValue: string = '1';
@@ -97,73 +100,26 @@ test('ScalaParser.ParsePitchValueLine(string) builds IntRatioNote', () => {
     const expectedNote: IntRatioNote = new IntRatioNote(testValue, testComment);
 
     // Act
-    const note: ScaleNote = ScalaParser.ParsePitchValueLine(testLine);
+    const note: ScaleNote = ScalaParser.ParsePitchValue(testLine);
 
     // Assert
     expect(note).toBeInstanceOf(IntRatioNote);
     expect(note).toEqual(expectedNote);
 });
 
-// ScalaParser.ParsePitchValue(string)
-test('ScalaParser.ParsePitchValue(string) builds NoteInfo with type CENT', () => {
-
-    // Arrange
-    let testValue: string = '1.0';
-    let testComment: string = 'commentv2.3 9.5/10';
-    let testLine: string = testValue + testComment;
-    const expectedInfo: NoteInfo = new NoteInfo(NoteType.CENT, testValue, testComment);
-
-    // Act
-    const note: NoteInfo = ScalaParser.ParsePitchValue(testLine);
-
-    // Assert
-    expect(note).toEqual(expectedInfo);
-});
-
-test('ScalaParser.ParsePitchValue(string) builds NoteInfo with type RATIO', () => {
-
-    // Arrange
-    let testValue: string = '1/1';
-    let testComment: string = 'commentv2.3 9.5/10';
-    let testLine: string = testValue + testComment;
-    const expectedInfo: NoteInfo = new NoteInfo(NoteType.RATIO, testValue, testComment);
-
-    // Act
-    const note: NoteInfo = ScalaParser.ParsePitchValue(testLine);
-
-    // Assert
-    expect(note).toEqual(expectedInfo);
-});
-
-test('ScalaParser.ParsePitchValue(string) builds NoteInfo with type INTRATIO', () => {
-
-    // Arrange
-    let testValue: string = '1';
-    let testComment: string = 'commentv2.3 9.5/10';
-    let testLine: string = testValue + testComment;
-    const expectedInfo: NoteInfo = new NoteInfo(NoteType.INTRATIO, testValue, testComment);
-
-    // Act
-    const note: NoteInfo = ScalaParser.ParsePitchValue(testLine);
-
-    // Assert
-    expect(note).toEqual(expectedInfo);
-});
-
 
 // jest.mock('../ScalaParser');
 
-test.skip('ScalaParser.ParsePitchValue(string) throws Error when there\'s comments before the pitch value', () => {
+test.skip('ScalaParser.ParsePitchValue(string) throws Error when there\'s comments before the pitch value.', () => {
 
     // Arrange
     let testValue: string = 'a1';
     let testComment: string = 'comment';
     let testLine: string = testValue + testComment;
-    const expectedInfo: NoteInfo = new NoteInfo(NoteType.NULL, '', '');
 
     // Act
-    const note: NoteInfo = ScalaParser.ParsePitchValue(testLine);
+    const note: ScaleNote = ScalaParser.ParsePitchValue(testLine);
 
     // Assert
-    expect(note).toEqual(expectedInfo);
+    // expect error to be thrown
 });

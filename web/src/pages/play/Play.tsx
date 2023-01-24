@@ -5,10 +5,8 @@ import './piano.css';
 import { useState, useEffect } from 'react';
 import { Synthesizer } from './Synthesizer';
 import { NoteToMidi, NotesFromOctave } from '../../utility/midi/NoteToMidiConverter';
+import { ScalaParser } from '../../utility/microtonal/scala/ScalaParser';
 
-// TODO: When a user is holding down a note and changes the octave,
-// the note remains downpressed on the original octave.
-// You then need to press the note twice to play it.
 const synthesizer = new Synthesizer();
 
 export default function Play() {
@@ -40,7 +38,7 @@ export default function Play() {
     // MIDI numbers range from 0 to 128 (C-1 to G#9).
     // However, react-piano only allows MIDI numbers from 12 to 128 (C0 to G#9).
     // Therefore, the user can only play the react-piano's range when using the on-screen keyboard, 
-    // but can still play the full MIDI range with a MIDI controller. (TODO: test this)
+    // but can still play the full MIDI range with a MIDI controller.
     // Starts at C3
     const [firstNote, setFirstNote] = useState(NoteToMidi('c' + synthesizer.audioConfiguration.currentOctave));
     const [lastNote, setLastNote] = useState(NoteToMidi('b' + synthesizer.audioConfiguration.currentOctave));
@@ -304,6 +302,19 @@ export default function Play() {
         setRightTabValue(newValue);
     };
 
+    // Scala File Upload
+    const [uploadedScalaFile, setUploadedScalaFile] = React.useState(null);
+
+    const parseScalaFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setUploadedScalaFile(event.target.files[0]);
+
+        let reader: FileReader = new FileReader();
+        reader.onload = function() {
+            /*setScale(*/ScalaParser.ParseScalaFile(this.result);
+        }
+        reader.readAsText(event.target.files[0]);
+    };
+
     return (
         <div className="mt-13">
             {/* <div className="text-white">
@@ -409,6 +420,7 @@ export default function Play() {
                             <input
                                 type="file"
                                 hidden
+                                onChange={parseScalaFile}
                             />
                         </Button>
                     </TabPanel>

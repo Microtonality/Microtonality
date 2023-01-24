@@ -18,7 +18,7 @@ export class RatioNote extends ScaleNote {
         if (isNaN(denominator))
             throw new InvalidNoteInputException('RatioNote.calcMultiplier(' + num + '): The denominator is not a number.');
         if (denominator === 0)
-            throw new InvalidNoteInputException('RatioNote.calcMultiplier(' + num + '): You cannot have 0 for the denominator in a pitch value.');
+            throw new InvalidNoteInputException('RatioNote.calcMultiplier(' + num + '): You cannot have zero for the denominator in a pitch value.');
 
         return numerator / denominator;
     }

@@ -13,4 +13,14 @@ export class CentNote extends ScaleNote {
 
         return Math.pow(twelfthRootOfTwo, cents * 0.01);
     }
+
+    public static reverseCalc(multiplier: number): string {
+
+        if (multiplier <= 0)
+            throw new Error('CentNote.reverseCalc(' + multiplier + '): Multiplier must be higher than 0.');
+
+        let cents: number = 1200 * Math.log2(multiplier);
+
+        return cents.toString();
+    }
 }
