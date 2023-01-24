@@ -5,6 +5,7 @@ import './piano.css';
 import { useState, useEffect } from 'react';
 import { Synthesizer } from './Synthesizer';
 import { NoteToMidi, NotesFromOctave } from '../../utility/midi/NoteToMidiConverter';
+import { ScalaParser } from '../../utility/microtonal/scala/ScalaParser';
 import FrequencyBar from './FrequencyBar';
 
 // TODO: When a user is holding down a note and changes the octave,
@@ -22,6 +23,7 @@ declare global {
       }
     }
   }
+
 
 export default function Play() {
 
@@ -42,12 +44,6 @@ export default function Play() {
         createFrequencyBar();
     }
 
-    function createMIDINote() {
-    }
-
-    function playSound() {
-    }
-
     //Frequency bar values
     const [freqBarValue, setFreqBarValue] = useState(12); //number of frequencies
     const [freqBar, setFreqBar] = useState([]); //array of frequency buttons to be rendered
@@ -57,7 +53,7 @@ export default function Play() {
     // MIDI numbers range from 0 to 128 (C-1 to G#9).
     // However, react-piano only allows MIDI numbers from 12 to 128 (C0 to G#9).
     // Therefore, the user can only play the react-piano's range when using the on-screen keyboard, 
-    // but can still play the full MIDI range with a MIDI controller. (TODO: test this)
+    // but can still play the full MIDI range with a MIDI controller.
     // Starts at C3
     const [firstNote, setFirstNote] = useState(NoteToMidi('c' + synthesizer.audioConfiguration.currentOctave));
     const [lastNote, setLastNote] = useState(NoteToMidi('b' + synthesizer.audioConfiguration.currentOctave));
@@ -213,6 +209,19 @@ export default function Play() {
         }
     }
 
+    // Scala File Upload
+    const [uploadedScalaFile, setUploadedScalaFile] = React.useState(null);
+
+    const parseScalaFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setUploadedScalaFile(event.target.files[0]);
+
+        let reader: FileReader = new FileReader();
+        reader.onload = function() {
+            /*setScale(*/ScalaParser.ParseScalaFile(this.result);
+        }
+        reader.readAsText(event.target.files[0]);
+    };
+
     return (
         <div className="2xl:mt-13 xl:mt-11 lg:mt-9 md:mt-7 sm:mt-5 xs:mt-3">
             {/* <div className="text-white">
@@ -328,7 +337,6 @@ export default function Play() {
                                 />
                             </div>
 
-                            
                         <div className={openTab === 2 ? "block" : "hidden"} id="link2">
                             <Button 
                                 className="2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs"
@@ -340,6 +348,7 @@ export default function Play() {
                                 <input
                                     type="file"
                                     hidden
+                                    onChange={parseScalaFile}
                                 />
                             </Button>
                             <Button 
@@ -355,8 +364,6 @@ export default function Play() {
                 </div>
                 </div>
             </Grid>
-                
-
                 <Grid item xs={1}></Grid>
 
                 <Grid item xs={7} className="container max-w-8xl bottom-0 border-gold border-t-2 border-l-2 rounded-tl-xl bg-bglight ml-auto">
