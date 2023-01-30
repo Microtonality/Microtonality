@@ -1,5 +1,5 @@
 import { AudioConfiguration } from './AudioConfiguration';
-import { MIDI_MIN, MIDI_MAX } from '../../utility/midi/NoteToMidiConverter';
+import { MIDI_MIN, MIDI_MAX } from '../utility/midi/NoteToMidiConverter';
 import FrequencyBar from './FrequencyBar';
 
 // TODO: fix snapping by introducing a layer of gain nodes to each oscillator (wrapper object to hold both?)

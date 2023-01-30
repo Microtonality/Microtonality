@@ -1,4 +1,4 @@
-import { MicrotonalScale } from "../../utility/microtonal/MicrotonalScale"
+import { MicrotonalScale } from "../utility/microtonal/MicrotonalScale"
 
 export class AudioConfiguration {
 
