@@ -1,4 +1,4 @@
-class OscillatorSettings {
+export class OscillatorSettings {
     pitchRatio: number
     localGain: number
 

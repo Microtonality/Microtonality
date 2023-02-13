@@ -1,3 +1,6 @@
+import {OscillatorSettings} from "./OscillatorSettings";
+import {OscillatorStack} from "./OscillatorStack";
+
 export class AdditiveSynthesizer {
 
     currentOscillatorSettings: Array<OscillatorSettings> = [
