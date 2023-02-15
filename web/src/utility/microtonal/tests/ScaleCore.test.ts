@@ -1,23 +1,39 @@
 import scaleCore, {ScaleCore} from "../ScaleCore";
-import * as MIDIpitches from './MIDInoteFrequencies.json';
-  
+import { readFile } from 'node:fs';
+import * as assert from "assert";
+
+interface ScaleNote {
+    'MIDI Note': number,
+    'Pitch (Hz)': number,
+}
 
 test('test ScaleCore.MIDINotesToFrequency() with values in json file', () =>{
     // Arrange
     let scaleCore = new ScaleCore();
 
-    // read in JSON for MIDI note pitches. 
-    // side note: Pitches in file must be rounded to 3 decimals
-    let dataStr = JSON.stringify(MIDIpitches);
+    let contents: Array<ScaleNote>;
+
+    readFile('./MIDInoteFrequencies.json', "utf8", (err, jsonString) => {
+        if (err) {
+            console.log("File read failed: ", err)
+            return;
+        }
+
+        try {
+            contents = JSON.parse(jsonString)
+        } catch (err) {
+            console.log("Error parsing JSON string: ", err)
+        }
+    })
+
+    expect(contents).not.toEqual(null);
     
-    // Act
-    const map = new Map(Object.entries(JSON.parse(dataStr)));
-    map.forEach(({'MIDI Note': midiNote, 'Pitch (Hz)': pitch }, key) => {
+    // Check pitch generation
+    contents.forEach(({'MIDI Note': midiNote, 'Pitch (Hz)': pitch }, key) => {
         // test each MIDI Note and compare output of ScaleCore.MIDINotesToFrequency
         let expectedNoteFrequency: number = Number(Number(pitch).toFixed(3));
         let returnedNoteFrequency: number  = Number(scaleCore.MIDINotesToFrequency(midiNote).toFixed(3));
     
-        // Assert
         expect(returnedNoteFrequency).toEqual(expectedNoteFrequency);
     });
 })
