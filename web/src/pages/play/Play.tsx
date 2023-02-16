@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { Synthesizer } from './Synthesizer';
 import { NoteToMidi, NotesFromOctave } from '../../utility/midi/NoteToMidiConverter';
 import FrequencyBar from './FrequencyBar';
+import Oscillator from "./Oscillator";
 
 // TODO: When a user is holding down a note and changes the octave,
 // the note remains downpressed on the original octave.
@@ -401,22 +402,13 @@ export default function Play() {
                             </div>
                             <div className={openRightTab === 2 ? "block" : "hidden"} id="link2">
                                 <div className='container h-150'>
-                                    <Slider
-                                    //Does not display right.
-                                    //Container issue?
-                                    
-                                    sx={{
-                                        '& input[type="range"]': {
-                                        WebkitAppearance: 'slider-vertical',
-                                    },
-                                    color: 'white'
-                                    }}
-                                    orientation="vertical"
-                                    defaultValue={0}
-                                    aria-label="Slider2"
-                                    valueLabelDisplay="auto"
-                                    //onKeyDown={preventHorizontalKeyboardNavigation}
-                                    />
+                                    <Oscillator/>
+                                    <Oscillator/>
+                                    <Oscillator/>
+                                    <Oscillator/>
+                                    <Oscillator/>
+                                    <Oscillator/>
+                                    <Oscillator/>
                                 </div>
                             </div>
                         </div>
