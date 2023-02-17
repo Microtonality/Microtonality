@@ -7,6 +7,7 @@ import { Synthesizer } from './Synthesizer';
 import { NoteToMidi, NotesFromOctave } from '../../utility/midi/NoteToMidiConverter';
 import FrequencyBar from './FrequencyBar';
 import Oscillator from "./Oscillator";
+import Knobs from "./Knobs";
 
 // TODO: When a user is holding down a note and changes the octave,
 // the note remains downpressed on the original octave.
@@ -409,6 +410,8 @@ export default function Play() {
                                     <Oscillator/>
                                     <Oscillator/>
                                     <Oscillator/>
+                                    <br /><br />
+                                    <Knobs size={100} min={0} max={100} value={100} onChange={(value) => console.log(value)} />
                                 </div>
                             </div>
                         </div>
