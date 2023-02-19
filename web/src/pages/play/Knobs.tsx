@@ -50,10 +50,8 @@ class Knob extends Component <Props, State> {
 
   private handleMouseMove = (event: MouseEvent) => {
     const { onChange } = this.props;
-    const { pageX, pageY } = event;
-    const dx = pageX - this.center;
-    const dy = pageY - this.center;
-    const angle = Math.atan2(dy, dx) * (180 / Math.PI) + 360;
+    const { movementX, movementY } = event;
+    const angle = movementX + movementY + this.state.angle;
     this.setState({ angle });
     const value = this.getAngleValue(angle);
     onChange(value);
@@ -75,7 +73,7 @@ class Knob extends Component <Props, State> {
       backgroundColor: 'gray',
       position: 'relative',
       cursor: 'pointer',
-    };
+    } as React.CSSProperties;
 
     const lineStyle = {
       position: 'absolute',
@@ -86,7 +84,7 @@ class Knob extends Component <Props, State> {
       transform: `rotate(${angle+20}deg)`,
       transformOrigin: 'left',
       backgroundColor: 'white',
-    };
+    } as React.CSSProperties;
 
     const textStyle = {
       position: 'absolute',
@@ -94,10 +92,10 @@ class Knob extends Component <Props, State> {
       left: this.center - 20,
       fontSize: 10,
       color: 'white',
-    };
+    } as React.CSSProperties;
 
     return (
-        <div style = {knobStyle} onMouseDown={this.handleMouseDown}>
+        <div style={knobStyle} onMouseDown={this.handleMouseDown}>
         <div style = {lineStyle} />
         <div style = {textStyle}>{value.toFixed(2)}</div>
       </div>
