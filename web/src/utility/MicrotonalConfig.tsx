@@ -1,4 +1,5 @@
 import {Scale} from "./microtonal/Scale";
+import {frequenciesToScaleNote, generateEqualTemperedScale} from "./microtonal/ScaleGeneration";
 
 interface MicrotonalConfig {
     keyMapping?: Record<string, string>; // Map Keyboard keys to scale degrees, ex. "a": 0
@@ -7,8 +8,15 @@ interface MicrotonalConfig {
 
 }
 
-interface SynthConfig {
+export interface SynthConfig {
+    gain: number
 
+    attack: number
+    decay: number
+    sustain: number
+    release: number
+
+    oscillators: Array<OscillatorSettings>
 }
 
 interface ScaleConfig {
@@ -19,19 +27,35 @@ interface ScaleConfig {
     scale?: Scale // The configuration for the scale
 }
 
-const DEFAULT_MICROTONAL_SETTINGS: MicrotonalConfig = {
+export const DEFAULT_MICROTONAL_SETTINGS: MicrotonalConfig = {
 
 }
 
-const DEFAULT_SYNTH_SETTINGS: MicrotonalConfig = {
+export const DEFAULT_SYNTH_SETTINGS: SynthConfig = {
+    gain: 0.5,
 
+    attack: 1,
+    decay: 1,
+    sustain: 1,
+    release: 1,
+
+    oscillators: [
+        new OscillatorSettings(1, 1, "sine"),
+        new OscillatorSettings(2, 1, "sine"),
+        new OscillatorSettings(3, 1, "sine"),
+        new OscillatorSettings(4, 1, "sine"),
+        new OscillatorSettings(5, 1, "sine"),
+        new OscillatorSettings(6, 1, "sine"),
+        new OscillatorSettings(7, 1, "sine"),
+        ]
 }
 
 const DEFAULT_SCALE_SETTINGS: ScaleConfig = {
     keysPerOctave: 12,
     tuningFrequency: 440,
     rootKey: 69,
-    scale: Scale
+    scale: new Scale("ET 12-Tone", "The Even-Tempered 12-Tone Scale",
+                     frequenciesToScaleNote(generateEqualTemperedScale(12)))
 }
 
 
