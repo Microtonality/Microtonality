@@ -9,6 +9,7 @@ import FrequencyBar from '../../synthesizer/FrequencyBar';
 import ADSR from "./ADSR";
 import BasicSettings from "./BasicSettings";
 import PianoKeyButton from "../../ui/PianoKeyButton";
+import FrequencyBarComponent from "./FrequencyBar";
 
 // TODO: When a user is holding down a note and changes the octave,
 // the note remains downpressed on the original octave.
@@ -204,7 +205,7 @@ export default function Play() {
           setBaseFreq( parseFloat(amount) );
           console.log(baseFreq)
         }
-    };
+    }
 
     async function changeBaseFreqCommitted(e: React.KeyboardEvent) {
         if (e.key === 'Enter') {
@@ -239,7 +240,7 @@ export default function Play() {
                     </div>
                     <div className={"h-full flex flex-col w-full"}>
                         <div className={"flex justify-center align-center"}>
-                            {freqBar.map(item => item)}
+                            <FrequencyBarComponent keyMapping={{0: 0, 1: 1, 2: 2}} notesPerOctave={12} playMidiNote={() => {}} updateKeyMapping={() => {}}/>
                             <Popper id={id} open={open} anchorEl={anchorEl} className="w-35 h-10 bg-white rounded-md font-agrandir-wide text-black text-center">
                                 <p className="mt-2 mx-2">Assign key...</p>
                             </Popper>
@@ -259,7 +260,7 @@ export default function Play() {
                 </div>
             </div>
 
-            <div className="flex justify-between h-1/2">
+            <div className="flex justify-between h-1/2 flex-col md:flex-row">
 
                 <BasicSettings freqBarValue={freqBarValue} baseFreq={baseFreq} changeSliderValue={changeSliderValue}
                            changeSliderValueCommitted={changeSliderValueCommitted} changeBaseFreq={changeBaseFreq}
