@@ -1,4 +1,4 @@
-import {ScaleCore} from "./../microtonal/ScaleCore"
+import ScaleCore from "./../microtonal/ScaleCore"
 import {AdditiveSynthesizer} from "./../audio/AdditiveSynthesizer"
 
 export class MIDIReceiver {
