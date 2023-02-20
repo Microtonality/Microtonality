@@ -30,10 +30,9 @@ function FrequencyBarComponent(props: {
     keyMapping: Record<number, number>,
     notesPerOctave: 12,
     playMidiNote: Function,
-    setKeyMapping: Function
+    setKeyMapping: Function,
+    octaveOffset: number
 }) {
-    let frequencyBar = new FrequencyBar();
-    let octave = 0;
 
     let freqBarArr = []
 
@@ -42,7 +41,7 @@ function FrequencyBarComponent(props: {
         (
             <Tooltip describeChild title={"asdf"} key={key}
                      placement="top">
-                    <FrequencyBarButton frequency={MIDINoteToFrequency(octave * 12 + parseInt(key))} key={key}/>
+                    <FrequencyBarButton frequency={MIDINoteToFrequency(octaveOffset * 12 + parseInt(key))} key={key}/>
             </Tooltip>
         )
     }

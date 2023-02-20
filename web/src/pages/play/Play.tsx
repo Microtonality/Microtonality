@@ -9,6 +9,7 @@ import FrequencyBar from '../../synthesizer/FrequencyBar';
 import ADSR from "./ADSR";
 import BasicSettings from "./BasicSettings";
 import PianoKeyButton from "../../ui/PianoKeyButton";
+import FullPianoComponent from "./Piano"
 import FrequencyBarComponent from "./FrequencyBar";
 
 // TODO: When a user is holding down a note and changes the octave,
@@ -229,18 +230,10 @@ export default function Play() {
 
             <div className={"flex flex-col items-center h-1/3"}>
                 <div className="flex items-center max-w-full w-2/3 h-full">
-                    <div className={"flex flex-col h-full mr-1"}>
-                        <span className={"text-white text-center"}>Octave</span>
-                        <PianoKeyButton faceUp className={"lg:w-24 w-16 h-1/2"} onClick={octaveUp}>
-                            <span className={"text-center"}>PgUp</span>
-                        </PianoKeyButton>
-                        <PianoKeyButton className={"lg:w-24 w-16 h-1/2"} onClick={octaveDown}>
-                            <span className={"text-center"}>PgDown</span>
-                        </PianoKeyButton>
-                    </div>
+
                     <div className={"h-full flex flex-col w-full"}>
                         <div className={"flex justify-center align-center"}>
-                            <FrequencyBarComponent keyMapping={{0: 0, 1: 1, 2: 2}} notesPerOctave={12} playMidiNote={() => {}} updateKeyMapping={() => {}}/>
+                            <FullPianoComponent synthIndex={0}/>
                             <Popper id={id} open={open} anchorEl={anchorEl} className="w-35 h-10 bg-white rounded-md font-agrandir-wide text-black text-center">
                                 <p className="mt-2 mx-2">Assign key...</p>
                             </Popper>
