@@ -1,6 +1,6 @@
-import { MIDIReceiver } from "../MIDIReceiver";
+import { MidiReceiver } from "../MidiReceiver";
 
-test('MIDIReceiver.initDevices(midi)', () => {
+test('MidiReceiver.initDevices(midi)', () => {
 
     // Arrange
 
@@ -11,7 +11,7 @@ test('MIDIReceiver.initDevices(midi)', () => {
     const expectedMidiInput: WebMidi.MIDIInput[] = [];
     const expectedMidiOutput: WebMidi.MIDIInput[] = [];
 
-    const midiReceiver: MIDIReceiver = new MIDIReceiver();
+    const midiReceiver: MidiReceiver = new MidiReceiver();
 
     // Act
     midiReceiver.initDevices(midi);

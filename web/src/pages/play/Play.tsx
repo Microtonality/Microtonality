@@ -3,9 +3,7 @@ import { Grid, Popper, Tooltip } from '@mui/material';
 import { Piano, KeyboardShortcuts } from 'react-piano';
 import './piano.css';
 import { useState, useEffect } from 'react';
-import { Synthesizer } from '../../synthesizer/Synthesizer';
 import { NoteToMidi, NotesFromOctave } from '../../utility/midi/NoteToMidiConverter';
-import FrequencyBar from '../../synthesizer/FrequencyBar';
 import SynthSettings from "./SynthSettings";
 import BasicSettings from "./BasicSettings";
 import PianoKeyButton from "../../ui/PianoKeyButton";
@@ -13,12 +11,7 @@ import FullPianoComponent from "./Piano"
 import FrequencyBarComponent from "./FrequencyBar";
 import {DEFAULT_MICROTONAL_CONFIG} from "../../utility/MicrotonalConfig";
 import {AdditiveSynthesizer} from "../../utility/audio/AdditiveSynthesizer";
-
-// TODO: When a user is holding down a note and changes the octave,
-// the note remains downpressed on the original octave.
-// You then need to press the note twice to play it.
-const frequencyBar = new FrequencyBar();
-const synthesizer = new Synthesizer(frequencyBar);
+import {MidiReceiver} from "../../utility/midi/MidiReceiver";
 
 declare global {
     namespace React {
@@ -33,9 +26,11 @@ declare global {
 export default function Play() {
     const [microtonalConfig, setMicrotonalConfig] = useState(DEFAULT_MICROTONAL_CONFIG);
     const additiveSynth = new AdditiveSynthesizer();
+    const midiReceiver = new MidiReceiver();
 
     useEffect(() => {
         additiveSynth.config = microtonalConfig.synthConfig;
+        midiReceiver.config = microtonalConfig.scaleConfig;
     })
 
     return (

@@ -1,7 +1,7 @@
 import {Scale} from "./microtonal/Scale";
 import {frequenciesToScaleNote, generateEqualTemperedScale} from "./microtonal/ScaleGeneration";
 
-interface MicrotonalConfig {
+export interface MicrotonalConfig {
     keyMapping?: Record<string, string>; // Map Keyboard keys to scale degrees, ex. "a": 0
     scaleConfig?: ScaleConfig;
     synthConfig?: SynthConfig;
@@ -10,6 +10,7 @@ interface MicrotonalConfig {
 
 export interface SynthConfig {
     gain: number
+    pitchBend: number
 
     attack: number
     decay: number
@@ -19,7 +20,7 @@ export interface SynthConfig {
     oscillators: Array<OscillatorSettings>
 }
 
-interface ScaleConfig {
+export interface ScaleConfig {
     keysPerOctave?: number; // How many piano keys are mapped per octave, 12 by default
     tuningFrequency?: number; // Anchor frequency of scale
     rootKey?: number; // Which MIDI key maps to the tuningFrequency. In normal 12-tone equal-temperament
@@ -33,6 +34,7 @@ export const DEFAULT_MICROTONAL_CONFIG: MicrotonalConfig = {
 
 export const DEFAULT_SYNTH_CONFIG: SynthConfig = {
     gain: 0.5,
+    pitchBend: 0,
 
     attack: 1,
     decay: 1,
@@ -50,7 +52,7 @@ export const DEFAULT_SYNTH_CONFIG: SynthConfig = {
         ]
 }
 
-const DEFAULT_SCALE_CONFIG: ScaleConfig = {
+export const DEFAULT_SCALE_CONFIG: ScaleConfig = {
     keysPerOctave: 12,
     tuningFrequency: 440,
     rootKey: 69,
