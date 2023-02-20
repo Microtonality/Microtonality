@@ -1,7 +1,7 @@
-import {SynthConfig, DEFAULT_SYNTH_SETTINGS} from "../MicrotonalConfig";
+import {SynthConfig, DEFAULT_SYNTH_CONFIG} from "../MicrotonalConfig";
 
 export class AdditiveSynthesizer {
-    config: SynthConfig = DEFAULT_SYNTH_SETTINGS;
+    config: SynthConfig = DEFAULT_SYNTH_CONFIG;
 
     oscillatorStacks: { [key: number]: OscillatorStack } = {}
 

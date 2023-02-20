@@ -6,12 +6,12 @@ import { useState, useEffect } from 'react';
 import { Synthesizer } from '../../synthesizer/Synthesizer';
 import { NoteToMidi, NotesFromOctave } from '../../utility/midi/NoteToMidiConverter';
 import FrequencyBar from '../../synthesizer/FrequencyBar';
-import ADSR from "./ADSR";
+import SynthSettings from "./SynthSettings";
 import BasicSettings from "./BasicSettings";
 import PianoKeyButton from "../../ui/PianoKeyButton";
 import FullPianoComponent from "./Piano"
 import FrequencyBarComponent from "./FrequencyBar";
-import {DEFAULT_MICROTONAL_SETTINGS} from "../../utility/MicrotonalConfig";
+import {DEFAULT_MICROTONAL_CONFIG} from "../../utility/MicrotonalConfig";
 import {AdditiveSynthesizer} from "../../utility/audio/AdditiveSynthesizer";
 
 // TODO: When a user is holding down a note and changes the octave,
@@ -31,7 +31,7 @@ declare global {
   }
 
 export default function Play() {
-    const [microtonalConfig, setMicrotonalConfig] = useState(DEFAULT_MICROTONAL_SETTINGS);
+    const [microtonalConfig, setMicrotonalConfig] = useState(DEFAULT_MICROTONAL_CONFIG);
     const additiveSynth = new AdditiveSynthesizer();
 
     useEffect(() => {
@@ -63,8 +63,9 @@ export default function Play() {
             </div>
 
             <div className="flex justify-between h-1/2 flex-col md:flex-row">
-                <BasicSettings freqBarValue={microtonalConfig.scaleConfig.tuningFrequency} baseFreq={microtonalConfig.scaleConfig.rootKey}></BasicSettings>
-                <ADSR/>
+                <BasicSettings freqBarValue={microtonalConfig.scaleConfig.tuningFrequency}
+                    baseFreq={microtonalConfig.scaleConfig.rootKey}/>
+                <SynthSettings/>
             </div>
         </div>
     );

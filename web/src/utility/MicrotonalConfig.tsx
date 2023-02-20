@@ -27,11 +27,11 @@ interface ScaleConfig {
     scale?: Scale // The configuration for the scale
 }
 
-export const DEFAULT_MICROTONAL_SETTINGS: MicrotonalConfig = {
+export const DEFAULT_MICROTONAL_CONFIG: MicrotonalConfig = {
 
 }
 
-export const DEFAULT_SYNTH_SETTINGS: SynthConfig = {
+export const DEFAULT_SYNTH_CONFIG: SynthConfig = {
     gain: 0.5,
 
     attack: 1,
@@ -50,7 +50,7 @@ export const DEFAULT_SYNTH_SETTINGS: SynthConfig = {
         ]
 }
 
-const DEFAULT_SCALE_SETTINGS: ScaleConfig = {
+const DEFAULT_SCALE_CONFIG: ScaleConfig = {
     keysPerOctave: 12,
     tuningFrequency: 440,
     rootKey: 69,

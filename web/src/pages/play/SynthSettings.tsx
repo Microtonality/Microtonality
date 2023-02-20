@@ -1,10 +1,10 @@
 import {Grid, Slider} from "@mui/material";
 import * as React from "react";
 
-interface ADSRProps {
+interface SynthProps {
 }
 
-export default function ADSR(props: ADSRProps) {
+export default function SynthSettings(props: SynthProps) {
     const [openTab, setOpenTab] = React.useState(1);
 
     return <div className="max-w-[50%] bottom-0 border-gold border-t-2 border-l-2 rounded-tl-xl bg-bglight w-96">

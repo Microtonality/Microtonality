@@ -1,5 +1,5 @@
 import {Button, FormControl, Grid, MenuItem, Select, Slider, TextField} from "@mui/material";
-import ADSR from "./ADSR";
+import SynthSettings from "./SynthSettings";
 import * as React from "react";
 import {ChangeEventHandler, KeyboardEventHandler} from "react";
 
