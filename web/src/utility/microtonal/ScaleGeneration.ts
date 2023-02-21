@@ -1,13 +1,14 @@
 import {ScaleNote} from "./notes/ScaleNote";
+import {scaleFromCents} from "./Scale";
 
 export function generateEqualTemperedScale(numberOfNotes: number) {
     let multipliers = [];
 
     for (let i = 0; i < numberOfNotes; i++) {
-        multipliers.push((440 * Math.pow(2, i/12)) / 440);
+        multipliers.push(i * 100);
     }
 
-    return multipliers;
+    return scaleFromCents(multipliers, `${numberOfNotes}-note Equal Tempered Scale`);
 }
 
 export function frequenciesToScaleNote(notes: Array<number>) {

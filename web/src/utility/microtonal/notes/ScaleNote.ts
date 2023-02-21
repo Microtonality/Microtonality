@@ -1,21 +1,16 @@
 export class ScaleNote {
-
     public multiplier: number;
-    public num: string;
     public comments: string;
     public altered: boolean;
 
-    constructor(num: string, comments: string | null = null) {
-        this.multiplier = this.calcMultiplier(num);
-        this.num = num;
+    // Subclass this, don't use as is
+    constructor(multiplier: number, comments: string | null = null) {
+        this.multiplier = multiplier;
         this.comments = comments;
         this.altered = false;
     }
 
-    protected calcMultiplier(num: string): number {
-        throw new Error("Not implemented.");
-    }
-
+    // Peter: What is this for?
     public setAltered(altered: boolean) {
         this.altered = altered;
     }

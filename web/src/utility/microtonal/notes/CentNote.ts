@@ -4,16 +4,22 @@ import { ScaleNote, InvalidNoteInputException } from "./ScaleNote";
 
 const twelfthRootOfTwo = Math.pow(2, 1/12);
 
+function calcCentsMultiplier(cents: number): number {
+    return Math.pow(twelfthRootOfTwo, cents * 0.01);
+}
+
 export class CentNote extends ScaleNote {
-    protected calcMultiplier(num: string): number {
-        let cents: number = parseFloat(num);
+    public cents: number;
 
-        if (isNaN(cents))
-            throw new InvalidNoteInputException('CentNote.calcMultiplier(' + num + '): The string is not a number.');
-
-        return Math.pow(twelfthRootOfTwo, cents * 0.01);
+    constructor(cents: number, comments: string | null = null) {
+        // Has to be outside the class because we apparently
+        // can't call class methods until we call super :(
+        let multiplier = calcCentsMultiplier(cents);
+        super(multiplier, comments);
+        this.cents = cents;
     }
 
+    // Do we need this?
     public static reverseCalc(multiplier: number): string {
 
         if (multiplier <= 0)

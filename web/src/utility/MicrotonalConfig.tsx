@@ -56,8 +56,7 @@ export const DEFAULT_SCALE_CONFIG: ScaleConfig = {
     keysPerOctave: 12,
     tuningFrequency: 440,
     rootKey: 69,
-    scale: new Scale("ET 12-Tone", "The Even-Tempered 12-Tone Scale",
-                     frequenciesToScaleNote(generateEqualTemperedScale(12)))
+    scale: generateEqualTemperedScale(12)
 }
 
 
