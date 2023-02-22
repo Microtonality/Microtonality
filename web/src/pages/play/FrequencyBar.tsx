@@ -1,7 +1,6 @@
 import {Tooltip} from "@mui/material";
 import * as React from "react";
 import {useEffect, useRef} from "react";
-import FrequencyBar from "../../synthesizer/FrequencyBar";
 
 interface FrequencyBarButton {
     frequency: number,

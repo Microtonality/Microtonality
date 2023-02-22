@@ -14,7 +14,7 @@ export function generateEqualTemperedScale(numberOfNotes: number) {
 export function frequenciesToScaleNote(notes: Array<number>) {
     let scaleNotes = [];
 
-    for (const note in notes) {
+    for (const note of notes) {
         scaleNotes.push(new ScaleNote(note))
     }
 

@@ -48,10 +48,7 @@ export default function Play() {
                             </Tooltip>
                         </div>
                         <Piano
-                            activeNotes={synthesizer.activeNotes}
                             className="mx-auto my-auto"
-                            playNote={synthesizer.NoteOn}
-                            stopNote={synthesizer.NoteOff}
                         />
                     </div>
                 </div>

@@ -2,7 +2,7 @@ import { CentNote } from "./notes/CentNote";
 import { ScaleNote } from "./notes/ScaleNote";
 import {RatioNote} from "./notes/RatioNote";
 
-class Scale {
+export class Scale {
 
     public title: string;
     public description: string;

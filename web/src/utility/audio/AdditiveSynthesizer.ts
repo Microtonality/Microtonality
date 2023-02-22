@@ -19,6 +19,4 @@ export class AdditiveSynthesizer {
         this.oscillatorStacks[frequency].endPlay()
         delete this.oscillatorStacks[frequency]
     }
-
-
 }
