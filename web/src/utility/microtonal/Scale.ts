@@ -16,15 +16,12 @@ export class Scale {
     }
 }
 
-function scaleFromCents(centValues: Array<number>, title: string = '', description: string = '') {
+export function scaleFromCents(centValues: Array<number>, title: string = '', description: string = '') {
     let notes = centValues.map(value => new CentNote(value));
     return new Scale(notes, title, description);
 }
 
-function scaleFromRatios(ratioValues: Array<string>, title: string = '', description: string = '') {
+export function scaleFromRatios(ratioValues: Array<string>, title: string = '', description: string = '') {
     let notes = ratioValues.map(value => new RatioNote(value));
     return new Scale(notes, title, description);
 }
-
-
-export { Scale, scaleFromRatios, scaleFromCents }

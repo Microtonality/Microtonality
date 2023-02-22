@@ -1,6 +1,6 @@
 import OscillatorSettings from "./OscillatorSettings";
 
-class OscillatorStack {
+export default class OscillatorStack {
 
     audioContexts: Array<AudioContext> = []
     oscillatorNodes: Array<OscillatorNode> = []
