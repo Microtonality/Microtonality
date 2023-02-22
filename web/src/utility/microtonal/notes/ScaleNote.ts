@@ -1,3 +1,5 @@
+import {Exception} from "sass";
+
 export class ScaleNote {
     public multiplier: number;
     public comments: string;
@@ -13,6 +15,11 @@ export class ScaleNote {
     // Peter: What is this for?
     public setAltered(altered: boolean) {
         this.altered = altered;
+    }
+
+    // Used for writing scala files
+    public exportScala() : string {
+        throw new Error("Not Implemented");
     }
 }
 

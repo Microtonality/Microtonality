@@ -5,7 +5,7 @@ test('IntRatioNote object has correct values', () => {
     // Arrange
     let multiplier: number = Math.trunc((Math.random() * 1000)) + 1;
     let comment: string = 'comment';
-    let testNum = multiplier.toString();
+    let testNum = multiplier;
 
     let expectedMultiplier: number = multiplier;
 
@@ -14,16 +14,6 @@ test('IntRatioNote object has correct values', () => {
 
     // Assert
     expect(ratioNote.multiplier).toEqual(expectedMultiplier);
-    expect(ratioNote.num).toEqual(testNum);
+    expect(ratioNote.intRatio).toEqual(testNum);
     expect(ratioNote.comments).toEqual(comment);
-})
-
-test.skip('IntRatioNote.calcMultiplier(string) throws Error when parseInt() returns NaN', () => {
-
-    // Arrange
-    let testNum: string = '';
-
-    // Act and Assert
-    const ratioNote: IntRatioNote = new IntRatioNote(testNum);
-
 })

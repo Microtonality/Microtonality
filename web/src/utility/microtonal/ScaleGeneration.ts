@@ -1,5 +1,6 @@
 import {ScaleNote} from "./notes/ScaleNote";
 import {scaleFromCents} from "./Scale";
+import {CentNote} from "./notes/CentNote";
 
 export function generateEqualTemperedScale(numberOfNotes: number) {
     let multipliers = [];
@@ -11,11 +12,18 @@ export function generateEqualTemperedScale(numberOfNotes: number) {
     return scaleFromCents(multipliers, `${numberOfNotes}-note Equal Tempered Scale`);
 }
 
-export function frequenciesToScaleNote(notes: Array<number>) {
+const logOf2 = Math.log(2)
+
+export function frequencyToCents(tuningFrequency: number, otherFrequency: number) {
+    return (1200 * Math.log(otherFrequency / tuningFrequency)) / logOf2;
+}
+
+
+export function frequenciesToScaleNote(tuningFrequency: number, notes: Array<number>) {
     let scaleNotes = [];
 
-    for (const note in notes) {
-        scaleNotes.push(new ScaleNote(note))
+    for (const note of notes) {
+        scaleNotes.push(new CentNote(frequencyToCents(tuningFrequency, note)))
     }
 
     return scaleNotes;

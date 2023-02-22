@@ -2,20 +2,17 @@ import {Button, FormControl, Grid, MenuItem, Select, Slider, TextField} from "@m
 import SynthSettings from "./SynthSettings";
 import * as React from "react";
 import {ChangeEventHandler, KeyboardEventHandler} from "react";
+import {ScaleConfig} from "../../utility/MicrotonalConfig";
 
 interface BasicSettingsProps {
-    freqBarValue: number,
     className?: string,
-    baseFreq: number,
-    changeBaseFreq: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>,
-    changeBaseFreqCommitted: KeyboardEventHandler<HTMLDivElement>,
-    changeSliderValue: (event: Event, value: number | number[], activeThumb: number) => void,
-    changeSliderValueCommitted: (event: React.SyntheticEvent | Event, value: number | number[]) => void
+    scaleConfig: ScaleConfig
 }
 
 
 export default function BasicSettings(props: BasicSettingsProps) {
     const [openTab, setOpenTab] = React.useState(1);
+
 
     return <div className="max-w-[50%] border-gold border-t-2 border-r-2 rounded-tr-xl bg-bglight w-96">
         <div className="w-full overflow-auto flex flex-col h-full">
@@ -75,9 +72,9 @@ export default function BasicSettings(props: BasicSettingsProps) {
                                     min={12}
                                     max={32}
                                     valueLabelDisplay="auto"
-                                    value={props.freqBarValue}
-                                    onChange={props.changeSliderValue}
-                                    onChangeCommitted={props.changeSliderValueCommitted}
+                                    value={props.scaleConfig.scale.notes.length}
+                                    // onChange={props.changeSliderValue}
+                                    // onChangeCommitted={props.changeSliderValueCommitted}
                                     sx={{color: 'white'}}
                                 />
                             </FormControl>
@@ -106,9 +103,9 @@ export default function BasicSettings(props: BasicSettingsProps) {
                                        }}
                                        type='number'
                                        inputProps={{step: '0.0001'}}
-                                       value={props.baseFreq}
-                                       onChange={props.changeBaseFreq}
-                                       onKeyDown={props.changeBaseFreqCommitted}
+                                       value={props.scaleConfig.tuningFrequency}
+                                       // onChange={props.changeBaseFreq}
+                                       // onKeyDown={props.changeBaseFreqCommitted}
                             />
                         </div>
 

@@ -29,4 +29,8 @@ export class CentNote extends ScaleNote {
 
         return cents.toString();
     }
+
+    exportScala(): string {
+        return this.cents.toString();
+    }
 }

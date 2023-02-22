@@ -1,4 +1,4 @@
-import { MidiReceiver } from "../MidiReceiver";
+import MidiReceiver from "../MIDIReceiver"
 
 test('MidiReceiver.initDevices(midi)', () => {
 

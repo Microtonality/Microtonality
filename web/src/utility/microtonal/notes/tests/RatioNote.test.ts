@@ -15,7 +15,7 @@ test('RatioNote object has correct values', () => {
 
     // Assert
     expect(ratioNote.multiplier).toEqual(expectedMultiplier);
-    expect(ratioNote.num).toEqual(testNum);
+    expect(ratioNote.ratio).toEqual(testNum);
     expect(ratioNote.comments).toEqual(comment);
 })
 

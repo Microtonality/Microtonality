@@ -27,4 +27,4 @@ function scaleFromRatios(ratioValues: Array<string>, title: string = '', descrip
 }
 
 
-export { scaleFromRatios, scaleFromCents }
+export { Scale, scaleFromRatios, scaleFromCents }

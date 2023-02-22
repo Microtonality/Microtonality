@@ -49,7 +49,7 @@ test('ScalaParser.ParseScalaFile(string) parses valid file.', () => {
         var note: ScaleNote = ScalaParser.ParsePitchValue(val);
         notes.push(note);
     }
-    var expectedScale: Scale = new Scale(title, desc, notes);
+    var expectedScale: Scale = new Scale(notes, title, desc);
 
     // Act
     var scale: Scale = ScalaParser.ParseScalaFile(testFile);
@@ -62,7 +62,7 @@ test('ScalaParser.ParseScalaFile(string) parses valid file.', () => {
 test('ScalaParser.ParsePitchValue(string) builds CentNote.', () => {
 
     // Arrange
-    let testValue: string = '1.0';
+    let testValue: number = 1.0;
     let testComment: string = 'commentv2.3 9.5/10';
     let testLine: string = testValue + testComment;
     const expectedNote: CentNote = new CentNote(testValue, testComment);
@@ -80,7 +80,7 @@ test('ScalaParser.ParsePitchValue(string) builds RatioNote.', () => {
     // Arrange
     let testValue: string = '1/1';
     let testComment: string = 'commentv2.3 9.5/10';
-    let testLine: string = testValue + testComment;
+    let testLine: string = testValue.toString() + testComment;
     const expectedNote: RatioNote = new RatioNote(testValue, testComment);
 
     // Act
@@ -94,9 +94,9 @@ test('ScalaParser.ParsePitchValue(string) builds RatioNote.', () => {
 test('ScalaParser.ParsePitchValuestring) builds IntRatioNote.', () => {
 
     // Arrange
-    let testValue: string = '1';
+    let testValue: number = 1;
     let testComment: string = 'commentv2.3 9.5/10';
-    let testLine: string = testValue + testComment;
+    let testLine: string = testValue.toString() + testComment;
     const expectedNote: IntRatioNote = new IntRatioNote(testValue, testComment);
 
     // Act

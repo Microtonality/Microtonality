@@ -80,7 +80,7 @@ export class ScalaParser {
         if (notes.length !== keysPerOctave)
             throw Error('The Scala file does not have a pitch value for each key in the octave.');
 
-        return new Scale(title, description, notes);
+        return new Scale(notes, title, description);
     }
 
     public static ParsePitchValue(line: string): ScaleNote {
@@ -109,6 +109,8 @@ export class ScalaParser {
                     } 
                     else if (char === '/') {
                         readSlashOrDecimal = true;
+                        // @ts-ignore
+                        // It complains about mismatching constructors but we take care of that later
                         noteType = RatioNote;
                         num += char;
                         continue;
@@ -135,7 +137,15 @@ export class ScalaParser {
 
         comments = line.substring(i).trim();
 
-        return new noteType(num, comments);
+        // @ts-ignore
+        if (noteType === RatioNote) {
+            // @ts-ignore
+            return new noteType(num, comments);
+        } else {
+            return new noteType(parseFloat(num), comments)
+        }
+
+
     }
 }
 

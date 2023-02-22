@@ -21,7 +21,7 @@ export class ScalaGenerator {
 
         let note: ScaleNote = null;
         for (note of scale.notes)
-            fileData.push('  ' + note.num + ' ' + note.comments + '\n');
+            fileData.push('  ' + note.exportScala() + ' ' + note.comments + '\n');
         fileData.push('\n');
 
         return new File(fileData, fileTitle, {type: "text/plain"});

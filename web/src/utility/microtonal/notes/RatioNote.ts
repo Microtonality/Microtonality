@@ -32,4 +32,8 @@ export class RatioNote extends ScaleNote {
         super(multiplier, comments);
         this.ratio = ratio;
     }
+
+    exportScala(): string {
+        return this.ratio;
+    }
 }

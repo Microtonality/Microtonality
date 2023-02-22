@@ -1,7 +1,6 @@
 import {Tooltip} from "@mui/material";
 import * as React from "react";
 import {useEffect, useRef} from "react";
-import FrequencyBar from "../../synthesizer/FrequencyBar";
 
 interface FrequencyBarButton {
     frequency: number,
@@ -41,7 +40,7 @@ function FrequencyBarComponent(props: {
         (
             <Tooltip describeChild title={"asdf"} key={key}
                      placement="top">
-                    <FrequencyBarButton frequency={MIDINoteToFrequency(octaveOffset * 12 + parseInt(key))} key={key}/>
+                    <FrequencyBarButton frequency={MIDINoteToFrequency(props.octaveOffset * 12 + parseInt(key))} key={key}/>
             </Tooltip>
         )
     }

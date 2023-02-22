@@ -1,3 +1,5 @@
+import OscillatorSettings from "./OscillatorSettings";
+
 class OscillatorStack {
 
     audioContexts: Array<AudioContext> = []

@@ -9,9 +9,9 @@ import BasicSettings from "./BasicSettings";
 import PianoKeyButton from "../../ui/PianoKeyButton";
 import FullPianoComponent from "./Piano"
 import FrequencyBarComponent from "./FrequencyBar";
-import {DEFAULT_MICROTONAL_CONFIG} from "../../utility/MicrotonalConfig";
+import {createMicrotonalConfig, DEFAULT_MICROTONAL_CONFIG} from "../../utility/MicrotonalConfig";
 import {AdditiveSynthesizer} from "../../utility/audio/AdditiveSynthesizer";
-import {MidiReceiver} from "../../utility/midi/MidiReceiver";
+import MidiReceiver from "../../utility/midi/MIDIReceiver";
 
 declare global {
     namespace React {
@@ -24,13 +24,15 @@ declare global {
   }
 
 export default function Play() {
-    const [microtonalConfig, setMicrotonalConfig] = useState(DEFAULT_MICROTONAL_CONFIG);
+    const [microtonalConfig, setMicrotonalConfig] = useState([createMicrotonalConfig()]);
+    // Which of the microtonalConfigs is active on screen right now?
+    const [currentSynth, setCurrentSynth] = useState(0);
     const additiveSynth = new AdditiveSynthesizer();
     const midiReceiver = new MidiReceiver();
 
     useEffect(() => {
-        additiveSynth.config = microtonalConfig.synthConfig;
-        midiReceiver.config = microtonalConfig.scaleConfig;
+        additiveSynth.config = microtonalConfig[0].synthConfig;
+        midiReceiver.config = microtonalConfig[0].scaleConfig;
     })
 
     return (
@@ -39,27 +41,21 @@ export default function Play() {
                 <div className="flex items-center max-w-full w-2/3 h-full">
                     <div className={"h-full flex flex-col w-full"}>
                         <div className={"flex justify-center align-center"}>
-                            <FullPianoComponent synthIndex={0}/>
-                            <Popper id={id} open={open} anchorEl={anchorEl} className="w-35 h-10 bg-white rounded-md font-agrandir-wide text-black text-center">
+                            <FullPianoComponent scaleConfig={microtonalConfig[currentSynth].scaleConfig} keyMapping={microtonalConfig[currentSynth].keyMapping}
+                            setKeyMapping={() => {}}/>
+                            <Popper open={false} className="w-35 h-10 bg-white rounded-md font-agrandir-wide text-black text-center">
                                 <p className="mt-2 mx-2">Assign key...</p>
                             </Popper>
                             <Tooltip describeChild title="Click a frequency box and then press the key on your keyboard you want it to correspond to">
                                 <button className="btn 2xl:h-8 2xl:w-8 xl:h-8 xl:w-8 lg:h-7 lg-w-7 md:h-7 md:w-7 sm:h-6 sm:w-6 xs:h-6 xs:w-6 bg-white text-black rounded-3xl hover:bg-gray-100 ml-2">?</button>
                             </Tooltip>
                         </div>
-                        <Piano
-                            activeNotes={synthesizer.activeNotes}
-                            className="mx-auto my-auto"
-                            playNote={synthesizer.NoteOn}
-                            stopNote={synthesizer.NoteOff}
-                        />
                     </div>
                 </div>
             </div>
 
             <div className="flex justify-between h-1/2 flex-col md:flex-row">
-                <BasicSettings freqBarValue={microtonalConfig.scaleConfig.tuningFrequency}
-                    baseFreq={microtonalConfig.scaleConfig.rootKey}/>
+                <BasicSettings scaleConfig={microtonalConfig[currentSynth].scaleConfig}/>
                 <SynthSettings/>
             </div>
         </div>

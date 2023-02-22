@@ -1,7 +1,7 @@
 import {AdditiveSynthesizer} from "../audio/AdditiveSynthesizer"
 import {ScaleConfig, DEFAULT_SCALE_CONFIG} from "../MicrotonalConfig";
 
-export class MidiReceiver {
+export default class MidiReceiver {
 
     public midiInput: WebMidi.MIDIInput[] = [];
     public midiOutput: WebMidi.MIDIOutput[] = [];
