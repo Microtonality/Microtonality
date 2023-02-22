@@ -17,7 +17,7 @@ jobs:
         run: |
           cd web
           npm i
-          npm run build
+          PUBLIC_URL="/Microtonality/" npm run build
           ls -la
           ls -la build
       - name: Deploy to GH Pages

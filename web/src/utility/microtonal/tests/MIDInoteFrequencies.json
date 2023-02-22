@@ -1,0 +1,514 @@
+[
+    {
+        "MIDI Note": "0",
+        "Pitch (Hz)": "8.176"
+    },
+    {
+        "MIDI Note": "1",
+        "Pitch (Hz)": "8.662"
+    },
+    {
+        "MIDI Note": "2",
+        "Pitch (Hz)": "9.177"
+    },
+    {
+        "MIDI Note": "3",
+        "Pitch (Hz)": "9.723"
+    },
+    {
+        "MIDI Note": "4",
+        "Pitch (Hz)": "10.301"
+    },
+    {
+        "MIDI Note": "5",
+        "Pitch (Hz)": "10.913"
+    },
+    {
+        "MIDI Note": "6",
+        "Pitch (Hz)": "11.562"
+    },
+    {
+        "MIDI Note": "7",
+        "Pitch (Hz)": "12.25"
+    },
+    {
+        "MIDI Note": "8",
+        "Pitch (Hz)": "12.978"
+    },
+    {
+        "MIDI Note": "9",
+        "Pitch (Hz)": "13.75"
+    },
+    {
+        "MIDI Note": "10",
+        "Pitch (Hz)": "14.568"
+    },
+    {
+        "MIDI Note": "11",
+        "Pitch (Hz)": "15.434"
+    },
+    {
+        "MIDI Note": "12",
+        "Pitch (Hz)": "16.352"
+    },
+    {
+        "MIDI Note": "13",
+        "Pitch (Hz)": "17.324"
+    },
+    {
+        "MIDI Note": "14",
+        "Pitch (Hz)": "18.354"
+    },
+    {
+        "MIDI Note": "15",
+        "Pitch (Hz)": "19.445"
+    },
+    {
+        "MIDI Note": "16",
+        "Pitch (Hz)": "20.602"
+    },
+    {
+        "MIDI Note": "17",
+        "Pitch (Hz)": "21.827"
+    },
+    {
+        "MIDI Note": "18",
+        "Pitch (Hz)": "23.125"
+    },
+    {
+        "MIDI Note": "19",
+        "Pitch (Hz)": "24.5"
+    },
+    {
+        "MIDI Note": "20",
+        "Pitch (Hz)": "25.957"
+    },
+    {
+        "MIDI Note": "21",
+        "Pitch (Hz)": "27.5"
+    },
+    {
+        "MIDI Note": "22",
+        "Pitch (Hz)": "29.135"
+    },
+    {
+        "MIDI Note": "23",
+        "Pitch (Hz)": "30.868"
+    },
+    {
+        "MIDI Note": "24",
+        "Pitch (Hz)": "32.703"
+    },
+    {
+        "MIDI Note": "25",
+        "Pitch (Hz)": "34.648"
+    },
+    {
+        "MIDI Note": "26",
+        "Pitch (Hz)": "36.708"
+    },
+    {
+        "MIDI Note": "27",
+        "Pitch (Hz)": "38.891"
+    },
+    {
+        "MIDI Note": "28",
+        "Pitch (Hz)": "41.203"
+    },
+    {
+        "MIDI Note": "29",
+        "Pitch (Hz)": "43.654"
+    },
+    {
+        "MIDI Note": "30",
+        "Pitch (Hz)": "46.249"
+    },
+    {
+        "MIDI Note": "31",
+        "Pitch (Hz)": "48.999"
+    },
+    {
+        "MIDI Note": "32",
+        "Pitch (Hz)": "51.913"
+    },
+    {
+        "MIDI Note": "33",
+        "Pitch (Hz)": "55"
+    },
+    {
+        "MIDI Note": "34",
+        "Pitch (Hz)": "58.27"
+    },
+    {
+        "MIDI Note": "35",
+        "Pitch (Hz)": "61.735"
+    },
+    {
+        "MIDI Note": "36",
+        "Pitch (Hz)": "65.406"
+    },
+    {
+        "MIDI Note": "37",
+        "Pitch (Hz)": "69.296"
+    },
+    {
+        "MIDI Note": "38",
+        "Pitch (Hz)": "73.416"
+    },
+    {
+        "MIDI Note": "39",
+        "Pitch (Hz)": "77.782"
+    },
+    {
+        "MIDI Note": "40",
+        "Pitch (Hz)": "82.407"
+    },
+    {
+        "MIDI Note": "41",
+        "Pitch (Hz)": "87.307"
+    },
+    {
+        "MIDI Note": "42",
+        "Pitch (Hz)": "92.499"
+    },
+    {
+        "MIDI Note": "43",
+        "Pitch (Hz)": "97.999"
+    },
+    {
+        "MIDI Note": "44",
+        "Pitch (Hz)": "103.826"
+    },
+    {
+        "MIDI Note": "45",
+        "Pitch (Hz)": "110"
+    },
+    {
+        "MIDI Note": "46",
+        "Pitch (Hz)": "116.541"
+    },
+    {
+        "MIDI Note": "47",
+        "Pitch (Hz)": "123.471"
+    },
+    {
+        "MIDI Note": "48",
+        "Pitch (Hz)": "130.813"
+    },
+    {
+        "MIDI Note": "49",
+        "Pitch (Hz)": "138.591"
+    },
+    {
+        "MIDI Note": "50",
+        "Pitch (Hz)": "146.832"
+    },
+    {
+        "MIDI Note": "51",
+        "Pitch (Hz)": "155.563"
+    },
+    {
+        "MIDI Note": "52",
+        "Pitch (Hz)": "164.814"
+    },
+    {
+        "MIDI Note": "53",
+        "Pitch (Hz)": "174.614"
+    },
+    {
+        "MIDI Note": "54",
+        "Pitch (Hz)": "184.997"
+    },
+    {
+        "MIDI Note": "55",
+        "Pitch (Hz)": "195.998"
+    },
+    {
+        "MIDI Note": "56",
+        "Pitch (Hz)": "207.652"
+    },
+    {
+        "MIDI Note": "57",
+        "Pitch (Hz)": "220"
+    },
+    {
+        "MIDI Note": "58",
+        "Pitch (Hz)": "233.082"
+    },
+    {
+        "MIDI Note": "59",
+        "Pitch (Hz)": "246.942"
+    },
+    {
+        "MIDI Note": "60",
+        "Pitch (Hz)": "261.626"
+    },
+    {
+        "MIDI Note": "61",
+        "Pitch (Hz)": "277.183"
+    },
+    {
+        "MIDI Note": "62",
+        "Pitch (Hz)": "293.665"
+    },
+    {
+        "MIDI Note": "63",
+        "Pitch (Hz)": "311.127"
+    },
+    {
+        "MIDI Note": "64",
+        "Pitch (Hz)": "329.628"
+    },
+    {
+        "MIDI Note": "65",
+        "Pitch (Hz)": "349.228"
+    },
+    {
+        "MIDI Note": "66",
+        "Pitch (Hz)": "369.994"
+    },
+    {
+        "MIDI Note": "67",
+        "Pitch (Hz)": "391.995"
+    },
+    {
+        "MIDI Note": "68",
+        "Pitch (Hz)": "415.305"
+    },
+    {
+        "MIDI Note": "69",
+        "Pitch (Hz)": "440"
+    },
+    {
+        "MIDI Note": "70",
+        "Pitch (Hz)": "466.164"
+    },
+    {
+        "MIDI Note": "71",
+        "Pitch (Hz)": "493.883"
+    },
+    {
+        "MIDI Note": "72",
+        "Pitch (Hz)": "523.251"
+    },
+    {
+        "MIDI Note": "73",
+        "Pitch (Hz)": "554.365"
+    },
+    {
+        "MIDI Note": "74",
+        "Pitch (Hz)": "587.33"
+    },
+    {
+        "MIDI Note": "75",
+        "Pitch (Hz)": "622.254"
+    },
+    {
+        "MIDI Note": "76",
+        "Pitch (Hz)": "659.255"
+    },
+    {
+        "MIDI Note": "77",
+        "Pitch (Hz)": "698.456"
+    },
+    {
+        "MIDI Note": "78",
+        "Pitch (Hz)": "739.989"
+    },
+    {
+        "MIDI Note": "79",
+        "Pitch (Hz)": "783.991"
+    },
+    {
+        "MIDI Note": "80",
+        "Pitch (Hz)": "830.609"
+    },
+    {
+        "MIDI Note": "81",
+        "Pitch (Hz)": "880"
+    },
+    {
+        "MIDI Note": "82",
+        "Pitch (Hz)": "932.328"
+    },
+    {
+        "MIDI Note": "83",
+        "Pitch (Hz)": "987.767"
+    },
+    {
+        "MIDI Note": "84",
+        "Pitch (Hz)": "1046.502"
+    },
+    {
+        "MIDI Note": "85",
+        "Pitch (Hz)": "1108.731"
+    },
+    {
+        "MIDI Note": "86",
+        "Pitch (Hz)": "1174.659"
+    },
+    {
+        "MIDI Note": "87",
+        "Pitch (Hz)": "1244.508"
+    },
+    {
+        "MIDI Note": "88",
+        "Pitch (Hz)": "1318.51"
+    },
+    {
+        "MIDI Note": "89",
+        "Pitch (Hz)": "1396.913"
+    },
+    {
+        "MIDI Note": "90",
+        "Pitch (Hz)": "1479.978"
+    },
+    {
+        "MIDI Note": "91",
+        "Pitch (Hz)": "1567.982"
+    },
+    {
+        "MIDI Note": "92",
+        "Pitch (Hz)": "1661.219"
+    },
+    {
+        "MIDI Note": "93",
+        "Pitch (Hz)": "1760"
+    },
+    {
+        "MIDI Note": "94",
+        "Pitch (Hz)": "1864.655"
+    },
+    {
+        "MIDI Note": "95",
+        "Pitch (Hz)": "1975.533"
+    },
+    {
+        "MIDI Note": "96",
+        "Pitch (Hz)": "2093.005"
+    },
+    {
+        "MIDI Note": "97",
+        "Pitch (Hz)": "2217.461"
+    },
+    {
+        "MIDI Note": "98",
+        "Pitch (Hz)": "2349.318"
+    },
+    {
+        "MIDI Note": "99",
+        "Pitch (Hz)": "2489.016"
+    },
+    {
+        "MIDI Note": "100",
+        "Pitch (Hz)": "2637.02"
+    },
+    {
+        "MIDI Note": "101",
+        "Pitch (Hz)": "2793.826"
+    },
+    {
+        "MIDI Note": "102",
+        "Pitch (Hz)": "2959.955"
+    },
+    {
+        "MIDI Note": "103",
+        "Pitch (Hz)": "3135.963"
+    },
+    {
+        "MIDI Note": "104",
+        "Pitch (Hz)": "3322.438"
+    },
+    {
+        "MIDI Note": "105",
+        "Pitch (Hz)": "3520"
+    },
+    {
+        "MIDI Note": "106",
+        "Pitch (Hz)": "3729.31"
+    },
+    {
+        "MIDI Note": "107",
+        "Pitch (Hz)": "3951.066"
+    },
+    {
+        "MIDI Note": "108",
+        "Pitch (Hz)": "4186.009"
+    },
+    {
+        "MIDI Note": "109",
+        "Pitch (Hz)": "4434.922"
+    },
+    {
+        "MIDI Note": "110",
+        "Pitch (Hz)": "4698.636"
+    },
+    {
+        "MIDI Note": "111",
+        "Pitch (Hz)": "4978.032"
+    },
+    {
+        "MIDI Note": "112",
+        "Pitch (Hz)": "5274.041"
+    },
+    {
+        "MIDI Note": "113",
+        "Pitch (Hz)": "5587.652"
+    },
+    {
+        "MIDI Note": "114",
+        "Pitch (Hz)": "5919.911"
+    },
+    {
+        "MIDI Note": "115",
+        "Pitch (Hz)": "6271.927"
+    },
+    {
+        "MIDI Note": "116",
+        "Pitch (Hz)": "6644.875"
+    },
+    {
+        "MIDI Note": "117",
+        "Pitch (Hz)": "7040"
+    },
+    {
+        "MIDI Note": "118",
+        "Pitch (Hz)": "7458.62"
+    },
+    {
+        "MIDI Note": "119",
+        "Pitch (Hz)": "7902.133"
+    },
+    {
+        "MIDI Note": "120",
+        "Pitch (Hz)": "8372.018"
+    },
+    {
+        "MIDI Note": "121",
+        "Pitch (Hz)": "8869.844"
+    },
+    {
+        "MIDI Note": "122",
+        "Pitch (Hz)": "9397.273"
+    },
+    {
+        "MIDI Note": "123",
+        "Pitch (Hz)": "9956.063"
+    },
+    {
+        "MIDI Note": "124",
+        "Pitch (Hz)": "10548.082"
+    },
+    {
+        "MIDI Note": "125",
+        "Pitch (Hz)": "11175.303"
+    },
+    {
+        "MIDI Note": "126",
+        "Pitch (Hz)": "11839.822"
+    },
+    {
+        "MIDI Note": "127",
+        "Pitch (Hz)": "12543.854"
+    }
+]
