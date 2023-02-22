@@ -42,10 +42,7 @@ export default function Play() {
                     <div className={"h-full flex flex-col w-full"}>
                         <div className={"flex justify-center align-center"}>
                             <FullPianoComponent scaleConfig={microtonalConfig[currentSynth].scaleConfig} keyMapping={microtonalConfig[currentSynth].keyMapping}
-                            setKeyMapping={() => {}}/>
-                            <Popper open={false} className="w-35 h-10 bg-white rounded-md font-agrandir-wide text-black text-center">
-                                <p className="mt-2 mx-2">Assign key...</p>
-                            </Popper>
+                                                setKeyMapping={() => {}}/>
                             <Tooltip describeChild title="Click a frequency box and then press the key on your keyboard you want it to correspond to">
                                 <button className="btn 2xl:h-8 2xl:w-8 xl:h-8 xl:w-8 lg:h-7 lg-w-7 md:h-7 md:w-7 sm:h-6 sm:w-6 xs:h-6 xs:w-6 bg-white text-black rounded-3xl hover:bg-gray-100 ml-2">?</button>
                             </Tooltip>
