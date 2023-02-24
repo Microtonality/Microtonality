@@ -1,5 +1,6 @@
-import {Grid, Slider} from "@mui/material";
+import {FormControl, Grid, Slider} from "@mui/material";
 import * as React from "react";
+import Oscillator from "../../ui/Oscillator";
 
 interface SynthProps {
 }
@@ -54,23 +55,14 @@ export default function SynthSettings(props: SynthProps) {
 
                         </div>
                         <div className={openTab === 2 ? "block" : "hidden"} id="link2">
-                            <div className='container h-150'>
-                                <Slider
-                                    //Does not display right.
-                                    //Container issue?
-
-                                    sx={{
-                                        '& input[type="range"]': {
-                                            WebkitAppearance: 'slider-vertical',
-                                        },
-                                        color: 'white'
-                                    }}
-                                    orientation="vertical"
-                                    defaultValue={0}
-                                    aria-label="Slider2"
-                                    valueLabelDisplay="auto"
-                                    //onKeyDown={preventHorizontalKeyboardNavigation}
-                                />
+                            <div className='container w-50 h-150'>
+                                <Oscillator/>
+                                <Oscillator/>
+                                <Oscillator/>
+                                <Oscillator/>
+                                <Oscillator/>
+                                <Oscillator/>
+                                <Oscillator/>
                             </div>
                         </div>
                     </div>
