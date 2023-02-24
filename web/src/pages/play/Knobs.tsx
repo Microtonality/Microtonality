@@ -40,8 +40,11 @@ export default function Knob (props: KnobProps) {
 
   const handleMouseMove = (event: MouseEvent) => {
     const { movementX, movementY } = event;
-    let newValue = Math.min(props.max, Math.max(movementY + value, props.min));
-    setValue(newValue);
+    console.log("x" + movementX);
+    console.log("y" + movementY);
+    setValue((prevValue) =>{
+      return Math.min(props.max, Math.max(movementX + movementY + prevValue, props.min))
+    });
     props.onChange(value);
   };
 
@@ -65,7 +68,7 @@ export default function Knob (props: KnobProps) {
       left: 0,
       width: "10em",
       height: 1,
-      transform: `rotate(${valueToAngle(value)}deg)`,
+      transform: `rotate(${valueToAngle(value)+90}deg)`,
       transformOrigin: 'left',
       backgroundColor: 'white',
     } as React.CSSProperties;
