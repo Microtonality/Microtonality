@@ -7,7 +7,7 @@ import { NoteToMidi, NotesFromOctave } from '../../utility/midi/NoteToMidiConver
 import SynthSettings from "./SynthSettings";
 import BasicSettings from "./BasicSettings";
 import PianoKeyButton from "../../ui/PianoKeyButton";
-import FullPianoComponent from "./Piano"
+import FullPianoComponent from "./MicrotonalPiano"
 import FrequencyBarComponent from "./FrequencyBar";
 import {createMicrotonalConfig, DEFAULT_MICROTONAL_CONFIG} from "../../utility/MicrotonalConfig";
 import {AdditiveSynthesizer} from "../../utility/audio/AdditiveSynthesizer";
