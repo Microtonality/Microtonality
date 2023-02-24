@@ -1,106 +1,90 @@
-import { Component } from 'react';
+import { Component, useState } from 'react';
 
-interface Props {
-  size: number;
+interface KnobProps {
   min: number;
   max: number;
   value: number;
   onChange: (value: number) => void;
+  minAngle: number,
+  maxAngle: number;
 }
 
 interface State {
   angle: number;
 }
 
-class Knob extends Component <Props, State> {
-  private readonly radius: number;
-  private readonly center: number;
+const defaultProps = {
+  min: 0,
+  max: 100,
+  value: 30,
+  minAngle: 30,
+  maxAngle: 330,
+}
 
-  constructor(props: Props) {
-    super(props);
+export default function Knob (props: KnobProps) {
+  let [value, setValue] = useState<number>(props.value);
 
-    this.state = {
-      angle: this.getValueAngle(props.value),
-    };
 
-    this.radius = props.size / 2;
-    this.center = this.radius;
-  }
-
-  private getValueAngle(value: number) {
-    const { min, max } = this.props;
-    const range = max - min;
-    const percent = (value - min) / range;
-    const angle = percent * 360;
+  const valueToAngle = (value: number) => {
+    const range = props.max - props.min;
+    const percent = (value - props.min) / range;
+    const angle = percent * (props.maxAngle - props.minAngle) + props.minAngle;
     return angle;
   }
 
-  private getAngleValue(angle: number) {
-    const { min, max } = this.props;
-    const range = max - min;
-    const percent = angle / 360;
-    const value = min + percent * range;
-    return value;
-  }
-
-  private handleMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    document.addEventListener('mousemove', this.handleMouseMove);
-    document.addEventListener('mouseup', this.handleMouseUp);
+  const handleMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    event.preventDefault();
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
   };
 
-  private handleMouseMove = (event: MouseEvent) => {
-    const { onChange } = this.props;
+  const handleMouseMove = (event: MouseEvent) => {
     const { movementX, movementY } = event;
-    const angle = movementX + movementY + this.state.angle;
-    this.setState({ angle });
-    const value = this.getAngleValue(angle);
-    onChange(value);
+    let newValue = Math.min(props.max, Math.max(movementY + value, props.min));
+    setValue(newValue);
+    props.onChange(value);
   };
 
-  private handleMouseUp = () => {
-    document.removeEventListener('mousemove', this.handleMouseMove);
-    document.removeEventListener('mouseup', this.handleMouseUp);
+  const handleMouseUp = () => {
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
   };
 
-  render() {
-    const { size, value } = this.props;
-    const { angle } = this.state;
-
-    const knobStyle = {
-      width: size,
-      height: size,
+  const knobStyle = {
+      width: "20em",
+      height: "20em",
       borderRadius: '50%',
       backgroundColor: 'gray',
       position: 'relative',
       cursor: 'pointer',
     } as React.CSSProperties;
-
+    
     const lineStyle = {
       position: 'absolute',
-      top: this.center,
-      left: this.center,
-      width: this.radius,
+      top: 0,
+      left: 0,
+      width: "10em",
       height: 1,
-      transform: `rotate(${angle+20}deg)`,
+      transform: `rotate(${valueToAngle(value)}deg)`,
       transformOrigin: 'left',
       backgroundColor: 'white',
     } as React.CSSProperties;
 
     const textStyle = {
       position: 'absolute',
-      top: this.center - 10,
-      left: this.center - 20,
+      top: 0,
+      left: 0,
       fontSize: 10,
       color: 'white',
     } as React.CSSProperties;
 
     return (
-        <div style={knobStyle} onMouseDown={this.handleMouseDown}>
+        <div style={knobStyle} onMouseDown={handleMouseDown}>
         <div style = {lineStyle} />
-        <div style = {textStyle}>{value.toFixed(2)}</div>
+        <div style = {textStyle}>{value}</div>
       </div>
     );
-  }
+  
 }
 
-export default Knob;
+Knob.defaultProps = defaultProps;

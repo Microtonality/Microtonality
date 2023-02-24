@@ -411,7 +411,7 @@ export default function Play() {
                                     <Oscillator/>
                                     <Oscillator/>
                                     <br /><br />
-                                    <Knobs size={100} min={0} max={100} value={100} onChange={(value) => console.log(value)} />
+                                    <Knobs min={0} max={100} value={100} onChange={(value) => console.log(value)} />
                                 </div>
                             </div>
                         </div>
