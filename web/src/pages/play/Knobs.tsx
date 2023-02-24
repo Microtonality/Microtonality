@@ -5,20 +5,18 @@ interface KnobProps {
   max: number;
   value: number;
   onChange: (value: number) => void;
-  minAngle: number,
+  minAngle: number;
   maxAngle: number;
-}
-
-interface State {
-  angle: number;
+  className: string;
 }
 
 const defaultProps = {
   min: 0,
   max: 100,
-  value: 30,
+  value: 50,
   minAngle: 30,
   maxAngle: 330,
+  className: "w-96"
 }
 
 export default function Knob (props: KnobProps) {
@@ -29,7 +27,7 @@ export default function Knob (props: KnobProps) {
     const range = props.max - props.min;
     const percent = (value - props.min) / range;
     const angle = percent * (props.maxAngle - props.minAngle) + props.minAngle;
-    return angle;
+    return angle-180;
   }
 
   const handleMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -53,38 +51,20 @@ export default function Knob (props: KnobProps) {
     document.removeEventListener('mouseup', handleMouseUp);
   };
 
-  const knobStyle = {
-      width: "20em",
-      height: "20em",
-      borderRadius: '50%',
-      backgroundColor: 'gray',
-      position: 'relative',
-      cursor: 'pointer',
-    } as React.CSSProperties;
-    
-    const lineStyle = {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      width: "10em",
-      height: 1,
-      transform: `rotate(${valueToAngle(value)+90}deg)`,
-      transformOrigin: 'left',
-      backgroundColor: 'white',
-    } as React.CSSProperties;
-
-    const textStyle = {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      fontSize: 10,
-      color: 'white',
-    } as React.CSSProperties;
-
     return (
-        <div style={knobStyle} onMouseDown={handleMouseDown}>
-        <div style = {lineStyle} />
-        <div style = {textStyle}>{value}</div>
+      <div className={`flex flex-col ${props.className}`}>
+        <div className={"aspect-square rounded-full p-2 bg-gradient-to-b from-neutral-500 to-neutral-900 flex items-center justify-center"} onMouseDown={handleMouseDown}>
+          <div className={"w-full h-full rounded-full p-0.5 bg-gradient-to-b from-stone-700 to-neutral-800 flex-1"} >
+            <div style={{transform: `rotate(${valueToAngle(value)}deg)`}} className={"w-full h-full flex items-start justify-center"}>
+              <div className={"w-2.5 h-2.5 rounded-full bg-black"}>
+              </div>
+            </div>
+          </div>
+        
+      </div>
+      <div className={"text-neutral-200 text-center w-full"}>
+        {value}
+      </div>
       </div>
     );
   
