@@ -15,7 +15,6 @@ export function frequencyToCents(tuningFrequency: number, otherFrequency: number
     return (1200 * Math.log2(otherFrequency / tuningFrequency));
 }
 
-// TODO keep an eye out for where this is called
 export function frequenciesToScaleNote(tuningFrequency: number, notes: Array<number>): Array<CentNote> {
     let scaleNotes: Array<CentNote> = [];
 
