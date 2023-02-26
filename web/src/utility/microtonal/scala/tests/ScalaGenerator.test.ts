@@ -1,54 +1,67 @@
 import { Scale } from "../../Scale";
-import { IntRatioNote } from "../../notes/IntRatioNote";
-import { ScalaGenerator } from "../ScalaGenerator";
+import { CentNote, IntRatioNote, RatioNote, ScaleNote } from "../../notes";
+import { getTitle, validateTitle, GENERATED_TITLE, InvalidFilenameException, generateScalaFile } from "../ScalaGenerator";
 
-test('ScalaGenerator.GenerateScalaFile(Scale) returns a File object.', () => {
+let notes: ScaleNote[];
+let scale: Scale;
 
-    // Arrange
-    let scale: Scale = new Scale([new IntRatioNote(0)]);
-
-    // Act
-    let test: File = ScalaGenerator.GenerateScalaFile(scale);
-
-    // Assert
-    expect(test).toBeInstanceOf(File);
+beforeAll(() => {
+    notes = [new ScaleNote(1)];
+    scale = new Scale([new ScaleNote(1)], '', '');
 })
 
-test('ScalaGenerator.GetTitle(Scale) takes the scale\'s title and appends \'.scl\'.', () => {
+test('getTitle(Scale) takes the scale\'s title and appends \'.scl\'', () => {
 
     // Arrange
     let title: string = 'title';
-    let scale: Scale = new Scale([new IntRatioNote(0)], title);
+    let scale: Scale = new Scale(notes, title, '');
 
     // Act
-    let test: string = ScalaGenerator.GetTitle(scale);
+    let test: string = getTitle(scale);
 
     // Assert
     expect(test).toEqual(title + '.scl');
 })
 
-test('ScalaGenerator.GetTitle(Scale) takes the scale\'s title and does not append \'.scl\'.', () => {
+test('getTitle(Scale) takes the scale\'s title and does not append \'.scl\'', () => {
 
     // Arrange
     let title: string = 'title.scl';
-    let scale: Scale = new Scale([new IntRatioNote(0)], title, '');
+    let scale: Scale = new Scale(notes, title, '');
 
     // Act
-    let test: string = ScalaGenerator.GetTitle(scale);
+    let test: string = getTitle(scale);
 
     // Assert
     expect(test).toEqual(title);
 })
 
-test('ScalaGenerator.GetTitle(Scale) generates a title is the scale has none.', () => {
-
-    // Arrange
-    let scale: Scale = new Scale([new IntRatioNote(0)]);
+test('getTitle(Scale) generates a title if the scale has none', () => {
 
     // Act
-    let test: string = ScalaGenerator.GetTitle(scale);
+    let test: string = getTitle(scale);
 
     // Assert
-    expect(test).toContain(ScalaGenerator.GENERATED_TITLE);
+    expect(test).toContain(GENERATED_TITLE);
     expect(test).toContain('.scl');
+})
+
+test('validateTitle(title) throws Error when an invalid character is present', () => {
+
+    // Arrange
+    let invalidTitle: string = 'title$';
+
+    // Act and Assert
+    expect(() => validateTitle(invalidTitle)).toThrowError(InvalidFilenameException);
+})
+
+test('validateTitle(title) throws Error when the title is a reserved filename', () => {
+
+    // Arrange
+    let reservedFilenameList: string[] = ['CON', 'PRN', 'AUX', 'NUL', 'LST', 'COM0', 'COM1', 'COM2', 'COM3', 'COM4', 'COM5', 'COM6', 'COM7', 'COM8', 'COM9', 'LPT0', 'LPT1', 'LPT2', 'LPT3', 'LPT4', 'LPT5', 'LPT6', 'LPT7', 'LPT8', 'LPT9'];
+    let roll: number = Math.trunc((Math.random() * reservedFilenameList.length));
+    let test = reservedFilenameList[roll];
+
+    // Act and Assert
+    expect(() => validateTitle(test)).toThrowError(InvalidFilenameException);
 })

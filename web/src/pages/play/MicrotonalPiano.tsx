@@ -4,7 +4,7 @@ import * as React from "react";
 import OctaveButtons from "./OctaveButtons";
 import {ScaleConfig} from "../../utility/MicrotonalConfig";
 import { Piano, KeyboardShortcuts } from 'react-piano';
-import {NoteToMidi} from "../../utility/midi/NoteToMidiConverter";
+import {NoteToMIDI} from "../../utility/midi/NoteToMIDI";
 import { Grid } from "@mui/material";
 
 function createDefaultKeyMapping(keys: number) {
@@ -35,7 +35,7 @@ export default function MicrotonalPiano(props: {
                     className="mx-auto my-auto"
                     playNote={playNote}
                     stopNote={stopNote}
-                    noteRange={{ first: NoteToMidi('c' + octave), last: NoteToMidi('b' + octave) }}
+                    noteRange={{ first: NoteToMIDI('c' + octave), last: NoteToMIDI('b' + octave) }}
                 />
             </div>
         </Grid>

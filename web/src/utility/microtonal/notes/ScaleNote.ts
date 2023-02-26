@@ -1,31 +1,26 @@
-import {Exception} from "sass";
 
 export class ScaleNote {
     public multiplier: number;
     public comments: string;
-    public altered: boolean;
+    // public altered: boolean = false;
 
     // Subclass this, don't use as is
     constructor(multiplier: number, comments: string | null = null) {
         this.multiplier = multiplier;
         this.comments = comments;
-        this.altered = false;
+        // this.altered = false;
     }
 
-    // Peter: What is this for?
-    public setAltered(altered: boolean) {
-        this.altered = altered;
+    exportScala(): string {
+        return 'ScaleNote DONT CALL';
     }
 
-    // Used for writing scala files
-    public exportScala() : string {
-        throw new Error("Not Implemented");
-    }
-}
-
-export class InvalidNoteInputException extends Error {
-
-    constructor(msg: string) {
-        super(msg);
-    }
+    // We should probably just overwrite the 
+    // note in the scale at the level of the
+    // ScaleHandler upon changing the frequency.
+    // Also we gotta remember to
+    // bring any comments over from the old note.
+    // public setAltered(altered: boolean) {
+    //     this.altered = altered;
+    // }
 }

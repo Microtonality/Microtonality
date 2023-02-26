@@ -3,7 +3,6 @@ import { Grid, Popper, Tooltip } from '@mui/material';
 import { Piano, KeyboardShortcuts } from 'react-piano';
 import './piano.css';
 import { useState, useEffect } from 'react';
-import { NoteToMidi, NotesFromOctave } from '../../utility/midi/NoteToMidiConverter';
 import SynthSettings from "./SynthSettings";
 import BasicSettings from "./BasicSettings";
 import PianoKeyButton from "../../ui/PianoKeyButton";

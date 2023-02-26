@@ -1,26 +1,11 @@
 import { Scale } from '../../Scale';
-import { CentNote } from '../../notes/CentNote';
-import { IntRatioNote } from '../../notes/IntRatioNote';
-import { RatioNote } from '../../notes/RatioNote';
-import { ScaleNote } from '../../notes/ScaleNote';
-import { ScalaParser } from '../ScalaParser'
+import { ScaleNote, CentNote, RatioNote, IntRatioNote } from '../../notes';
+import { CommentPrefixException, InsufficientPitchValuesException, parsePitchValue, parseScalaFile } from '../ScalaParser'
 
-// Noteworthy test cases:
-//
-//   123 wow 7.8/10
-//   23 wow 1.1
-//   123 blah v2.3 9.5/10
-//   22.2/3 asd/2 (22.2)
-//   5/5.5 oo4.5.6.6.3o 1.2 (5/5)
-// 
-// also check valid pitch value list from
-// https://www.huygens-fokker.org/scala/scl_format.html 
-
-// ScalaParser.ParseScalaFile(string)
-test('ScalaParser.ParseScalaFile(string) parses valid file.', () => {
+test('parseScalaFile(string) parses valid file and has correct values', () => {
     
     // Arrange
-    let testFile: string = 
+    let file: string = 
         '! meanquar.scl\n' + 
         '!\n' + 
         '1/4-comma meantone scale. Pietro Aaron\'s temperament (1523)\n' + 
@@ -43,64 +28,94 @@ test('ScalaParser.ParseScalaFile(string) parses valid file.', () => {
     let title: string = 'meanquar';
     let desc: string = '1/4-comma meantone scale. Pietro Aaron\'s temperament (1523)';
     let notes: ScaleNote[] = [];
-    var pitchVals = ['76.04900', '193.15686', '310.26471', '5/4', '503.42157', '579.47057', '696.57843', '25/16', '889.73529', '1006.84314', '1082.89214', '2'];
-    let val: string;
-    for (val of pitchVals) {
-        var note: ScaleNote = ScalaParser.ParsePitchValue(val);
-        notes.push(note);
-    }
-    var expectedScale: Scale = new Scale(notes, title, desc);
+    let pitchVals: string[] = ['76.04900', '193.15686', '310.26471', '5/4', '503.42157', '579.47057', '696.57843', '25/16', '889.73529', '1006.84314', '1082.89214', '2'];
+    for (let val of pitchVals)
+        notes.push(parsePitchValue(val));
+    let expectedScale: Scale = new Scale(notes, title, desc);
 
     // Act
-    var scale: Scale = ScalaParser.ParseScalaFile(testFile);
+    let scale: Scale = parseScalaFile(file);
 
     // Assert
     expect(scale).toEqual(expectedScale);
 });
 
-// ScalaParser.ParsePitchValue(string)
-test('ScalaParser.ParsePitchValue(string) builds CentNote.', () => {
-
+test('ScalaParser.parseScalaFile(string) throws error if there are not enough pitch values', () => {
+    
     // Arrange
-    let testValue: number = 1.0;
-    let testComment: string = 'commentv2.3 9.5/10';
-    let testLine: string = testValue + testComment;
-    const expectedNote: CentNote = new CentNote(testValue, testComment);
+    let file: string = 
+        '\n' + 
+        ' 2\n' + 
+        '!\n' +
+        ' 310.26471\n';
+
+    // Act and Assert
+    expect(() => parseScalaFile(file)).toThrowError(InsufficientPitchValuesException);
+});
+
+test('ScalaParser.parseScalaFile(string) doesn\'t throw error or save when there are extra pitch values', () => {
+    
+    // Arrange
+    let file: string = 
+        '\n' + 
+        ' 1\n' + 
+        '!\n' +
+        ' 310.26471\n' + 
+        ' 25/16\n';
+
+    // Create expected scale
+    let pitchVal: string = '310.26471';
+    let expectedScale: Scale = new Scale([parsePitchValue(pitchVal)], '', '\n');
 
     // Act
-    const note: ScaleNote = ScalaParser.ParsePitchValue(testLine);
+    let scale: Scale = parseScalaFile(file);
+
+    // Assert
+    expect(scale).toEqual(expectedScale);
+});
+
+test('parsePitchValue(string) builds CentNote', () => {
+
+    // Arrange
+    let testValue: string = '1.0';
+    let testComment: string = 'commentv2.3 9.5/10';
+    let testLine: string = testValue + testComment;
+    let expectedNote: CentNote = new CentNote(testValue, testComment);
+
+    // Act
+    let note: ScaleNote = parsePitchValue(testLine);
 
     // Assert
     expect(note).toBeInstanceOf(CentNote);
     expect(note).toEqual(expectedNote);
 });
 
-test('ScalaParser.ParsePitchValue(string) builds RatioNote.', () => {
+test('parsePitchValue(string) builds RatioNote', () => {
 
     // Arrange
     let testValue: string = '1/1';
     let testComment: string = 'commentv2.3 9.5/10';
     let testLine: string = testValue.toString() + testComment;
-    const expectedNote: RatioNote = new RatioNote(testValue, testComment);
+    let expectedNote: RatioNote = new RatioNote(testValue, testComment);
 
     // Act
-    const note: ScaleNote = ScalaParser.ParsePitchValue(testLine);
+    let note: ScaleNote = parsePitchValue(testLine);
 
     // Assert
     expect(note).toBeInstanceOf(RatioNote);
     expect(note).toEqual(expectedNote);
 });
 
-test('ScalaParser.ParsePitchValuestring) builds IntRatioNote.', () => {
+test('parsePitchValuestring) builds IntRatioNote', () => {
 
     // Arrange
     let testValue: number = 1;
     let testComment: string = 'commentv2.3 9.5/10';
     let testLine: string = testValue.toString() + testComment;
-    const expectedNote: IntRatioNote = new IntRatioNote(testValue, testComment);
+    let expectedNote: IntRatioNote = new IntRatioNote(testValue, testComment);
 
     // Act
-    const note: ScaleNote = ScalaParser.ParsePitchValue(testLine);
+    let note: ScaleNote = parsePitchValue(testLine);
 
     // Assert
     expect(note).toBeInstanceOf(IntRatioNote);
@@ -108,18 +123,12 @@ test('ScalaParser.ParsePitchValuestring) builds IntRatioNote.', () => {
 });
 
 
-// jest.mock('../ScalaParser');
-
-test.skip('ScalaParser.ParsePitchValue(string) throws Error when there\'s comments before the pitch value.', () => {
+test('parsePitchValue(string) throws CommentPrefixException', () => {
 
     // Arrange
     let testValue: string = 'a1';
-    let testComment: string = 'comment';
-    let testLine: string = testValue + testComment;
+    let testLine: string = testValue;
 
-    // Act
-    const note: ScaleNote = ScalaParser.ParsePitchValue(testLine);
-
-    // Assert
-    // expect error to be thrown
+    // Act and Assert
+    expect(() => parsePitchValue(testLine)).toThrowError(CommentPrefixException);
 });
