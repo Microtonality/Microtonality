@@ -65,7 +65,7 @@ test('ScalaParser.parseScalaFile(string) doesn\'t throw error or save when there
 
     // Create expected scale
     let pitchVal: string = '310.26471';
-    let expectedScale: Scale = new Scale([parsePitchValue(pitchVal)], '', '\n');
+    let expectedScale: Scale = new Scale([parsePitchValue(pitchVal)], '', '');
 
     // Act
     let scale: Scale = parseScalaFile(file);
