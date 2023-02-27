@@ -13,16 +13,6 @@ import {createMicrotonalConfig, DEFAULT_MICROTONAL_CONFIG} from "../../utility/M
 import {AdditiveSynthesizer} from "../../utility/audio/AdditiveSynthesizer";
 import MidiReceiver from "../../utility/midi/MIDIReceiver";
 
-declare global {
-    namespace React {
-      interface DOMAttributes<T> {
-        onResize?: ReactEventHandler<T> | undefined;
-        onResizeCapture?: ReactEventHandler<T> | undefined;
-        nonce?: string | undefined;
-      }
-    }
-  }
-
 export default function Play() {
     const [microtonalConfig, setMicrotonalConfig] = useState([createMicrotonalConfig()]);
     // Which of the microtonalConfigs is active on screen right now?
@@ -43,9 +33,6 @@ export default function Play() {
                         <div className={"flex justify-center align-center"}>
                             <FullPianoComponent scaleConfig={microtonalConfig[currentSynth].scaleConfig} keyMapping={microtonalConfig[currentSynth].keyMapping}
                                                 setKeyMapping={() => {}}/>
-                            <Tooltip describeChild title="Click a frequency box and then press the key on your keyboard you want it to correspond to">
-                                <button className="btn 2xl:h-8 2xl:w-8 xl:h-8 xl:w-8 lg:h-7 lg-w-7 md:h-7 md:w-7 sm:h-6 sm:w-6 xs:h-6 xs:w-6 bg-white text-black rounded-3xl hover:bg-gray-100 ml-2">?</button>
-                            </Tooltip>
                         </div>
                     </div>
                 </div>

@@ -14,6 +14,10 @@ export class Scale {
         this.description = description;
         this.notes = notes;
     }
+
+    scaleDegreeToNote(scaleDegree: number): ScaleNote {
+        return this.notes[scaleDegree % this.notes.length];
+    }
 }
 
 export function scaleFromCents(centValues: Array<number>, title: string = '', description: string = '') {

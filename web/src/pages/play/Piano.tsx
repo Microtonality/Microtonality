@@ -3,12 +3,11 @@ import FrequencyBarComponent from "./FrequencyBar";
 import * as React from "react";
 import OctaveButtons from "./OctaveButtons";
 import {ScaleConfig} from "../../utility/MicrotonalConfig";
-import {Piano as ReactPiano} from 'react-piano';
+import {Piano as ReactPiano, KeyboardShortcuts} from 'react-piano';
+import ReactPianoWrapper from "./ReactPianoWrapper";
+import {createPianoKeyboardShortcuts} from "../../utility/microtonal/PianoKeyMapping";
 
-function createDefaultKeyMapping(keys: number) {
-    return {}
-}
-
+const MIDDLE_C = 60;
 
 export default function Piano(props: {
     scaleConfig: ScaleConfig,
@@ -16,22 +15,20 @@ export default function Piano(props: {
     setKeyMapping: Function
 }) {
     const [octave, setOctave] = useState(0);
+
+
+    let keyboardShortcuts = createPianoKeyboardShortcuts(MIDDLE_C, props.scaleConfig.keysPerOctave);
+
     return <div>
-        <FrequencyBarComponent keyMapping={{0: 0, 1: 1, 2: 2}} notesPerOctave={12} playMidiNote={() => {}}
+        <FrequencyBarComponent keyMapping={props.keyMapping} keyboardShortcuts={keyboardShortcuts} scaleConfig={props.scaleConfig}
+                               playMidiNote={() => {}}
                                setKeyMapping={props.setKeyMapping} octaveOffset={octave}/>
         <div className={"flex flex-row w-60 h-40"}>
-            <OctaveButtons octaveUp={() => setOctave(value => value + 1)}
-                           octaveDown={() => setOctave(value => value - 1)}/>
-            <ReactPiano
-                // activeNotes={synthesizer.activeNotes}
-                className="mx-auto my-auto"
-                // C
-                noteRange={{ first: 72, last: 72 + props.scaleConfig.keysPerOctave }}
-                playNote={() => {}}
-                stopNote={() => {}}
-                // keyboardShortcuts={keyboardShortcuts}
-            />
+            <OctaveButtons octaveUp={() => setOctave(octave + 1)}
+                           octaveDown={() => setOctave(octave - 1)}/>
+            <ReactPianoWrapper keyboardShortcuts={keyboardShortcuts} keyMapping={props.keyMapping}
+                               scaleConfig={props.scaleConfig}
+                               rootKey={MIDDLE_C + octave * props.scaleConfig.keysPerOctave}/>
         </div>
-
     </div>;
 }

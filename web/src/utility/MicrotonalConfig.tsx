@@ -1,9 +1,10 @@
 import {Scale} from "./microtonal/Scale";
 import {generateEqualTemperedScale} from "./microtonal/ScaleGeneration";
 import OscillatorSettings from "./audio/OscillatorSettings";
+import {createPianoKeyboardShortcuts, mapScaleToKeyboardShortcuts} from "./microtonal/PianoKeyMapping";
 
 export interface MicrotonalConfig {
-    keyMapping?: Record<string, number>; // Map Keyboard keys to scale degrees, ex. "a": 0
+    keyMapping?: Record<number, number>; // Map keyboard keys (0-keysPerOctave) to scale degrees, ex. 0: 1
     scaleConfig?: ScaleConfig;
     synthConfig?: SynthConfig;
 }
@@ -49,14 +50,14 @@ export const DEFAULT_SYNTH_CONFIG: SynthConfig = {
 }
 
 export const DEFAULT_SCALE_CONFIG: ScaleConfig = {
-    keysPerOctave: 12,
+    keysPerOctave: 18,
     tuningFrequency: 440,
     rootKey: 69,
     scale: generateEqualTemperedScale(12)
 }
 
 export const DEFAULT_MICROTONAL_CONFIG: MicrotonalConfig = {
-    keyMapping: {},
+    keyMapping: mapScaleToKeyboardShortcuts(DEFAULT_SCALE_CONFIG.scale, DEFAULT_SCALE_CONFIG.keysPerOctave),
     scaleConfig: DEFAULT_SCALE_CONFIG,
     synthConfig: DEFAULT_SYNTH_CONFIG
 }
