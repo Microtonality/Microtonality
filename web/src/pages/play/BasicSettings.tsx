@@ -14,7 +14,7 @@ export default function BasicSettings(props: BasicSettingsProps) {
     const [openTab, setOpenTab] = React.useState(1);
 
 
-    return <div className="max-w-[50%] border-gold border-t-2 border-r-2 rounded-tr-xl bg-bglight w-96">
+    return <div className="h-full border-gold border-t-2 border-r-2 rounded-tr-xl bg-bglight">
         <div className="w-full overflow-auto flex flex-col h-full">
             <ul
                 className="flex mb-0 list-none flex-wrap pt-3 pb-4 flex-row border-b-2 border-gold"
