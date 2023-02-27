@@ -32,6 +32,15 @@ body {
   }
 }
 
+input[type=range][orient=vertical]
+{
+    writing-mode: bt-lr; /* IE */
+    -webkit-appearance: slider-vertical; /* Chromium */
+    width: 8px;
+    height: 175px;
+    padding: 0 5px;
+}
+
 .navBar {
   padding: 35px 0;
   background-color: #313131;

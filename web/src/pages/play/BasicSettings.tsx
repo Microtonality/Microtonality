@@ -33,7 +33,7 @@ export default function BasicSettings(props: BasicSettingsProps) {
                         href="#link1"
                         role="tablist"
                     >
-                        SETTINGS
+                        BASIC SETTINGS
                     </a>
                 </li>
                 <li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
@@ -49,7 +49,7 @@ export default function BasicSettings(props: BasicSettingsProps) {
                         href="#link2"
                         role="tablist"
                     >
-                        SCALA
+                        SCALE EDITOR
                     </a>
                 </li>
             </ul>
@@ -59,10 +59,11 @@ export default function BasicSettings(props: BasicSettingsProps) {
                     <div className="tab-content tab-space">
                         <div className={openTab === 1 ? "block" : "hidden"} id="link1">
                             <div
-                                className="2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide text-white">NOTES
-                                PER OCTAVE
+                                className="2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide text-white mt-[5%]">
+                                    EQUAL-TEMPERED SCALE
                             </div>
-                            <FormControl fullWidth className="max-w-md font-agrandir-wide">
+                            <input type="range" step={1} min={12} max={32} className="range w-full mt-[2%]"></input>
+                            {/* <FormControl fullWidth className="max-w-md font-agrandir-wide">
                                 <Slider
                                     className="ml-1"
                                     aria-label="Small steps"
@@ -77,24 +78,16 @@ export default function BasicSettings(props: BasicSettingsProps) {
                                     // onChangeCommitted={props.changeSliderValueCommitted}
                                     sx={{color: 'white'}}
                                 />
-                            </FormControl>
-                            <div
-                                className="2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide text-white mt-2">MIDI
-                                DEVICE
-                            </div>
-                            <FormControl fullWidth className="max-w-md font-agrandir-wide"
-                                         sx={{color: 'white', fontFamily: 'Agrandir-Wide'}}>
-                                <Select value={0}
-                                        sx={{background: 'white', marginTop: '5px', fontFamily: 'Agrandir-Wide'}}>
-                                    <MenuItem value={0} sx={{fontFamily: 'Agrandir-Wide'}}>MIDI KEYBOARD</MenuItem>
-                                </Select>
-                            </FormControl>
+                            </FormControl> */}
 
                             <div
-                                className="2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide text-white mt-3">BASE
+                                className="2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide text-white mt-[10%]">BASE
                                 FREQUENCY
                             </div>
-                            <TextField fullWidth className="max-w-md"
+                            <div className="flex w-full h-11 mt-[2%]">
+                                <input type="number" step="0.0001" className="w-full rounded-md font-agrandir pl-[2%]" />
+                            </div>
+                            {/* <TextField fullWidth className="max-w-md"
                                        sx={{
                                            marginTop: '5px',
                                            background: 'white',
@@ -106,7 +99,22 @@ export default function BasicSettings(props: BasicSettingsProps) {
                                        value={props.scaleConfig.tuningFrequency}
                                        // onChange={props.changeBaseFreq}
                                        // onKeyDown={props.changeBaseFreqCommitted}
-                            />
+                            /> */}
+
+                            <div
+                                className="2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide text-white mt-[9%]">MIDI
+                                DEVICE
+                            </div>
+                            <div className="flex w-full h-11 mt-[2%]">
+                                <select data-te-select-init className="w-full rounded-md font-agrandir pl-[2%]">
+                                    <option value="1">MIDI Device 1</option>
+                                    <option value="2">MIDI Device 2</option>
+                                    <option value="3">MIDI Device 3</option>
+                                    <option value="4">MIDI Device 4</option>
+                                </select>
+                            </div>
+
+                            
                         </div>
 
 

@@ -41,8 +41,8 @@ export default function Play() {
                 <BasicSettings scaleConfig={microtonalConfig[currentSynth].scaleConfig}/>
             </div>
 
-            <div className={"flex flex-col w-full justify-end ml-[1%]"}>
-                <div className="h-1/2 mb-[1.5%]">
+            <div className={"flex flex-col w-full ml-[1%]"}>
+                <div className="h-1/2 mb-[1.5%] md:flex-row">
                     <FullPianoComponent scaleConfig={microtonalConfig[currentSynth].scaleConfig} keyMapping={microtonalConfig[currentSynth].keyMapping}
                                                     setKeyMapping={() => {}}/>
                 </div>
