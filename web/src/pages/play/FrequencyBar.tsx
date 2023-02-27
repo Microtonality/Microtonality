@@ -63,7 +63,7 @@ function FrequencyBarComponent(props: {
         )
     }
 
-    return <div>
+    return <div className="flex justify-center mt-[2%]">
         <div>
             {freqBarArr}
         </div>
