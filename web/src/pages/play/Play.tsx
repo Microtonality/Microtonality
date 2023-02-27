@@ -3,11 +3,10 @@ import { Grid, Popper, Tooltip } from '@mui/material';
 import { Piano, KeyboardShortcuts } from 'react-piano';
 import './piano.css';
 import { useState, useEffect } from 'react';
-import { NoteToMidi, NotesFromOctave } from '../../utility/midi/NoteToMidiConverter';
 import SynthSettings from "./SynthSettings";
 import BasicSettings from "./BasicSettings";
 import PianoKeyButton from "../../ui/PianoKeyButton";
-import FullPianoComponent from "./Piano"
+import FullPianoComponent from "./MicrotonalPiano"
 import FrequencyBarComponent from "./FrequencyBar";
 import {createMicrotonalConfig, DEFAULT_MICROTONAL_CONFIG} from "../../utility/MicrotonalConfig";
 import {AdditiveSynthesizer} from "../../utility/audio/AdditiveSynthesizer";
@@ -26,22 +25,23 @@ export default function Play() {
     })
 
     return (
-        <div className="xl:mt-11 md:mt-7 mt-3 flex-1 flex flex-col justify-between">
-            <div className={"flex flex-col items-center h-1/3"}>
-                <div className="flex items-center max-w-full w-2/3 h-full">
-                    <div className={"h-full flex flex-col w-full"}>
-                        <div className={"flex justify-center align-center"}>
-                            <FullPianoComponent scaleConfig={microtonalConfig[currentSynth].scaleConfig} keyMapping={microtonalConfig[currentSynth].keyMapping}
-                                                setKeyMapping={() => {}}/>
-                        </div>
-                    </div>
+        <div className="mt-[1%] flex-1 flex h-screen w-screen">
+
+            <div className="w-[30%] h-full">
+                <BasicSettings scaleConfig={microtonalConfig[currentSynth].scaleConfig}/>
+            </div>
+
+            <div className={"flex flex-col w-full ml-[1%]"}>
+                <div className="h-1/2 mb-[1.5%] md:flex-row">
+                    <FullPianoComponent scaleConfig={microtonalConfig[currentSynth].scaleConfig} keyMapping={microtonalConfig[currentSynth].keyMapping}
+                                                    setKeyMapping={() => {}}/>
+                </div>
+
+                <div className="h-1/2 md:flex-row">
+                    <SynthSettings/>
                 </div>
             </div>
 
-            <div className="flex justify-between h-1/2 flex-col md:flex-row">
-                <BasicSettings scaleConfig={microtonalConfig[currentSynth].scaleConfig}/>
-                <SynthSettings/>
-            </div>
         </div>
     );
 }

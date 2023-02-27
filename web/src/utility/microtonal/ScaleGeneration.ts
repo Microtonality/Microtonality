@@ -14,14 +14,12 @@ import {RatioNote} from "./notes/RatioNote";
     return scaleFromRatios(ratios, `${numberOfNotes}-note Equal Tempered Scale`);
 }
 
-const logOf2 = Math.log(2)
-
 export function frequencyToCents(tuningFrequency: number, otherFrequency: number) {
-    return (1200 * Math.log(otherFrequency / tuningFrequency)) / logOf2;
+    return (1200 * Math.log2(otherFrequency / tuningFrequency));
 }
 
-export function frequenciesToScaleNote(tuningFrequency: number, notes: Array<number>) {
-    let scaleNotes = [];
+export function frequenciesToScaleNote(tuningFrequency: number, notes: Array<number>): Array<CentNote> {
+    let scaleNotes: Array<CentNote> = [];
 
     for (const note of notes) {
         scaleNotes.push(new CentNote(frequencyToCents(tuningFrequency, note)));

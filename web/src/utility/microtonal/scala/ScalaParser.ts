@@ -1,151 +1,143 @@
 import { Scale } from '../Scale'
-import { ScaleNote } from '../notes/ScaleNote'
-import { RatioNote } from '../notes/RatioNote'
-import { CentNote } from '../notes/CentNote'
-import { IntRatioNote } from '../notes/IntRatioNote';
+import { ScaleNote, RatioNote, CentNote, IntRatioNote } from '../notes'
 
-export class ScalaParser {
+export function parseScalaFile(file: string | ArrayBuffer): Scale {
 
-    public static ParseScalaFile(file: string | ArrayBuffer): Scale {
+    if (file instanceof ArrayBuffer)
+        file = new TextDecoder().decode(file);
 
-        let fileAsText: string = '';
-        if (file instanceof ArrayBuffer)
-            fileAsText = new TextDecoder().decode(file);
-        else 
-            fileAsText = file;
+    let title: string = '';
+    let description: string = '';
+    let keysPerOctave: number = 0;
+    let notes: ScaleNote[] = [];
 
-        let title: string = '';
-        let description: string = '';
-        let keysPerOctave: number = 0;
-        var notes: ScaleNote[] = [];
+    // Read scala file
+    let phase: ParserPhase = ParserPhase.TITLE;
+    for (let line of file.split(/[\r\n]+/)) {
 
-        // Read scala file
-        let phase: ParserPhase = ParserPhase.TITLE;
-        let line: string = '';
-        for (line of fileAsText.split(/[\r\n]+/)) {
+        line = line.trim();
 
-            line = line.trim();
+        // Read title, if there is one.
+        // We want this before we look for comments,
+        // since it is a comment and is always the first one.
+        if (phase === ParserPhase.TITLE) {
+            if (line.startsWith('!')) {
+                line = line.substring(1); // Remove '!'
+                line = line.trim();
 
-            // Read title, if there is one.
-            // We want this before we look for comments,
-            // since it is a comment and is always the first one.
-            if (phase === ParserPhase.TITLE) {
-                if (line.startsWith('!')) {
-                    line = line.substring(1); // Remove '!'
-                    line = line.trim();
+                if (line.endsWith('.scl'))
+                    line = line.substring(0, line.length - 4); // Remove '.scl'
 
-                    if (line.endsWith('.scl'))
-                        line = line.substring(0, line.length - 4); // Remove '.scl'
-
-                    title = line;
-                    phase = ParserPhase.DESCRIPTION;
-                    continue;
-                }
-
+                title = line;
                 phase = ParserPhase.DESCRIPTION;
+                continue;
             }
 
-            if (line.startsWith('!'))
+            phase = ParserPhase.DESCRIPTION;
+        }
+
+        if (line.startsWith('!'))
+            continue;
+
+        // Read description, keys per octave, 
+        // and create note objects for each pitch value.
+        switch (phase) {
+
+            case ParserPhase.DESCRIPTION:
+                description = line;
+                phase = ParserPhase.KEYS_PER_OCTAVE;
                 continue;
 
-            // Read description, keys per octave, 
-            // and create note objects for each pitch value.
-            switch (phase) {
+            case ParserPhase.KEYS_PER_OCTAVE:
+                keysPerOctave = parseInt(line);
+                if (isNaN(keysPerOctave))
+                    throw Error('The number of pitch values in your Scala file must be an integer.');
 
-                case ParserPhase.DESCRIPTION:
-                    description = line;
-                    phase = ParserPhase.KEYS_PER_OCTAVE;
-                    continue;
+                phase = ParserPhase.PITCH_VALUES;
+                continue;
 
-                case ParserPhase.KEYS_PER_OCTAVE:
-                    keysPerOctave = parseInt(line);
-                    if (isNaN(keysPerOctave))
-                        throw Error('The number of pitch values must be an integer.');
+            case ParserPhase.PITCH_VALUES:
+                notes.push(parsePitchValue(line));
 
-                    phase = ParserPhase.PITCH_VALUES;
-                    continue;
-
-                case ParserPhase.PITCH_VALUES:
-                    notes.push(ScalaParser.ParsePitchValue(line));
-
-                    if (notes.length === keysPerOctave)
-                        phase = ParserPhase.DONE;
-                    continue;
-            }
-
-            if (phase === ParserPhase.DONE)
-                break;
+                if (keysPerOctave === notes.length)
+                    phase = ParserPhase.DONE
         }
 
-        if (notes.length !== keysPerOctave)
-            throw Error('The Scala file does not have a pitch value for each key in the octave.');
-
-        return new Scale(notes, title, description);
+        if (phase === ParserPhase.DONE)
+            break;
     }
 
-    public static ParsePitchValue(line: string): ScaleNote {
+    if (notes.length !== keysPerOctave)
+        throw new InsufficientPitchValuesException(`The Scala file has ${keysPerOctave} notes but only ${notes.length} pitch values.`);
 
-        let noteType: typeof ScaleNote = null;
-        let num: string = '';
-        let comments: string = '';
+    return new Scale(notes, title, description);
+}
 
-        let readSlashOrDecimal: boolean = false;
-        let i: number;
-        for (i = 0; i < line.length; i++) {
+export function parsePitchValue(line: string): ScaleNote {
 
-            let char: string = line.charAt(i);
+    let value: string = '';
+    let comments: string = '';
+    let noteType: (typeof CentNote | typeof RatioNote | typeof IntRatioNote) = null;
 
-            if (isNaN(parseInt(char))) {
+    let seenChar: boolean = false;
+    let i: number;
+    for (i = 0; i < line.length; i++) {
 
-                if (num.length === 0)
-                    throw Error('ScalaParser.ParsePitchValue(' + line + '): You cannot have comments before a pitch value.');
+        let char: string = line.charAt(i);
 
-                if (!readSlashOrDecimal) {
-                    if (char === '.') {
-                        readSlashOrDecimal = true;
-                        noteType = CentNote;
-                        num += char;
-                        continue;
-                    } 
-                    else if (char === '/') {
-                        readSlashOrDecimal = true;
-                        // @ts-ignore
-                        // It complains about mismatching constructors but we take care of that later
-                        noteType = RatioNote;
-                        num += char;
-                        continue;
-                    }
-                }
+        if (isNaN(parseInt(char))) {
 
-                if (num.length !== 0) {
-                    if (noteType === null)
-                        noteType = IntRatioNote;
+            if (seenChar)
+                break;
 
-                    break;
-                }
+            if (value.length === 0)
+                throw new CommentPrefixException(`You cannot have comments before a pitch value: ${line}`);
+
+            if (char === '.') 
+                noteType = CentNote;
+            else if (char === '/')
+                noteType = RatioNote;
+            else {
+                noteType = IntRatioNote;
+                break;
             }
 
-            num += char;
+            // Check if the next character exists or is not a number.
+            // Alert the user they may have incorrectly inputted their pitch value? TODO
+            // This is for cases '1/' or '1.' where the user may 
+            // have forgotten the number after the '/' or '.' 
+            if (((i+1) >= line.length) || (isNaN(parseInt(line.charAt(i+1))))) {
+                noteType = IntRatioNote;
+                break;
+            }
+
+            seenChar = true;
         }
 
-        // For single digit integer ratios with no comments.
-        if (!isNaN(parseInt(num)) && noteType === null)
-            noteType = IntRatioNote;
+        value += char;
+    }
 
-        if (noteType === null)
-            throw new Error('ScalaParser.ParsePitchValue(' + line + '): Could not find a note type for the pitch value.');
+    // For single digit integer ratios with no comments.
+    if (noteType === null && !isNaN(parseInt(line)))
+        noteType = IntRatioNote;
 
-        comments = line.substring(i).trim();
+    if (noteType === null)
+        throw new InsufficientPitchValuesException(`The pitch value line does not contain a value: \'${line}\'.`);
 
-        // @ts-ignore
-        if (noteType === RatioNote) {
-            // @ts-ignore
-            return new noteType(num, comments);
-        } else {
-            return new noteType(parseFloat(num), comments)
-        }
+    comments = line.substring(i).trim();
 
+    return new noteType(value, comments);
+}
 
+export class CommentPrefixException extends Error {
+    constructor(msg: string) {
+        super(msg);
+    }
+}
+
+export class InsufficientPitchValuesException extends Error {
+    constructor(msg: string) {
+        super(msg);
     }
 }
 

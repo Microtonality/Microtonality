@@ -1,42 +1,38 @@
-import { RatioNote } from '../RatioNote';
+import { RatioNote, calcRatioMultiplier, InvalidRatioException } from '../RatioNote';
+
+let numerator: number;
+let denominator: number;
+let ratio: string;
+let expectedMultiplier: number;
+let comment: string;
+
+beforeAll(() => {
+    numerator = Math.trunc((Math.random() * 1000)) + 1;
+    denominator = Math.trunc((Math.random() * 1000)) + 1;
+    ratio = numerator + '/' + denominator;
+    expectedMultiplier = numerator / denominator;
+    comment = 'comment';
+})
 
 test('RatioNote object has correct values', () => {
-
-    // Arrange
-    let numerator: number = Math.trunc((Math.random() * 1000)) + 1;
-    let denominator: number = Math.trunc((Math.random() * 1000)) + 1;
-    let testNum: string = numerator.toString() + '/' + denominator.toString();
-    let comment: string = 'comment';
-    
-    let expectedMultiplier: number = numerator / denominator;
-
     // Act
-    const ratioNote: RatioNote = new RatioNote(testNum, comment);
+    let ratioNote: RatioNote = new RatioNote(ratio, comment);
 
     // Assert
     expect(ratioNote.multiplier).toEqual(expectedMultiplier);
-    expect(ratioNote.ratio).toEqual(testNum);
+    expect(ratioNote.ratio).toEqual(ratio);
     expect(ratioNote.comments).toEqual(comment);
 })
 
-// jest.mock('../RatioNote')
-
-test.skip('Ratio.calcMultiplier(string) throws Error when denominator is 0', () => {
-
-    // Arrange
-    let testNum: string = '1/0';
-
+test('calcRatioMultiplier parses and returns correct value', () => {
     // Act
-    const ratioNote: RatioNote = new RatioNote(testNum);
+    let multiplier = calcRatioMultiplier(ratio);
 
+    // Assert
+    expect(multiplier).toEqual(expectedMultiplier);
 })
 
-test.skip('Ratio.calcMultiplier(string) throws Error when parseInt() returns NaN', () => {
-
-    // Arrange
-    let testNum: string = '';
-
-    // Act
-    const ratioNote: RatioNote = new RatioNote(testNum);
-
+test('Ratio.calcRatioMultiplier(string) throws Error when denominator is 0', () => {
+    // Act and Assert
+    expect(() => calcRatioMultiplier('1/0')).toThrowError(InvalidRatioException);
 })
