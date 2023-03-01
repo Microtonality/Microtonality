@@ -10,8 +10,8 @@ export default function (props: {keyMapping: Record<number, number>, keyboardSho
     let keyboardShortcuts = createPianoKeyboardShortcuts(props.rootKey, props.scaleConfig.keysPerOctave);
 
     useEffect(() => {
-            keyboardShortcuts = createPianoKeyboardShortcuts(props.rootKey, props.scaleConfig.keysPerOctave)
-       },
+        keyboardShortcuts = createPianoKeyboardShortcuts(props.rootKey, props.scaleConfig.keysPerOctave)
+    },
         [props.scaleConfig]
     )
 
