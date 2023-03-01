@@ -4,7 +4,7 @@ import { Piano, KeyboardShortcuts } from 'react-piano';
 import './piano.css';
 import { useState, useEffect } from 'react';
 import SynthSettings from "./SynthSettings";
-import BasicSettings from "./BasicSettings";
+import ScaleSettings from "./ScaleSettings";
 import PianoKeyButton from "../../ui/PianoKeyButton";
 import FullPianoComponent from "./MicrotonalPiano"
 import FrequencyBarComponent from "./FrequencyBar";
@@ -28,7 +28,7 @@ export default function Play() {
         <div className="mt-[1%] flex-1 flex h-screen w-screen">
 
             <div className="w-[30%] h-full">
-                <BasicSettings scaleConfig={microtonalConfig[currentSynth].scaleConfig}/>
+                <ScaleSettings scaleConfig={microtonalConfig[currentSynth].scaleConfig}/>
             </div>
 
             <div className={"flex flex-col w-full ml-[1%]"}>

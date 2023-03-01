@@ -19,7 +19,7 @@ export default function Oscillator(props: OscillatorProps) {
     }
     
     return (
-        <div className="flex flex-col h-full w-full items-center justify-around mt-[2%] mb-[2%]">
+        <div className="flex flex-col h-full w-full items-center justify-around">
 
             <select data-te-select-init className="flex w-[80%] h-[7%] rounded-md text-center font-agrandir">
                 <option value="sine">SINE</option>
