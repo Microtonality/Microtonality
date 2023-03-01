@@ -30,7 +30,7 @@ export default function Oscillator(props: OscillatorProps) {
             
             <input
                 type="range"
-                className="transparent h-[1%] w-[200%] my-[80%] cursor-pointer appearance-none rounded-lg border-transparent bg-neutral-200 transform -rotate-90"
+                className="transparent h-[2%] w-[200%] my-[80%] cursor-pointer appearance-none rounded-lg border-neutral-500 border-[1px] bg-bgdark transform -rotate-90 accent-neutral-200"
                 id="customRange1" 
                 onChange={handleSliderChange}
             />

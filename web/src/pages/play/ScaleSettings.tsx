@@ -15,7 +15,7 @@ export default function ScaleSettings(props: ScaleSettingsProps) {
     const [openTab, setOpenTab] = React.useState(1);
 
     return <div className="h-full border-gold border-t-2 border-r-2 rounded-tr-xl bg-bglight">
-        <div className="w-full overflow-auto flex flex-col h-full">
+        <div className="w-full flex flex-col h-full">
             <ul
                 className="flex mb-0 list-none flex-wrap pt-3 pb-4 flex-row border-b-2 border-gold"
                 role="tablist"
@@ -23,7 +23,7 @@ export default function ScaleSettings(props: ScaleSettingsProps) {
                 <li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
                     <a
                         className={
-                            "2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide uppercase px-5 py-3 rounded block leading-normal hover:underline " +
+                            "2xl:text-xl xl:text-lg md:text-sm sm:text-xs font-agrandir-wide uppercase px-5 py-3 rounded block leading-normal hover:underline " +
                             (openTab === 1 ? "text-gold underline" : "text-white")}
                         onClick={e => {
                             e.preventDefault();
@@ -39,7 +39,7 @@ export default function ScaleSettings(props: ScaleSettingsProps) {
                 <li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
                     <a
                         className={
-                            "2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide uppercase px-5 py-3 rounded block leading-normal hover:underline " +
+                            "2xl:text-xl xl:text-lg md:text-sm sm:text-xs font-agrandir-wide uppercase px-5 py-3 rounded block leading-normal hover:underline " +
                             (openTab === 2 ? "text-gold underline" : "text-white")}
                         onClick={e => {
                             e.preventDefault();
