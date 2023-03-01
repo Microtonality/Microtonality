@@ -1,25 +1,35 @@
 // Some code adapted for our use case from https://github.com/snopeusz/scl_reader
 
-import { ScaleNote, InvalidNoteInputException } from "./ScaleNote";
+import { ScaleNote } from "./ScaleNote";
+
+export function calcRatioMultiplier(ratio: string): number {
+    let ratioRegex: RegExp = new RegExp(/(\d+)\/(\d+)/);
+    let parsedRatio: string[] = ratioRegex.exec(ratio);
+
+    let numerator: number = parseInt(parsedRatio[1]);
+    let denominator: number = parseInt(parsedRatio[2]);
+
+    if (denominator === 0)
+        throw new InvalidRatioException(`The denominator is zero in the pitch value ${ratio}.`);
+
+    return numerator / denominator;
+}
 
 export class RatioNote extends ScaleNote {
-    protected calcMultiplier(num: string): number {
-        const ratioRegex: RegExp = new RegExp(/(\d+)\/(\d+)/);
-        const parsedRatio: string[] = ratioRegex.exec(num);
+    public ratio: string;
 
-        if (parsedRatio === null)
-            throw new InvalidNoteInputException('RatioNote.calcMultiplier(' + num + '): parsedRatio is null.');
+    constructor(ratio: string, comments: string = '') {
+        super(calcRatioMultiplier(ratio), comments);
+        this.ratio = ratio;
+    }
 
-        let numerator: number = parseInt(parsedRatio[1]);
-        let denominator: number = parseInt(parsedRatio[2]);
+    exportScala(): string {
+        return this.ratio + ' ' + this.comments;
+    }
+}
 
-        if (isNaN(numerator))
-            throw new InvalidNoteInputException('RatioNote.calcMultiplier(' + num + '): The numerator is not a number.');
-        if (isNaN(denominator))
-            throw new InvalidNoteInputException('RatioNote.calcMultiplier(' + num + '): The denominator is not a number.');
-        if (denominator === 0)
-            throw new InvalidNoteInputException('RatioNote.calcMultiplier(' + num + '): You cannot have zero for the denominator in a pitch value.');
-
-        return numerator / denominator;
+export class InvalidRatioException extends Error {
+    constructor(msg: string) {
+        super(msg);
     }
 }

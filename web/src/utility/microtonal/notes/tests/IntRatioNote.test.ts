@@ -1,29 +1,31 @@
 import { IntRatioNote } from '../IntRatioNote';
 
-test('IntRatioNote object has correct values', () => {
+let intRatio: number;
+let comment: string;
 
-    // Arrange
-    let multiplier: number = Math.trunc((Math.random() * 1000)) + 1;
-    let comment: string = 'comment';
-    let testNum = multiplier.toString();
-
-    let expectedMultiplier: number = multiplier;
-
-    // Act
-    const ratioNote: IntRatioNote = new IntRatioNote(testNum, comment);
-
-    // Assert
-    expect(ratioNote.multiplier).toEqual(expectedMultiplier);
-    expect(ratioNote.num).toEqual(testNum);
-    expect(ratioNote.comments).toEqual(comment);
+beforeAll(() => {
+    intRatio = Math.trunc((Math.random() * 1000)) + 1;
+    comment = 'comment';
 })
 
-test.skip('IntRatioNote.calcMultiplier(string) throws Error when parseInt() returns NaN', () => {
+test('IntRatioNote object has correct values when given a number', () => {
+    // Act
+    let intRatioNote: IntRatioNote = new IntRatioNote(intRatio, comment);
 
-    // Arrange
-    let testNum: string = '';
+    // Assert
+    expect(intRatioNote.multiplier).toEqual(intRatio);
+    expect(intRatioNote.intRatio).toEqual(intRatio);
+    expect(intRatioNote.ratio).toEqual(intRatio + '/1');
+    expect(intRatioNote.comments).toEqual(comment);
+})
 
-    // Act and Assert
-    const ratioNote: IntRatioNote = new IntRatioNote(testNum);
+test('IntRatioNote object has correct values when given a number', () => {
+    // Act
+    let intRatioNote: IntRatioNote = new IntRatioNote(intRatio.toString(), comment);
 
+    // Assert
+    expect(intRatioNote.multiplier).toEqual(intRatio);
+    expect(intRatioNote.intRatio).toEqual(intRatio);
+    expect(intRatioNote.ratio).toEqual(intRatio + '/1');
+    expect(intRatioNote.comments).toEqual(comment);
 })

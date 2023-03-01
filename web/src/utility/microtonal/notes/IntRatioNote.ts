@@ -1,12 +1,15 @@
-import { ScaleNote, InvalidNoteInputException } from "./ScaleNote";
+import { RatioNote } from "./RatioNote";
 
-export class IntRatioNote extends ScaleNote {
-    protected calcMultiplier(num: string): number {
-        let ratio: number = parseInt(num);
+export class IntRatioNote extends RatioNote {
+    public intRatio: number; // seems redundant but it is consistent
 
-        if (isNaN(ratio))
-            throw new InvalidNoteInputException('IntRatioNote.calcMultiplier(' + num + '): The string is not a number.');
+    constructor(intRatio: number | string, comments: string | null = null) {
+        super(intRatio.toString() + '/1', comments);
 
-        return ratio;
+        this.intRatio = ((typeof intRatio === 'number') ? intRatio : parseInt(intRatio));
+    }
+
+    exportScala(): string {
+        return this.intRatio + ' ' + this.comments;
     }
 }

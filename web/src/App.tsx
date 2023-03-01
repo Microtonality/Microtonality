@@ -1,18 +1,12 @@
 import './index.css';
-import {
-  BrowserRouter,
-  Route,
-  NavLink
-} from "react-router-dom";
-import {
-  Routes,
-  Outlet
-} from "react-router";
+import {BrowserRouter, Route} from "react-router-dom";
+import {Outlet, Routes} from "react-router";
+import NavLink from "./ui/NavLink";
 import * as React from 'react';
 import Play from './pages/play/Play';
-
-const activeLink = "2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide leading-relaxed inline-block mr-4 px-5 whitespace-nowrap uppercase text-gold underline"
-const inactiveLink = "2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide leading-relaxed inline-block mr-4 px-5 whitespace-nowrap uppercase text-white hover:underline"
+import {Learn} from "./pages/Learn";
+import {Download} from "./pages/Download";
+import {Contact} from "./pages/Contact";
 
 export default function App() {
   return (
@@ -35,10 +29,10 @@ const Layout = () => {
       <nav className="relative flex flex-wrap items-center justify-between px-2 2xl:py-7 xl:py-6 lg:py-5 md:py-4 sm:py-3 xs:py-2 bg-bglight border-b-2 border-gold">
         <span className="2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide leading-relaxed inline-block mr-4 px-5 whitespace-nowrap uppercase text-white">MICROTONAL SYNTHESIZER PROJECT</span>
           <span className="2xl:mr-10 xl:mr-9 lg:mr-8 md:mr-7 sm:mr-6 xs:mr-5">
-            <NavLink to="/" end className={({isActive}) => isActive ? activeLink : inactiveLink}>LEARN</NavLink>
-            <NavLink to="/play" className={({isActive}) => isActive ? activeLink : inactiveLink}>PLAY</NavLink>
-            <NavLink to="/download" className={({isActive}) => isActive ? activeLink : inactiveLink}>DOWNLOAD</NavLink>
-            <NavLink to="/contact" className={({isActive}) => isActive ? activeLink : inactiveLink}>CONTACT</NavLink>
+            <NavLink to="/" end><div className="hover:underline">LEARN</div></NavLink>
+            <NavLink to="/play"><div className="hover:underline">PLAY</div></NavLink>
+            <NavLink to="/download"><div className="hover:underline">DOWNLOAD</div></NavLink>
+            <NavLink to="/contact"><div className="hover:underline">CONTACT</div></NavLink>
           </span>
       </nav>
 
@@ -47,16 +41,3 @@ const Layout = () => {
   )
 }
 
-function Learn() {
-  return (
-    <h2 className="text-white">Learn</h2>
-  )
-}
-
-function Download() {
-  return <h2 className="text-white">Download</h2>
-}
-
-function Contact() {
-  return <h2 className="text-white">Contact</h2>
-}

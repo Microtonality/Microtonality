@@ -1,26 +1,32 @@
 // Some code adapted for our use case from https://github.com/snopeusz/scl_reader
 
-import { ScaleNote, InvalidNoteInputException } from "./ScaleNote";
+import { ScaleNote } from "./ScaleNote";
 
 const twelfthRootOfTwo = Math.pow(2, 1/12);
 
+export function calcCentsMultiplier(cents: number): number {
+    return Math.pow(twelfthRootOfTwo, cents * 0.01);
+}
+
 export class CentNote extends ScaleNote {
-    protected calcMultiplier(num: string): number {
-        let cents: number = parseFloat(num);
+    public cents: number;
 
-        if (isNaN(cents))
-            throw new InvalidNoteInputException('CentNote.calcMultiplier(' + num + '): The string is not a number.');
+    constructor(cents: number | string, comments: string = '') {
 
-        return Math.pow(twelfthRootOfTwo, cents * 0.01);
+        if (typeof cents === 'string')
+            cents = parseFloat(cents);
+        
+        let multiplier: number = calcCentsMultiplier(cents);
+        super(multiplier, comments);
+
+        this.cents = cents;
     }
 
-    public static reverseCalc(multiplier: number): string {
+    exportScala(): string {
+        let centsString = this.cents.toString();
+        if (!centsString.includes('.'))
+            centsString += '.0';
 
-        if (multiplier <= 0)
-            throw new Error('CentNote.reverseCalc(' + multiplier + '): Multiplier must be higher than 0.');
-
-        let cents: number = 1200 * Math.log2(multiplier);
-
-        return cents.toString();
+        return centsString + ' ' + this.comments;
     }
 }

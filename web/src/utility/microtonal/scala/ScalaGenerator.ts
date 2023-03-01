@@ -1,86 +1,88 @@
 import { Scale } from "../Scale";
-import { ScaleNote } from "../notes/ScaleNote";
+import { ScaleNote } from "../notes";
 
-export class ScalaGenerator {
+export const GENERATED_TITLE: string = 'MicrotonalScale_';
 
-    public static GENERATED_TITLE: string = 'MicrotonalScale_';
+export function generateScalaFile(scale: Scale): File {
 
-    public static GenerateScalaFile(scale: Scale): File {
+    let file: string[] = [];
 
-        let fileTitle: string = '';
-        let fileData: string[] = [];
+    let title: string = getTitle(scale);
+    file.push('! ' + title + '\n');
+    file.push('!\n');
 
-        fileTitle = ScalaGenerator.GetTitle(scale);
-        fileData.push('! ' + fileTitle + '\n');
-        fileData.push('!\n');
+    file.push(scale.description + '\n');
 
-        fileData.push(scale.description + '\n');
+    file.push('  ' + scale.notes.length + '\n');
+    file.push('!\n');
 
-        fileData.push('  ' + scale.notes.length + '\n');
-        fileData.push('!\n');
+    let note: ScaleNote = null;
+    for (note of scale.notes) 
+        file.push('  ' + note.exportScala() + '\n');
 
-        let note: ScaleNote = null;
-        for (note of scale.notes)
-            fileData.push('  ' + note.num + ' ' + note.comments + '\n');
-        fileData.push('\n');
+    file.push('\n');
+    return new File(file, title, {type: "text/plain"});
+}
 
-        return new File(fileData, fileTitle, {type: "text/plain"});
+export function getTitle(scale: Scale): string {
+
+    if (scale.title === '')
+        scale.title = generateTitle();
+    else {
+        validateTitle(scale.title);
+
+        if (!scale.title.endsWith('.scl'))
+            return scale.title + '.scl';
     }
 
-    public static GetTitle(scale: Scale): string {
+    return scale.title;
+}
 
-        if (scale.title === '')
-            scale.title = ScalaGenerator.GenerateTitle();
-        else
-            ScalaGenerator.ValidateTitle(scale.title);
+export function generateTitle(): string {
 
-        if (scale.title.endsWith('.scl'))
-            return scale.title;
-        
-        return scale.title + '.scl';
-    }
+    const date: Date = new Date();
 
-    public static GenerateTitle(): string {
+    const fileID: string = '' + date.getMinutes() + 
+                                date.getHours() + 
+                                date.getDay() + 
+                                date.getMonth() + 
+                                (date.getFullYear() % 100);
 
-        const date: Date = new Date();
+    return GENERATED_TITLE + fileID + '.scl';
+}
 
-        const fileID: string = '' + date.getMinutes() + 
-                                    date.getHours() + 
-                                    date.getDay() + 
-                                    date.getMonth() + 
-                                    (date.getFullYear() % 100);
+export function validateTitle(title: string): void {
 
-        return ScalaGenerator.GENERATED_TITLE + fileID;
-    }
+    let letterOrNumber: RegExp = new RegExp(/[A-z0-9]/)
+    let validCharacters: string[] = ['-', '_'];
 
-    public static ValidateTitle(title: string): void {
+    if (title.endsWith('.scl'))
+        title = title.substring(0, title.length - 4);
 
-        let letterOrNumber: RegExp = new RegExp(/[A-z0-9]/)
-        let validCharacters: string[] = ['-', '_'];
+    // Check the title for invalid characters.
+    for (let i = 0; i < title.length; i++) {
 
-        if (title.endsWith('.scl'))
-            title = title.substring(0, title.length - 4);
-
-        // Check the title for invalid characters.
-        let i: number;
-        for (i = 0; i < title.length; i++) {
-
-            if (!letterOrNumber.test(title[i])) {
-                let validChar: string;
-                for (validChar of validCharacters) {
-                    if (title[i] === validChar)
-                        break;
-                    
-                    if (validChar !== validCharacters[validCharacters.length - 1])
-                        throw new Error('ScalaGenerator.ValidateTitle(' + title + '): The title contains an invalid character (' + title[i] +'). You may only use letters, numbers, underscores, and dashes.');
-                }
+        if (!letterOrNumber.test(title[i])) {
+            let validChar: string;
+            for (validChar of validCharacters) {
+                if (title[i] === validChar)
+                    break;
+                
+                if (validChar === validCharacters[validCharacters.length - 1])
+                    throw new InvalidFilenameException(`The title \'${title}\' contains an invalid character, \'${title[i]}\'. You may only use letters, numbers, underscores, and dashes.`);
             }
         }
+    }
 
-        // Check if the title is a reserved filename.
-        // Source: https://en.wikipedia.org/wiki/Filename#Reserved_characters_and_words 
-        let reservedFilenamesRegex: RegExp = new RegExp(/^CON|PRN|AUX|NUL|LST|COM[0-9]|LPT[0-9]$/);
-        if (reservedFilenamesRegex.test(title))
-            throw new Error('ScalaGenerator.ValidateTitle(' + title + '): The title is a reserved filename. Please change it.');
+    // Check if the title is a reserved filename.
+    // Source: https://en.wikipedia.org/wiki/Filename#Reserved_characters_and_words 
+    let reservedFilenamesRegex: RegExp = new RegExp(/^CON|PRN|AUX|NUL|LST|COM[0-9]|LPT[0-9]$/);
+    if (reservedFilenamesRegex.test(title))
+        throw new InvalidFilenameException(`The title \'${title}\' is a reserved filename. Please change it to something else.`);
+}
+
+export class InvalidFilenameException extends Error {
+    constructor(msg: string) {
+        super(msg);
     }
 }

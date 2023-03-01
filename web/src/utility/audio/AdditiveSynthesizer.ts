@@ -1,29 +1,14 @@
-import {OscillatorSettings} from "./OscillatorSettings";
-import {OscillatorStack} from "./OscillatorStack";
+import {SynthConfig, DEFAULT_SYNTH_CONFIG} from "../MicrotonalConfig";
+import OscillatorStack from "./OscillatorStack";
 
 export class AdditiveSynthesizer {
-
-    currentOscillatorSettings: Array<OscillatorSettings> = [
-        new OscillatorSettings(1, 1, "sine"),
-        new OscillatorSettings(2, 1, "sine"),
-        new OscillatorSettings(3, 1, "sine"),
-        new OscillatorSettings(4, 1, "sine"),
-        new OscillatorSettings(5, 1, "sine"),
-        new OscillatorSettings(6, 1, "sine"),
-        ]
+    config: SynthConfig = DEFAULT_SYNTH_CONFIG;
 
     oscillatorStacks: { [key: number]: OscillatorStack } = {}
 
-    gain: number
-
-    attack: number = 1
-    decay: number = 1
-    sustain: number = 1
-    release: number = 1
-
     onPlayFrequency(frequency: number, velocity: number) {
         this.oscillatorStacks[frequency] = new OscillatorStack(
-                this.currentOscillatorSettings,
+                this.config.oscillators,
                 frequency,
                 velocity,
                 )
@@ -35,6 +20,4 @@ export class AdditiveSynthesizer {
         this.oscillatorStacks[frequency].endPlay()
         delete this.oscillatorStacks[frequency]
     }
-
-
 }
