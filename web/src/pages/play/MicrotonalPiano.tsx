@@ -6,6 +6,7 @@ import {ScaleConfig} from "../../utility/MicrotonalConfig";
 import {Piano as ReactPiano, KeyboardShortcuts} from 'react-piano';
 import ReactPianoWrapper from "./ReactPianoWrapper";
 import {createPianoKeyboardShortcuts} from "../../utility/microtonal/PianoKeyMapping";
+import Knobs from '../../ui/Knobs'
 
 const MIDDLE_C = 60;
 
@@ -26,7 +27,7 @@ export default function MicrotonalPiano(props: {
 
         <div className="flex w-[85%] h-[70%] mt-[2%] ml-[4%]">
             <div className="flex flex-row aspect-square w-1/5">
-                {/*<Knobs knobLabel="GAIN" onChange={(value) => console.log(value)} />*/}
+                <Knobs knobLabel="GAIN" onChange={(value) => console.log(value)} />
             </div>
             <OctaveButtons octaveUp={() => setOctave(octave + 1)} octaveDown={() => setOctave(octave - 1)}/>
                                        <ReactPianoWrapper keyboardShortcuts={keyboardShortcuts} keyMapping={props.keyMapping}
