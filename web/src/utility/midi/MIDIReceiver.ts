@@ -13,6 +13,11 @@ export default class MidiReceiver {
     private static NOTE_OFF_MESSAGE: number = 128;
     private static PITCH_BEND_MESSAGE: number = 224;
 
+    constructor(synth: AdditiveSynthesizer, config: ScaleConfig) {
+        this.synth = synth;
+        this.config = config;
+    }
+
     public connectToInstrument() {
         navigator.requestMIDIAccess().then(
             (midi) => this.initDevices(midi),
@@ -57,13 +62,27 @@ export default class MidiReceiver {
     }
 
     public noteOn(note: number, velocity: number) {
+        if (note == null || note < 0 || isNaN(note)) {
+            console.warn("Invalid note received!");
+            return;
+        }
+
         let frequency = this.MidiNotesToFrequency(note)
+        frequency = 440;
+        console.log("Start playing Freq: " + frequency);
 
         this.synth.onPlayFrequency(frequency, velocity)
     }
 
     public noteOff(note: number) {
+        if (note == null || note < 0 || isNaN(note)) {
+            console.warn("Invalid note received!");
+            return;
+        }
+
         let frequency = this.MidiNotesToFrequency(note)
+        frequency = 440;
+        console.log("Stop playing Freq: " + frequency);
 
         this.synth.onStopFrequency(frequency)
     }

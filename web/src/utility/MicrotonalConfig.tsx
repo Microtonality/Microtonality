@@ -30,7 +30,7 @@ export interface ScaleConfig {
 }
 
 export const DEFAULT_SYNTH_CONFIG: SynthConfig = {
-    gain: 0.5,
+    gain: 50,
     pitchBend: 0,
 
     attack: 1,
