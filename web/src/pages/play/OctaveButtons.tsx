@@ -1,3 +1,4 @@
+import * as React from 'react'
 import PianoKeyButton from "../../ui/PianoKeyButton";
 
 export default function OctaveButtons(props: {

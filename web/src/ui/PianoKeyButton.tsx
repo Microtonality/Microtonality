@@ -1,3 +1,4 @@
+import * as React from 'react'
 import {MouseEventHandler} from "react";
 
 interface PianoKeyButtonProps {
