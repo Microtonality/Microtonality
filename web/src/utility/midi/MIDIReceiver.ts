@@ -1,13 +1,13 @@
-import {ScaleCore} from "./../microtonal/ScaleCore"
-import {AdditiveSynthesizer} from "./../audio/AdditiveSynthesizer"
+import {AdditiveSynthesizer} from "../audio/AdditiveSynthesizer"
+import {ScaleConfig, DEFAULT_SCALE_CONFIG} from "../MicrotonalConfig";
 
-export class MIDIReceiver {
+export default class MidiReceiver {
 
     public midiInput: WebMidi.MIDIInput[] = [];
     public midiOutput: WebMidi.MIDIOutput[] = [];
 
     public synth: AdditiveSynthesizer = new AdditiveSynthesizer()
-    public core: ScaleCore = new ScaleCore()
+    public config: ScaleConfig = DEFAULT_SCALE_CONFIG
 
     private static NOTE_ON_MESSAGE: number = 144;
     private static NOTE_OFF_MESSAGE: number = 128;
@@ -37,38 +37,59 @@ export class MIDIReceiver {
     public onMIDIMessage(message: WebMidi.MIDIMessageEvent) {
         let command = message.data[0]
 
-        if (command == MIDIReceiver.NOTE_ON_MESSAGE) {
+        if (command == MidiReceiver.NOTE_ON_MESSAGE) {
             let note = message.data[1]
             let velocity = message.data[2]
 
             this.noteOn(note, velocity)
-        } else if (command == MIDIReceiver.NOTE_OFF_MESSAGE) {
+        } else if (command == MidiReceiver.NOTE_OFF_MESSAGE) {
             let note = message.data[1]
 
             this.noteOff(note)
-        } else if (command == MIDIReceiver.PITCH_BEND_MESSAGE) {
+        } else if (command == MidiReceiver.PITCH_BEND_MESSAGE) {
             let finePitchBend = message.data[1]
             let coarsePitchBend = message.data[2]
 
-            this.setGlobalPitchBend(finePitchBend, coarsePitchBend)
+            //this.setGlobalPitchBend(finePitchBend, coarsePitchBend)
         } else {
             console.warn("This MIDI Input is not supported yet!")
         }
     }
 
     public noteOn(note: number, velocity: number) {
-        let frequency = this.core.MIDINotesToFrequency(note)
+        let frequency = this.MidiNotesToFrequency(note)
 
         this.synth.onPlayFrequency(frequency, velocity)
     }
 
     public noteOff(note: number) {
-        let frequency = this.core.MIDINotesToFrequency(note)
+        let frequency = this.MidiNotesToFrequency(note)
 
         this.synth.onStopFrequency(frequency)
     }
 
-    public setGlobalPitchBend(finePitchBend: number, coarsePitchBend: number) {
-        // Probably move this to another class specifically for pitch bend calculation
+    private MidiNotesToFrequency(MidiNote: number): number {
+        // First, we need to determine which key in the octave this is.
+        let octaveKey = (MidiNote - this.config.rootKey) % this.config.keysPerOctave;
+        if (octaveKey < 0) {
+            octaveKey += this.config.keysPerOctave;
+        }
+
+        // Now, determine how many octaves away we are.
+        let octaveOffset = Math.floor((MidiNote - this.config.rootKey) / this.config.keysPerOctave);
+
+        // Which multiplier is this key mapped to?
+        let multiplier;
+        try {
+            multiplier = this.config.scale.notes[octaveKey].multiplier;
+        } catch (e) {
+            console.log(`Error: key in octave ${octaveKey} (MIDI number: ${MidiNote}) is not assigned to a note in the scale.`)
+            throw e;
+        }
+
+        // Finally, convert to a frequency.
+        let noteFrequency = multiplier * this.config.tuningFrequency * Math.pow(2, octaveOffset);
+
+        return noteFrequency;
     }
 }
