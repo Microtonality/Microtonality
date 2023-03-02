@@ -7,19 +7,16 @@ import close from "../../ui/icons/close.png"
 
 export default function ScaleEditor(props:{scaleConfig: ScaleConfig}) {
 
-    const [key, setKey] = useState(1)
-
-    const [scaleMap, setScaleMap] = useState<Map<number, JSX.Element>>(new Map([[0, <ScaleEditorInput key={0} value={0}/>]]))
-    
+    const [rowKey, setRowKey] = useState(0)
 
     function ScaleEditorInput(props:{ key: number, value: number }) {
 
         return (
-            <div className="inline-flex items-center mt-[5%]">
+            <div className="inline-flex items-center my-[2.5%]">
                 <img src={hamburger} className="w-[6%] min-w-[1.5rem] cursor-pointer"/>
     
-                <label htmlFor={key.toString()} className="inline-flex flex-wrap items-center cursor-pointer text-gray-800 w-[50%] h-10 text-center ml-[1%] min-w-[6rem]">
-                    <input id={key.toString()} type="checkbox" className="hidden peer" />
+                <label htmlFor={rowKey.toString()} className="inline-flex flex-wrap items-center cursor-pointer text-gray-800 w-[50%] h-10 text-center ml-[1%] min-w-[6rem]">
+                    <input id={rowKey.toString()} type="checkbox" className="hidden peer" />
                     <div className="2xl:text-lg md:text-sm sm:text-xs w-[50%] h-full bg-gold peer-checked:bg-white rounded-l-md border-r-[1px] border-black pt-[4%] min-w-[3rem]">CENTS</div>
                     <div className="2xl:text-lg md:text-sm sm:text-xs w-[50%] h-full bg-white peer-checked:bg-gold rounded-r-md border-l-[1px] border-black pt-[4%] min-w-[3rem]">RATIO</div>
                 </label>
@@ -27,28 +24,57 @@ export default function ScaleEditor(props:{scaleConfig: ScaleConfig}) {
                 <div className="flex w-full h-10 ml-[1%] max-w-[50%]">
                     <input type="number" step="0.0001" value={props.value} onChange={setValue} className="w-full rounded-md font-agrandir pl-[2%] min-w-[3rem]" />
                 </div>
-     
-                <img src={close} i-key={key} onClick={removeScale} className="w-[10%] min-w-[1.5rem] cursor-pointer" />
             </div>
         )
     }
 
-    function addScale() {
-        
-        setKey(key + 1)
-        let newScale = <ScaleEditorInput key={key} value={0} />
-        let newMap = new Map(scaleMap);
-        newMap.set(key, newScale)
-        setScaleMap(newMap)
+    interface State {
+        elements: JSX.Element[]
     }
 
-    function removeScale(event: React.MouseEvent<HTMLImageElement> ) {
-        const idx = parseInt(event.currentTarget.getAttribute('i-key'))
-        let newMap = new Map<number, JSX.Element>
-        newMap = scaleMap
-        newMap.delete(idx)
-        setScaleMap(newMap)
+    const [state, setState] = useState<State>({
+        elements: []
+    })
+
+    function addRow() {
+        setRowKey(rowKey + 1)
+        const key = state.elements.length;
+        const newRow = <ScaleEditorInput key={key} value={key} />
+        setState((prevState) => ({
+            elements: [...prevState.elements, newRow]
+        }))
     }
+
+    function removeRow(key: number) {
+        setState((prevState) => ({
+          elements: prevState.elements.filter((_, index) => index !== key),
+        }));
+    }
+
+    const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
+    const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+
+    function handleDragStart(index: number) {
+        setDraggingIndex(index);
+      }
+      
+      function handleDragOver(index: number) {
+        setDragOverIndex(index);
+      }
+      
+      function handleDragEnd() {
+        if (draggingIndex !== null && dragOverIndex !== null) {
+          setState((prevState) => {
+            const elements = [...prevState.elements];
+            const [removed] = elements.splice(draggingIndex, 1);
+            elements.splice(dragOverIndex, 0, removed);
+            return { elements };
+          });
+        }
+        setDraggingIndex(null);
+        setDragOverIndex(null);
+      }
+
 
     function setValue() {
 
@@ -79,10 +105,35 @@ export default function ScaleEditor(props:{scaleConfig: ScaleConfig}) {
                     <option value="4">MIDI Device 4</option>
                 </select>
             </div>
+
+            <div
+                className="2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide text-white mt-[5%] mx-[7%]">BASE
+                FREQUENCY
+            </div>
+            <div className="flex w-[85%] h-10 mt-[2%] mx-[7%]">
+                <input type="number" step="0.0001" className="w-full rounded-md font-agrandir pl-[2%]" />
+            </div>
  
-            <div className="flex flex-col mt-[5%]">
-                <button onClick={addScale} className="relative m-0 block w-[10%] bg-transparent min-w-0 flex-auto cursor-pointer bg-clip-padding text-2xl text-white">+</button>
-                {[...scaleMap.values()]}
+            <div
+                className="2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide text-white mt-[5%] mx-[7%]">
+                    SCALE
+            </div>
+            <div className="flex flex-col my-[1%]">
+                <button onClick={addRow} className="w-[85%] mx-[7%] mb-[2.5%] border-[1px] bg-white hover:bg-neutral-100 rounded-md flex-auto cursor-pointer font-agrandir text-bgdark">ADD ROW</button>
+                {state.elements.map((element, index) => (
+                    <div 
+                        draggable
+                        onDragStart={() => handleDragStart(index)}
+                        onDragOver={() => handleDragOver(index)}
+                        onDragEnd={handleDragEnd}
+                        key={index} 
+                        className={`inline-flex items-center ${
+                            dragOverIndex === index ? 'drag-over' : ''
+                          }`}>
+                        {element}
+                        <img src={close} onClick={() => removeRow(index)} className="w-[8%] h-[8%] min-w-[1.5rem] cursor-pointer" />
+                    </div>
+                ))}
                 
             </div>
         </div>

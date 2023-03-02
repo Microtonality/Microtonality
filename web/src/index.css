@@ -41,6 +41,15 @@ input[type=range][orient=vertical]
     padding: 0 5px;
 }
 
+.drag-over {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #212121;
+  z-index: 1;
+}
+
 .navBar {
   padding: 35px 0;
   background-color: #313131;
