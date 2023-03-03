@@ -2,25 +2,35 @@ import OscillatorSettings from "./OscillatorSettings";
 
 export default class OscillatorStack {
 
-    audioContexts: Array<AudioContext> = []
+    audioContext: AudioContext
     oscillatorNodes: Array<OscillatorNode> = []
     gainNodes: Array<GainNode> = []
+
+    masterGain: GainNode
 
     constructor(
             oscillatorSettings: Array<OscillatorSettings>,
             frequency: number,
             baseVolume: number
             ) {
+        this.audioContext = new AudioContext()
+        this.masterGain = this.audioContext.createGain()
+        this.masterGain.gain.value = baseVolume
         for (let i = 0; i < oscillatorSettings.length; i++) {
-            this.audioContexts[i] = new AudioContext()
-            this.oscillatorNodes[i] = this.audioContexts[i].createOscillator()
+            this.oscillatorNodes[i] = this.audioContext.createOscillator()
             this.oscillatorNodes[i].frequency.setValueAtTime(
                     oscillatorSettings[i].pitchRatio * frequency,
-                    this.audioContexts[i].currentTime,
+                    this.audioContext.currentTime,
                     )
 
-            this.gainNodes[i] = this.audioContexts[i].createGain()
-            this.gainNodes[i].gain.value = oscillatorSettings[i].localGain + baseVolume
+            this.oscillatorNodes[i].type = oscillatorSettings[i].waveType;
+
+            this.gainNodes[i] = this.audioContext.createGain()
+            this.gainNodes[i].gain.value = oscillatorSettings[i].localGain
+
+            this.oscillatorNodes[i].connect(this.gainNodes[i])
+            this.gainNodes[i].connect(this.masterGain)
+            this.masterGain.connect(this.audioContext.destination);
         }
     }
 

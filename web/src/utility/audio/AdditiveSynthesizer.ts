@@ -7,16 +7,24 @@ export class AdditiveSynthesizer {
     oscillatorStacks: { [key: number]: OscillatorStack } = {}
 
     onPlayFrequency(frequency: number, velocity: number) {
+        if (this.oscillatorStacks[frequency] != null) {
+            return;
+        }
+
         this.oscillatorStacks[frequency] = new OscillatorStack(
                 this.config.oscillators,
                 frequency,
-                velocity,
+                this.config.gain,
                 )
 
         this.oscillatorStacks[frequency].beginPlay()
     }
 
     onStopFrequency(frequency: number) {
+        if (this.oscillatorStacks[frequency] == null) {
+            return;
+        }
+
         this.oscillatorStacks[frequency].endPlay()
         delete this.oscillatorStacks[frequency]
     }
