@@ -14,7 +14,7 @@
  * Styles of accidental notes (flat or sharp)
  */
 .ReactPiano__Key--accidental {
-  background: #555;
+  background: #444;
   border: 1px solid #fff;
   border-top: 1px solid transparent;
   border-radius: 0 0 15px 15px;

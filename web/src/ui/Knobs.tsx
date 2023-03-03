@@ -14,8 +14,8 @@ interface KnobProps {
 
 const defaultProps = {
   min: 0,
-  max: 100,
-  value: 50,
+  max: 1,
+  value: 0,
   minAngle: 30,
   maxAngle: 330,
   className: "w-96",
@@ -44,7 +44,7 @@ export default function Knob (props: KnobProps) {
     console.log("x" + movementX);
     console.log("y" + movementY);
     setValue((prevValue) =>{
-      return Math.min(props.max, Math.max(movementX + movementY + prevValue, props.min))
+      return parseFloat(Math.min(props.max, Math.max((movementX/100) + (movementY/100) + prevValue, props.min)).toFixed(2))
     });
     props.onChange(value);
   };
@@ -55,14 +55,14 @@ export default function Knob (props: KnobProps) {
   };
 
   const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    let val = parseInt(event.target.value);
+    let val = parseFloat(event.target.value);
     if (val > 100) val = 100;
     setValue(val)
   }
 
     return (
       <div className={`flex flex-col justify-center items-center ${props.className}`}>
-        <input className={"text-center self-center w-1/4 rounded-md font-agrandir"} type="number" value={value} onChange={handleInput} min={0} max={100} />
+        <input className={"text-center self-center w-1/4 rounded-md font-agrandir"} type="number" value={value} onChange={handleInput} min={0} max={1} step={0.01} />
         <div className={"aspect-square rounded-full p-2 bg-gradient-to-b from-neutral-500 to-neutral-900 flex mt-[4%] w-1/2"} onMouseDown={handleMouseDown}>
           <div className={"w-full h-full rounded-full p-0.5 bg-gradient-to-b from-stone-700 to-neutral-800 flex-1"} >
             <div style={{transform: `rotate(${valueToAngle(value)}deg)`}} className={"w-full h-full flex items-start justify-center"}>

@@ -26,7 +26,7 @@ export default function (props: {keyMapping: Record<number, number>, keyboardSho
     return <ReactPiano
         // activeNotes={synthesizer.activeNotes}
         className="mx-auto my-auto"
-        noteRange={{ first: props.rootKey, last: props.rootKey + props.scaleConfig.keysPerOctave }}
+        noteRange={{ first: props.rootKey, last: props.rootKey + props.scaleConfig.keysPerOctave - 1 }}
         playNote={(note: any) => {console.log(translateNote(note))}}
         stopNote={() => {}}
         keyboardShortcuts={keyboardShortcuts}

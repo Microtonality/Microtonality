@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useState } from "react";
 
 interface OscillatorProps {
     value: number;
@@ -10,12 +11,18 @@ const defaultProps = {
 
 export default function Oscillator(props: OscillatorProps) {
 
+    const [value, setValue] = useState<number>(0)
+
     const handleSliderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    
+        let val = parseFloat(event.currentTarget.value)
+        if (val > 1.00) val = 1.00
+        setValue(val)
     }
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    
+        let val = parseFloat(event.currentTarget.value)
+        if (val > 1.00) val = 1.00
+        setValue(parseFloat(val.toFixed(2)))
     }
     
     return (
@@ -33,32 +40,23 @@ export default function Oscillator(props: OscillatorProps) {
                 className="transparent h-[2%] w-[200%] my-[80%] cursor-pointer appearance-none rounded-lg border-neutral-500 border-[1px] bg-bgdark transform -rotate-90 accent-neutral-200"
                 id="customRange1" 
                 onChange={handleSliderChange}
+                value={value}
+                min={0}
+                max={1}
+                step={0.01}
             />
 
             <input  
                 className={"text-center self-center w-[80%] rounded-md font-agrandir"} 
                 type="number" 
-                value={50} 
+                value={value} 
                 onChange={handleInputChange} 
                 min={0} 
-                max={100} 
+                max={1} 
+                step={0.01}
             />
         </div>
     )
 }
 
 Oscillator.defaultProps = defaultProps;
-
-{/* <Slider
-    sx={{
-    '& input[type="range"]': {
-        WebkitAppearance: 'slider-vertical',
-    },
-        color: 'white'
-}}
-    id="pitch_ratio"
-    orientation="vertical"
-    defaultValue={0}
-    aria-label="Slider2"
-    valueLabelDisplay="auto"
-/> */}
