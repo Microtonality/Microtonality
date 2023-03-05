@@ -92,6 +92,7 @@ module.exports = (env, options) => {
         devServer: {
             static: './dist',
             hot: true,
+            historyApiFallback: true,
         },
     };
 }
