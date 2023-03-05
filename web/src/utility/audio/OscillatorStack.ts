@@ -3,6 +3,7 @@ import OscillatorSettings from "./OscillatorSettings";
 export default class OscillatorStack {
 
     audioContext: AudioContext
+    dynamics: DynamicsCompressorNode
     oscillatorNodes: Array<OscillatorNode> = []
     gainNodes: Array<GainNode> = []
 
@@ -16,6 +17,7 @@ export default class OscillatorStack {
         this.audioContext = new AudioContext()
         this.masterGain = this.audioContext.createGain()
         this.masterGain.gain.value = baseVolume
+        this.dynamics = this.audioContext.createDynamicsCompressor();
         for (let i = 0; i < oscillatorSettings.length; i++) {
             this.oscillatorNodes[i] = this.audioContext.createOscillator()
             this.oscillatorNodes[i].frequency.setValueAtTime(
@@ -29,9 +31,11 @@ export default class OscillatorStack {
             this.gainNodes[i].gain.value = oscillatorSettings[i].localGain
 
             this.oscillatorNodes[i].connect(this.gainNodes[i])
-            this.gainNodes[i].connect(this.masterGain)
-            this.masterGain.connect(this.audioContext.destination);
+            this.gainNodes[i].connect(this.dynamics)
         }
+
+        this.dynamics.connect(this.masterGain)
+        this.masterGain.connect(this.audioContext.destination);
     }
 
     beginPlay() {

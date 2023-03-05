@@ -64,7 +64,7 @@ export const DEFAULT_MICROTONAL_CONFIG: MicrotonalConfig = {
 
 const createMicrotonalConfig = (
     microtonalConfig?: MicrotonalConfig,
-    synthConfig?: MicrotonalConfig,
+    synthConfig?: SynthConfig,
     scaleConfig?: ScaleConfig
 ) => {
     let newScaleConfig = {...DEFAULT_SCALE_CONFIG, ...scaleConfig} as ScaleConfig;

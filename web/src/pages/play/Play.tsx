@@ -36,7 +36,7 @@ export default function Play() {
                 </div>
 
                 <div className="h-1/2 md:flex-row">
-                    <SynthSettings/>
+                    <SynthSettings microtonalConfig={microtonalConfig[currentSynth]} setMicrotonalConfig={setMicrotonalConfig}/>
                 </div>
             </div>
 

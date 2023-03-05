@@ -5,6 +5,9 @@ const setTuningFrequency = (microtonalConfig: MicrotonalConfig, baseFrequency: n
     return createMicrotonalConfig(microtonalConfig, null, scaleConfig);
 }
 
+const setAttack = (microtonalConfig: MicrotonalConfig, attack: number) => {
+    let synthConfig = {...microtonalConfig.synthConfig, attack: attack} as SynthConfig;
+    return createMicrotonalConfig(microtonalConfig, synthConfig, null);
+}
 
-
-export {setTuningFrequency}
+export {setTuningFrequency, setAttack}
