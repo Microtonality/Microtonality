@@ -1,17 +1,19 @@
 import * as React from "react";
+import OscillatorSettings from "../utility/audio/OscillatorSettings";
 
 interface OscillatorProps {
-    value: number;
+    settings: OscillatorSettings;
+    onChange: (value: OscillatorSettings) => void;
 }
 
 const defaultProps = {
-    value: 50,
+    settings: new OscillatorSettings(1, 0.5, "sine"),
 }
 
 export default function Oscillator(props: OscillatorProps) {
 
     const handleSliderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    
+        
     }
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,10 +40,10 @@ export default function Oscillator(props: OscillatorProps) {
             <input  
                 className={"text-center self-center w-[80%] rounded-md font-agrandir"} 
                 type="number" 
-                value={50} 
+                value={0.5}
                 onChange={handleInputChange} 
                 min={0} 
-                max={100} 
+                max={1}
             />
         </div>
     )

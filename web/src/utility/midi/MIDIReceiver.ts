@@ -68,6 +68,7 @@ export default class MidiReceiver {
         }
 
         let frequency = this.MidiNotesToFrequency(note)
+        frequency = 440
 
         this.synth.onPlayFrequency(frequency, velocity)
     }
@@ -79,6 +80,7 @@ export default class MidiReceiver {
         }
 
         let frequency = this.MidiNotesToFrequency(note)
+        frequency = 440
 
         this.synth.onStopFrequency(frequency)
     }

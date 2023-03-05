@@ -4,7 +4,19 @@ import OscillatorStack from "./OscillatorStack";
 export class AdditiveSynthesizer {
     config: SynthConfig = DEFAULT_SYNTH_CONFIG;
 
+    audioContext: AudioContext = new AudioContext()
+    masterGain: GainNode = this.audioContext.createGain()
+    dynamicsCompressor: DynamicsCompressorNode = this.audioContext.createDynamicsCompressor()
+
     oscillatorStacks: { [key: number]: OscillatorStack } = {}
+
+    constructor() {
+        // this.dynamicsCompressor.attack.value = 1
+        // this.dynamicsCompressor.release.value = 1
+
+        this.dynamicsCompressor.connect(this.masterGain)
+        this.masterGain.connect(this.audioContext.destination)
+    }
 
     onPlayFrequency(frequency: number, velocity: number) {
         if (this.oscillatorStacks[frequency] != null) {
@@ -15,6 +27,8 @@ export class AdditiveSynthesizer {
                 this.config.oscillators,
                 frequency,
                 this.config.gain,
+                this.audioContext,
+                this.dynamicsCompressor
                 )
 
         this.oscillatorStacks[frequency].beginPlay()

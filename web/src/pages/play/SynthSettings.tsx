@@ -26,19 +26,19 @@ export default function SynthSettings(props: SynthProps) {
                             <Knobs knobLabel="Decay" onChange={(value) => console.log(value)} />
                         </div>
                         <div className="flex">
-                            <Knobs knobLabel="Sustain" onChange={(value) => console.log(value)} />
-                            <Knobs knobLabel="Release" onChange={(value) => console.log(value)} />
+                            <Knobs knobLabel="Sustain" onChange={(value) => this.props.synthConfig.sustain = value } />
+                            <Knobs knobLabel="Release" onChange={(value) => this.props.synthConfig.release = value} />
                         </div>
                     </div>
 
                     <div className="flex flex-row ml-[4%]">
-                        <Oscillator />
-                        <Oscillator />
-                        <Oscillator />
-                        <Oscillator />
-                        <Oscillator />
-                        <Oscillator />
-                        <Oscillator />
+                        <Oscillator onChange={(value) => this.props.synthConfig.oscillators[0] = value} />
+                        <Oscillator onChange={(value) => this.props.synthConfig.oscillators[1] = value} />
+                        <Oscillator onChange={(value) => this.props.synthConfig.oscillators[2] = value} />
+                        <Oscillator onChange={(value) => this.props.synthConfig.oscillators[3] = value} />
+                        <Oscillator onChange={(value) => this.props.synthConfig.oscillators[4] = value} />
+                        <Oscillator onChange={(value) => this.props.synthConfig.oscillators[5] = value} />
+                        <Oscillator onChange={(value) => this.props.synthConfig.oscillators[6] = value} />
                     </div>
                 </div>
             </div>;
