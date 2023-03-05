@@ -2,13 +2,14 @@ const path = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = (env, options) => {
     const isDevelopment = options.mode !== 'production';
     return {
         mode: isDevelopment ? "development" : "production",
         entry: {
-            main: './src/App.tsx',
+            main: './src/index.tsx',
         },
         output: {
             path: path.resolve(__dirname, 'dist'),
@@ -31,56 +32,6 @@ module.exports = (env, options) => {
                     use: [
                         {
                             loader: 'html-loader',
-                            options: {
-                                attributes: {
-                                    list: [
-                                        '...',
-                                        {
-                                            tag: 'meta',
-                                            attribute: 'content',
-                                            type: 'src',
-                                            /**
-                                             * @docs https://github.com/webpack-contrib/html-loader#list
-                                             */
-                                            filter: (_tag, _attribute, attributes, _resourcePath) => {
-                                                if (
-                                                    attributes.property === 'og:image' ||
-                                                    attributes.property === 'twitter:image'
-                                                ) {
-                                                    return true
-                                                }
-                                                return false
-                                            },
-                                        },
-                                        {
-                                            tag: 'img',
-                                            attribute: 'data-src',
-                                            type: 'src'
-                                        },
-                                        {
-                                            tag: 'img',
-                                            attribute: 'data-srcset',
-                                            type: 'srcset',
-                                        },
-                                        {
-                                            tag: 'link',
-                                            attribute: 'href',
-                                            type: 'src',
-                                            /**
-                                             * @docs https://github.com/webpack-contrib/html-loader#list
-                                             */
-                                            filter: (_tag, _attribute, attributes, _resourcePath) => {
-                                                if (
-                                                    attributes.as === 'image'
-                                                ) {
-                                                    return true
-                                                }
-                                                return false
-                                            },
-                                        },
-                                    ],
-                                },
-                            },
                         },
                     ]
                 },
@@ -112,12 +63,12 @@ module.exports = (env, options) => {
         resolve: {
             extensions: ['.tsx', '.ts', '.js'],
         },
-        devtool: isDevelopment ? 'eval-source-map' : 'source-map',
+        devtool: isDevelopment ? 'source-map' : 'source-map',
         plugins: [
-            // new HtmlWebpackPlugin({
-            //     template: path.resolve(__dirname, 'src/index.html'),
-            //     filename: 'index.html'
-            // }),
+            new HtmlWebpackPlugin({
+                template: path.resolve(__dirname, 'src/index.html'),
+                filename: 'index.html'
+            }),
             new MiniCssExtractPlugin({
                 filename: "[name].[contenthash].css"
             }),
@@ -137,6 +88,10 @@ module.exports = (env, options) => {
                     },
                 },
             },
-        }
+        },
+        devServer: {
+            static: './dist',
+            hot: true,
+        },
     };
 }
