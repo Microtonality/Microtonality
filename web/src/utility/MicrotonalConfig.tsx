@@ -30,7 +30,7 @@ export interface ScaleConfig {
 }
 
 export const DEFAULT_SYNTH_CONFIG: SynthConfig = {
-    gain: 0.5,
+    gain: 0.05,
     pitchBend: 0,
 
     attack: 1,
@@ -39,13 +39,13 @@ export const DEFAULT_SYNTH_CONFIG: SynthConfig = {
     release: 1,
 
     oscillators: [
-        new OscillatorSettings(1, 1, "sine"),
-        new OscillatorSettings(2, 1, "sine"),
-        new OscillatorSettings(3, 1, "sine"),
-        new OscillatorSettings(4, 1, "sine"),
-        new OscillatorSettings(5, 1, "sine"),
-        new OscillatorSettings(6, 1, "sine"),
-        new OscillatorSettings(7, 1, "sine"),
+        new OscillatorSettings(1, 0.5, "sine"),
+        new OscillatorSettings(2, 0.5, "sine"),
+        new OscillatorSettings(3, 0.5, "sine"),
+        new OscillatorSettings(4, 0.5, "sine"),
+        new OscillatorSettings(5, 0.5, "sine"),
+        new OscillatorSettings(6, 0.5, "sine"),
+        new OscillatorSettings(7, 0.5, "sine"),
         ]
 }
 
@@ -64,16 +64,18 @@ export const DEFAULT_MICROTONAL_CONFIG: MicrotonalConfig = {
 
 const createMicrotonalConfig = (
     microtonalConfig?: MicrotonalConfig,
-    synthConfig?: MicrotonalConfig,
+    synthConfig?: SynthConfig,
     scaleConfig?: ScaleConfig
 ) => {
-    let newScaleConfig = {...DEFAULT_SCALE_CONFIG, ...scaleConfig} as ScaleConfig;
-    let newSynthConfig = {...DEFAULT_SYNTH_CONFIG, ...synthConfig} as SynthConfig;
+
+    let newScaleConfig = {...DEFAULT_SCALE_CONFIG, ...microtonalConfig?.scaleConfig, ...scaleConfig} as ScaleConfig;
+    let newSynthConfig = {...DEFAULT_SYNTH_CONFIG, ...microtonalConfig?.synthConfig, ...synthConfig} as SynthConfig;
+
     return {
         ...DEFAULT_MICROTONAL_CONFIG,
+        ...microtonalConfig,
         scaleConfig: newScaleConfig,
-        synthConfig: newSynthConfig,
-        ...microtonalConfig
+        synthConfig: newSynthConfig
     } as MicrotonalConfig;
 }
 

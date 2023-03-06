@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Component, useState } from 'react';
+import { Component, useEffect, useState } from 'react';
 
 interface KnobProps {
   min: number;
@@ -23,7 +23,18 @@ const defaultProps = {
 }
 
 export default function Knob (props: KnobProps) {
-  let [value, setValue] = useState<number>(props.value);
+  let [value, setValue] = useState<number>(props.value); // TODO check
+  let [isMouseDown, setIsMouseDown] = useState(false);
+
+  useEffect(() => {
+    if (!isMouseDown) {
+      props.onChange(value);
+    }
+  }, [isMouseDown]);
+
+  useEffect(() => {
+    setValue(props.value);
+  }, [props.value]);
 
 
   const valueToAngle = (value: number) => {
@@ -37,21 +48,21 @@ export default function Knob (props: KnobProps) {
     event.preventDefault();
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
+    setIsMouseDown(true);
   };
 
   const handleMouseMove = (event: MouseEvent) => {
     const { movementX, movementY } = event;
-    console.log("x" + movementX);
-    console.log("y" + movementY);
-    setValue((prevValue) =>{
-      return parseFloat(Math.min(props.max, Math.max((movementX/100) + (movementY/100) + prevValue, props.min)).toFixed(2))
+    setValue((prevValue) => {
+      return Math.min(props.max, Math.max(movementX + movementY + prevValue, props.min));
     });
-    props.onChange(value);
   };
 
   const handleMouseUp = () => {
     document.removeEventListener('mousemove', handleMouseMove);
     document.removeEventListener('mouseup', handleMouseUp);
+
+    setIsMouseDown(false);
   };
 
   const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {

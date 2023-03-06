@@ -2,25 +2,30 @@ import OscillatorSettings from "./OscillatorSettings";
 
 export default class OscillatorStack {
 
-    audioContexts: Array<AudioContext> = []
     oscillatorNodes: Array<OscillatorNode> = []
     gainNodes: Array<GainNode> = []
 
     constructor(
             oscillatorSettings: Array<OscillatorSettings>,
             frequency: number,
-            baseVolume: number
+            baseVolume: number,
+            audioContext: AudioContext,
+            dynamicsCompressor: DynamicsCompressorNode
             ) {
         for (let i = 0; i < oscillatorSettings.length; i++) {
-            this.audioContexts[i] = new AudioContext()
-            this.oscillatorNodes[i] = this.audioContexts[i].createOscillator()
+            this.oscillatorNodes[i] = audioContext.createOscillator()
             this.oscillatorNodes[i].frequency.setValueAtTime(
                     oscillatorSettings[i].pitchRatio * frequency,
-                    this.audioContexts[i].currentTime,
+                    audioContext.currentTime,
                     )
 
-            this.gainNodes[i] = this.audioContexts[i].createGain()
-            this.gainNodes[i].gain.value = oscillatorSettings[i].localGain + baseVolume
+            this.oscillatorNodes[i].type = oscillatorSettings[i].waveType;
+
+            this.gainNodes[i] = audioContext.createGain()
+            this.gainNodes[i].gain.value = oscillatorSettings[i].localGain
+
+            this.oscillatorNodes[i].connect(this.gainNodes[i])
+            this.gainNodes[i].connect(dynamicsCompressor)
         }
     }
 
@@ -28,6 +33,11 @@ export default class OscillatorStack {
         this.oscillatorNodes.forEach(function (oscillator) {
             oscillator.start()
         })
+
+        // Attack Period
+        // Sustain
+        // Decay
+        // Release
     }
 
     endPlay() {

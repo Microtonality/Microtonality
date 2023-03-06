@@ -1,12 +1,14 @@
 import * as React from "react";
 import { useState } from "react";
+import OscillatorSettings from "../utility/audio/OscillatorSettings";
 
 interface OscillatorProps {
-    value: number;
+    settings: OscillatorSettings;
+    onChange: (value: OscillatorSettings) => void;
 }
 
 const defaultProps = {
-    value: 50,
+    settings: new OscillatorSettings(1, 0.5, "sine"),
 }
 
 export default function Oscillator(props: OscillatorProps) {
