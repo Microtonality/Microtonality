@@ -67,13 +67,15 @@ const createMicrotonalConfig = (
     synthConfig?: SynthConfig,
     scaleConfig?: ScaleConfig
 ) => {
-    let newScaleConfig = {...DEFAULT_SCALE_CONFIG, ...scaleConfig} as ScaleConfig;
-    let newSynthConfig = {...DEFAULT_SYNTH_CONFIG, ...synthConfig} as SynthConfig;
+
+    let newScaleConfig = {...DEFAULT_SCALE_CONFIG, ...microtonalConfig?.scaleConfig, ...scaleConfig} as ScaleConfig;
+    let newSynthConfig = {...DEFAULT_SYNTH_CONFIG, ...microtonalConfig?.synthConfig, ...synthConfig} as SynthConfig;
+
     return {
         ...DEFAULT_MICROTONAL_CONFIG,
+        ...microtonalConfig,
         scaleConfig: newScaleConfig,
-        synthConfig: newSynthConfig,
-        ...microtonalConfig
+        synthConfig: newSynthConfig
     } as MicrotonalConfig;
 }
 
