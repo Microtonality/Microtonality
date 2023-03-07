@@ -48,10 +48,10 @@ function FrequencyBarComponent(props: {
     freqBarArr.push(<FrequencyBarButton frequency={props.scaleConfig.tuningFrequency} keyMapping={props.keyMapping[0].toString()} key={0}/>)
 
     // Stop before the octave note
-    for (let scaleDegree = 1; scaleDegree < props.scaleConfig.scale.notes.length - 1; scaleDegree++) {
+    for (let scaleDegree = 0; scaleDegree < props.scaleConfig.scale.notes.length - 1; scaleDegree++) {
         let multiplier: number = props.scaleConfig.scale.notes[scaleDegree % props.scaleConfig.scale.notes.length].multiplier;
         let freq = multiplier * props.scaleConfig.tuningFrequency;
-        let keyboardKeyNum = props.keyMapping[scaleDegree];
+        let keyboardKeyNum = props.keyMapping[scaleDegree + 1];
         let keyboardKey;
         if (keyboardKeyNum == undefined) {
             keyboardKey = "None";
