@@ -1,10 +1,7 @@
 import { Scale } from '../Scale'
 import { ScaleNote, RatioNote, CentNote, IntRatioNote } from '../notes'
 
-export function parseScalaFile(file: string | ArrayBuffer): Scale {
-
-    if (file instanceof ArrayBuffer)
-        file = new TextDecoder().decode(file);
+export function parseScalaFile(file: string): Scale {
 
     let title: string = '';
     let description: string = '';

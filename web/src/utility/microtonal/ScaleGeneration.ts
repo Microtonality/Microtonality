@@ -3,13 +3,13 @@ import {scaleFromCents, scaleFromRatios} from "./Scale";
 import {CentNote} from "./notes/CentNote";
 import {RatioNote} from "./notes/RatioNote";
 
-    export function generateEqualTemperedScale(numberOfNotes: number) {
+export function generateEqualTemperedScale(numberOfNotes: number) {
     let ratios = [];
 
-    // Remember, an N-note scale has N-1 notes before wrapping around
-    for (let i = 0; i < numberOfNotes - 1; i++) {
-        ratios.push(`${i}/${numberOfNotes}`);
+    for (let i = 1; i < numberOfNotes; i++) {
+        ratios.push(`${i + numberOfNotes}/${numberOfNotes}`);
     }
+    ratios.push('2/1');
 
     return scaleFromRatios(ratios, `${numberOfNotes}-note Equal Tempered Scale`);
 }

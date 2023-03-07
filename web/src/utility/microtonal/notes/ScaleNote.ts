@@ -1,26 +1,25 @@
+import { RatioNote, CentNote } from ".";
 
 export class ScaleNote {
+    public num: string;
     public multiplier: number;
     public comments: string;
-    // public altered: boolean = false;
 
-    // Subclass this, don't use as is
-    constructor(multiplier: number, comments: string | null = null) {
+    constructor(num: string, multiplier: number, comments: string | null = null) {
+        this.num = num;
         this.multiplier = multiplier;
         this.comments = comments;
-        // this.altered = false;
     }
 
     exportScala(): string {
-        return 'ScaleNote DONT CALL';
+        throw new Error('Only call exportScala() from ScaleNote\'s subclasses');
     }
 
-    // We should probably just overwrite the 
-    // note in the scale at the level of the
-    // ScaleHandler upon changing the frequency.
-    // Also we gotta remember to
-    // bring any comments over from the old note.
-    // public setAltered(altered: boolean) {
-    //     this.altered = altered;
-    // }
+    static average(note1: ScaleNote, note2: ScaleNote): ScaleNote {
+        if (note1 instanceof RatioNote && note2 instanceof RatioNote) {
+            return RatioNote.average(note1, note2);
+        }
+        
+        return CentNote.average(note1, note2);
+    }
 }

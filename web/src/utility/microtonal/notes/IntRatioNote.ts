@@ -1,7 +1,7 @@
-import { RatioNote } from "./RatioNote";
+import { RatioNote } from ".";
 
 export class IntRatioNote extends RatioNote {
-    public intRatio: number; // seems redundant but it is consistent
+    public intRatio: number;
 
     constructor(intRatio: number | string, comments: string | null = null) {
         super(intRatio.toString() + '/1', comments);

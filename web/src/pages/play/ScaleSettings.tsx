@@ -2,13 +2,14 @@ import {Button, FormControl, Grid, MenuItem, Select, Slider, TextField} from "@m
 import SynthSettings from "./SynthSettings";
 import * as React from "react";
 import {ChangeEventHandler, KeyboardEventHandler} from "react";
-import {ScaleConfig} from "../../utility/MicrotonalConfig";
+import {MicrotonalConfig, ScaleConfig} from "../../utility/MicrotonalConfig";
 import ScaleEditor from "./ScaleEditor";
 import BasicSettings from "./BasicSettings";
 
 interface ScaleSettingsProps {
     className?: string,
-    scaleConfig: ScaleConfig
+    microtonalConfig: MicrotonalConfig
+    setMicrotonalConfig: Function
 }
 
 export default function ScaleSettings(props: ScaleSettingsProps) {
@@ -58,11 +59,11 @@ export default function ScaleSettings(props: ScaleSettingsProps) {
                 <div className="px-4 py-5 flex-auto">
                     <div className="tab-content tab-space">
                         <div className={openTab === 1 ? "block" : "hidden"} id="link1">
-                            <BasicSettings scaleConfig={props.scaleConfig}/>
+                            <BasicSettings scaleConfig={props.microtonalConfig.scaleConfig}/>
                         </div>
 
                         <div className={openTab === 2 ? "block" : "hidden"} id="link2">
-                            <ScaleEditor scaleConfig={props.scaleConfig} />
+                            <ScaleEditor microtonalConfig={props.microtonalConfig} setMicrotonalConfig={props.setMicrotonalConfig}/>
                         </div>
                     </div>
                 </div>

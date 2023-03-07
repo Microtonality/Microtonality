@@ -21,7 +21,7 @@ export function generateScalaFile(scale: Scale): File {
         file.push('  ' + note.exportScala() + '\n');
 
     file.push('\n');
-    return new File(file, title, {type: "text/plain"});
+    return new File(file, title, {type: "text"});
 }
 
 export function getTitle(scale: Scale): string {
@@ -29,6 +29,7 @@ export function getTitle(scale: Scale): string {
     if (scale.title === '')
         scale.title = generateTitle();
     else {
+        scale.title = scale.title.replace(/ /g, '_');
         validateTitle(scale.title);
 
         if (!scale.title.endsWith('.scl'))

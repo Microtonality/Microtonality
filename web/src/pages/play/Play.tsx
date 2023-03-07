@@ -4,13 +4,12 @@ import { useState, useEffect } from 'react';
 import SynthSettings from "./SynthSettings";
 import ScaleSettings from "./ScaleSettings";
 import FullPianoComponent from "./MicrotonalPiano"
-import {createMicrotonalConfig} from "../../utility/MicrotonalConfig";
+import {MicrotonalConfig, createMicrotonalConfig} from "../../utility/MicrotonalConfig";
 import MidiReceiver from "../../utility/midi/MIDIReceiver";
 import {AdditiveSynthesizer} from "../../utility/audio/AdditiveSynthesizer";
 
 export default function Play() {
-    const [microtonalConfig, setMicrotonalConfig] = useState(createMicrotonalConfig());
-    // Which of the microtonalConfigs is active on screen right now?
+    const [microtonalConfig, setMicrotonalConfig] = useState<MicrotonalConfig>(createMicrotonalConfig());
     const additiveSynth = new AdditiveSynthesizer();
     const midiReceiver = new MidiReceiver(additiveSynth, microtonalConfig.scaleConfig);
 
@@ -23,7 +22,7 @@ export default function Play() {
         <div className="mt-[1%] flex-1 flex h-screen w-screen">
 
             <div className="w-[30%] h-full">
-                <ScaleSettings scaleConfig={microtonalConfig.scaleConfig}/>
+                <ScaleSettings microtonalConfig={microtonalConfig} setMicrotonalConfig={setMicrotonalConfig}/>
             </div>
 
             <div className={"flex flex-col w-full ml-[1%]"}>

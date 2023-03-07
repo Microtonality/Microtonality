@@ -53,7 +53,7 @@ export default function BasicSettings(props: BasicSettingsProps) {
                 FREQUENCY
             </div>
             <div className="flex w-full h-11 mt-[2%]">
-                <input type="number" value={440} step="0.0001" className="w-full rounded-md font-agrandir pl-[2%]" />
+                <input type="number" defaultValue={props.scaleConfig.tuningFrequency} step="0.0001" className="w-full rounded-md font-agrandir pl-[2%]" />
             </div>
 
             <div

@@ -44,9 +44,13 @@ function FrequencyBarComponent(props: {
     let reversedMapping = reverseMapping(props.keyMapping);
     console.log(reversedMapping);
 
-    for (let scaleDegree=0; scaleDegree<props.scaleConfig.scale.notes.length; scaleDegree++) {
-        // Todo: Needs to be swapped for the actual freq calc
-        let freq = props.scaleConfig.scale.scaleDegreeToNote(scaleDegree).multiplier * 100;
+    // Push 1/1 note
+    freqBarArr.push(<FrequencyBarButton frequency={props.scaleConfig.tuningFrequency} keyMapping={props.keyMapping[0].toString()} key={0}/>)
+
+    // Stop before the octave note
+    for (let scaleDegree = 1; scaleDegree < props.scaleConfig.scale.notes.length - 1; scaleDegree++) {
+        let multiplier: number = props.scaleConfig.scale.notes[scaleDegree % props.scaleConfig.scale.notes.length].multiplier;
+        let freq = multiplier * props.scaleConfig.tuningFrequency;
         let keyboardKeyNum = props.keyMapping[scaleDegree];
         let keyboardKey;
         if (keyboardKeyNum == undefined) {

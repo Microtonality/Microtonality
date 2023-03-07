@@ -23,7 +23,7 @@ const defaultProps = {
 }
 
 export default function Knob (props: KnobProps) {
-  let [value, setValue] = useState<number>(props.value); // TODO check
+  let [value, setValue] = useState<number>(props.value);
   let [isMouseDown, setIsMouseDown] = useState(false);
 
   useEffect(() => {
