@@ -2,7 +2,7 @@ import * as React from "react";
 import { MicrotonalConfig } from "../../utility/MicrotonalConfig";
 import { useEffect, useState } from "react";
 
-import close from "../../ui/icons/close.png"
+import close from "../../img/icons/close.png"
 import { CentNote, RatioNote, ScaleNote } from "../../utility/microtonal/notes";
 import { addNote, deleteNote, setScale, swapNotes } from "./Reducers";
 import { parseScalaFile } from "../../utility/microtonal/scala/ScalaParser";
