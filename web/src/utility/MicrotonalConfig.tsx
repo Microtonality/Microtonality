@@ -50,7 +50,7 @@ export const DEFAULT_SYNTH_CONFIG: SynthConfig = {
 }
 
 export const DEFAULT_SCALE_CONFIG: ScaleConfig = {
-    keysPerOctave: 11,
+    keysPerOctave: 12,
     tuningFrequency: 440,
     rootKey: 69,
     scale: generateEqualTemperedScale(12)
