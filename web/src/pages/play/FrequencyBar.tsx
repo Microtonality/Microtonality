@@ -3,6 +3,7 @@ import * as React from "react";
 import {useEffect, useRef} from "react";
 import {KeyShortcut} from "../../utility/microtonal/PianoKeyMapping";
 import {ScaleConfig} from "../../utility/MicrotonalConfig";
+import MidiReceiver from "../../utility/midi/MIDIReceiver";
 
 interface FrequencyBarButton {
     frequency: number,
@@ -38,31 +39,29 @@ function FrequencyBarComponent(props: {
     setKeyMapping: Function,
     octaveOffset: number,
     keyboardShortcuts: Array<KeyShortcut>
+    midiReceiver: MidiReceiver
 }) {
 
     let freqBarArr = [];
     let reversedMapping = reverseMapping(props.keyMapping);
     console.log(reversedMapping);
 
-    // Push 1/1 note
-    freqBarArr.push(<FrequencyBarButton frequency={props.scaleConfig.tuningFrequency} keyMapping={props.keyMapping[0].toString()} key={0}/>)
-
     // Stop before the octave note
     for (let scaleDegree = 0; scaleDegree < props.scaleConfig.scale.notes.length - 1; scaleDegree++) {
-        let multiplier: number = props.scaleConfig.scale.notes[scaleDegree % props.scaleConfig.scale.notes.length].multiplier;
-        let freq = multiplier * props.scaleConfig.tuningFrequency;
-        let keyboardKeyNum = props.keyMapping[scaleDegree + 1];
+        let keyboardKeyNum = props.keyMapping[scaleDegree];
         let keyboardKey;
         if (keyboardKeyNum == undefined) {
             keyboardKey = "None";
         } else {
             keyboardKey = keyboardKeyNum.toString()
         }
+        let midiNote = props.scaleConfig.rootKey + (props.octaveOffset * (props.scaleConfig.scale.notes.length - 1)) + scaleDegree;
+
         freqBarArr.push
         (
             // <Tooltip describeChild title={"asdf"} key={i}
             //          placement="top">
-                    <FrequencyBarButton frequency={freq} keyMapping={keyboardKey} key={scaleDegree}/>
+                    <FrequencyBarButton frequency={props.midiReceiver.MidiNotesToFrequency(midiNote)} keyMapping={midiNote.toString()} key={midiNote}/>
             // </Tooltip>
         )
     }

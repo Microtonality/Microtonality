@@ -6,10 +6,9 @@ import {RatioNote} from "./notes/RatioNote";
 export function generateEqualTemperedScale(numberOfNotes: number) {
     let ratios = [];
 
-    for (let i = 1; i < numberOfNotes; i++) {
+    for (let i = 0; i < numberOfNotes; i++) {
         ratios.push(`${i + numberOfNotes}/${numberOfNotes}`);
     }
-    ratios.push('2/1');
 
     return scaleFromRatios(ratios, `${numberOfNotes}-note Equal Tempered Scale`);
 }

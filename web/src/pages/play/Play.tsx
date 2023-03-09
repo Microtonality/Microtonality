@@ -11,10 +11,11 @@ import {AdditiveSynthesizer} from "../../utility/audio/AdditiveSynthesizer";
 export default function Play() {
     const [microtonalConfig, setMicrotonalConfig] = useState<MicrotonalConfig>(createMicrotonalConfig());
     const additiveSynth = new AdditiveSynthesizer();
-    const midiReceiver = new MidiReceiver(additiveSynth, microtonalConfig.scaleConfig);
+    const midiReceiver = new MidiReceiver(additiveSynth, microtonalConfig.scaleConfig, microtonalConfig.keyMapping);
 
     useEffect(() => {
         midiReceiver.config = microtonalConfig.scaleConfig;
+        midiReceiver.keyMapping = microtonalConfig.keyMapping;
         additiveSynth.config = microtonalConfig.synthConfig;
     }, [microtonalConfig]);
 

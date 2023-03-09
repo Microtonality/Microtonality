@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import FrequencyBarComponent from "./FrequencyBar";
 import * as React from "react";
 import OctaveButtons from "./OctaveButtons";
@@ -20,11 +20,15 @@ export default function MicrotonalPiano(props: {
 }) {
     const [octave, setOctave] = useState(0);
 
+    useEffect(() => {
+        console.log("octave", octave);
+    }, [octave])
+
     let keyboardShortcuts = createPianoKeyboardShortcuts(MIDDLE_C, props.scaleConfig.keysPerOctave);
 
     return <div className="h-full border-gold border-t-2 border-l-2 border-b-2 rounded-tl-xl rounded-bl-xl bg-bglight">
         <FrequencyBarComponent keyMapping={props.keyMapping} keyboardShortcuts={keyboardShortcuts} scaleConfig={props.scaleConfig}
-                               playMidiNote={() => {}}
+                               playMidiNote={() => {}} midiReceiver={props.midiReceiver}
                                setKeyMapping={props.setKeyMapping} octaveOffset={octave}/>
         <div className="flex w-[85%] h-[70%] mt-[2%] ml-[4%]">
             <div className="flex flex-row aspect-square w-1/5">

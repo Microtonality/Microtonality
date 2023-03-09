@@ -50,10 +50,10 @@ export const DEFAULT_SYNTH_CONFIG: SynthConfig = {
 }
 
 export const DEFAULT_SCALE_CONFIG: ScaleConfig = {
-    keysPerOctave: 12,
+    keysPerOctave: 11,
     tuningFrequency: 440,
     rootKey: 69,
-    scale: generateEqualTemperedScale(18)
+    scale: generateEqualTemperedScale(12)
 }
 
 export const DEFAULT_MICROTONAL_CONFIG: MicrotonalConfig = {
