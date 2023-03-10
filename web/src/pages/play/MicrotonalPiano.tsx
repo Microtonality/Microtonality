@@ -27,7 +27,13 @@ export default function MicrotonalPiano(props: {
         console.log("octave", octave);
     }, [octave])
 
-    let keyboardShortcuts = createPianoKeyboardShortcuts(props.microtonalConfig.scaleConfig.rootKey, props.microtonalConfig.scaleConfig.keysPerOctave);
+    let keyboardShortcuts = createPianoKeyboardShortcuts(props.microtonalConfig.scaleConfig.rootKey + keyOffset, props.microtonalConfig.scaleConfig.keysPerOctave);
+
+    useEffect(() => {
+            keyboardShortcuts = createPianoKeyboardShortcuts(props.microtonalConfig.scaleConfig.rootKey + keyOffset, props.microtonalConfig.scaleConfig.keysPerOctave);
+        },
+        [props.microtonalConfig]
+    )
 
     return <div className="h-full border-gold border-t-2 border-l-2 border-b-2 rounded-tl-xl rounded-bl-xl bg-bglight">
         <FrequencyBarComponent keyMapping={props.keyMapping} keyboardShortcuts={keyboardShortcuts} scaleConfig={props.microtonalConfig.scaleConfig}

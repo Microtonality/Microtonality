@@ -15,8 +15,8 @@ function FrequencyBarButton(props: FrequencyBarButton) {
     const updateAssignedKey = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {  };
     return <button
         aria-describedby={"simple-popover"}
-        className={"btn w-8 h-8 font-agrandir text-black bg-gold border-b-2 border-r-2 border-black" +
-            `${props.active ? 'uppercase' : "hover:bg-gray-200"} text-sm`}
+        className={"btn flex flex-1 items-center justify-center md:p-0.5 p-0 font-agrandir text-black bg-gold border-b-2 border-r-2 border-black" +
+            `${props.active ? 'uppercase' : "hover:bg-gray-200"} md:text-sm text-xs`}
         onClick={(e) => updateAssignedKey(e)}>
         {Math.round(props.frequency)}
         <br/>
@@ -45,7 +45,6 @@ function FrequencyBarComponent(props: {
 
     let freqBarArr = [];
     let reversedMapping = reverseMapping(props.keyMapping);
-    console.log(reversedMapping);
 
     // If the user is advancing forward or backwards keys, we need to rotate the frequency bar buttons around
     let scaleOffset = null;
@@ -70,7 +69,7 @@ function FrequencyBarComponent(props: {
         if (keyboardKeyNum === undefined) {
             keyboardKey = "None";
         } else {
-            keyboardKey = (props.scaleConfig.rootKey + ((props.octaveOffset + octaveAdditive) * (props.scaleConfig.scale.notes.length - 1)) + keyboardKeyNum).toString();
+            keyboardKey = props.keyboardShortcuts[(keyboardKeyNum - props.keyOffset + props.keyboardShortcuts.length) % props.keyboardShortcuts.length].key.toUpperCase();
         }
 
         freqBarArr.push
@@ -83,7 +82,7 @@ function FrequencyBarComponent(props: {
     }
 
     return <div className="flex justify-center mt-[2%]">
-        <div>
+        <div className={"flex flex-row justify-center flex-wrap"}>
             {freqBarArr}
         </div>
         <Tooltip describeChild title="Click a frequency box and then press the key on your keyboard you want it to correspond to">
