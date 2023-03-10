@@ -47,21 +47,22 @@ function FrequencyBarComponent(props: {
     console.log(reversedMapping);
 
     // Stop before the octave note
-    for (let scaleDegree = 0; scaleDegree < props.scaleConfig.scale.notes.length - 1; scaleDegree++) {
-        let keyboardKeyNum = props.keyMapping[scaleDegree];
+    for (let scaleDegree = 0; scaleDegree < props.scaleConfig.scale.notes.length; scaleDegree++) {
+        // Map the scale degree to the midi keyboard mapping
+        let keyboardKeyNum = reversedMapping[scaleDegree];
         let keyboardKey;
-        if (keyboardKeyNum == undefined) {
+        // If it has a mapping, get the MIDI note for it
+        if (keyboardKeyNum === undefined) {
             keyboardKey = "None";
         } else {
-            keyboardKey = keyboardKeyNum.toString()
+            keyboardKey = (props.scaleConfig.rootKey + (props.octaveOffset * (props.scaleConfig.scale.notes.length - 1)) + keyboardKeyNum).toString();
         }
-        let midiNote = props.scaleConfig.rootKey + (props.octaveOffset * (props.scaleConfig.scale.notes.length - 1)) + scaleDegree;
 
         freqBarArr.push
         (
             // <Tooltip describeChild title={"asdf"} key={i}
             //          placement="top">
-                    <FrequencyBarButton frequency={props.midiReceiver.MidiNotesToFrequency(midiNote)} keyMapping={midiNote.toString()} key={midiNote}/>
+                    <FrequencyBarButton frequency={props.midiReceiver.ScaleDegreeToFrequency(scaleDegree, props.octaveOffset)} keyMapping={keyboardKey} key={scaleDegree}/>
             // </Tooltip>
         )
     }

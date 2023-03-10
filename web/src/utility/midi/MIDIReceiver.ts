@@ -109,13 +109,17 @@ export default class MidiReceiver {
             multiplier = note.multiplier;
         } catch (e) {
             console.log(`Error: key in octave ${octaveKey} (MIDI number: ${MidiNote}) is not assigned to a note in the scale.`)
-            // throw e;
             return null;
         }
-        // console.log("multiplier", multiplier, octaveOffset, note);
-        // console.log("full freq multiplier", Math.pow(this.config.scale.octaveMultiplier.multiplier, multiplier - 1), Math.pow(this.config.scale.octaveMultiplier.multiplier, octaveOffset))
+
+        return this.ScaleDegreeToFrequency(scaleDegree, octaveOffset)
+    }
+
+    public ScaleDegreeToFrequency(scaleDegree: number, octave: number): number {
+        let note = this.config.scale.scaleDegreeToNote(scaleDegree);
+        let multiplier = note.multiplier;
 
         // Finally, convert to a frequency.
-        return this.config.tuningFrequency * Math.pow(this.config.scale.octaveMultiplier.multiplier, multiplier - 1) * Math.pow(this.config.scale.octaveMultiplier.multiplier, octaveOffset);
+        return this.config.tuningFrequency * Math.pow(this.config.scale.octaveMultiplier.multiplier, multiplier - 1) * Math.pow(this.config.scale.octaveMultiplier.multiplier, octave);
     }
 }
