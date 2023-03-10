@@ -57,6 +57,10 @@ module.exports = (env, options) => {
                     test: /\.svg$/,
                     type: "asset/resource",
                     use: ['@svgr/webpack', 'svg-url-loader'],
+                },
+                {
+                    test: /\.png$/,
+                    type: "asset/resource",
                 }
             ]
         },
