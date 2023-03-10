@@ -24,7 +24,7 @@ export default function MicrotonalPiano(props: {
         console.log("octave", octave);
     }, [octave])
 
-    let keyboardShortcuts = createPianoKeyboardShortcuts(MIDDLE_C, props.scaleConfig.keysPerOctave);
+    let keyboardShortcuts = createPianoKeyboardShortcuts(props.scaleConfig.rootKey, props.scaleConfig.keysPerOctave);
 
     return <div className="h-full border-gold border-t-2 border-l-2 border-b-2 rounded-tl-xl rounded-bl-xl bg-bglight">
         <FrequencyBarComponent keyMapping={props.keyMapping} keyboardShortcuts={keyboardShortcuts} scaleConfig={props.scaleConfig}
@@ -38,7 +38,7 @@ export default function MicrotonalPiano(props: {
             <ReactPianoWrapper keyboardShortcuts={keyboardShortcuts} keyMapping={props.keyMapping}
                                 scaleConfig={props.scaleConfig}
                                 midiReceiver={props.midiReceiver}
-                                rootKey={MIDDLE_C + octave * props.scaleConfig.keysPerOctave}/>
+                                rootKey={props.scaleConfig.rootKey + octave * props.scaleConfig.keysPerOctave}/>
         </div>
     </div>;
 }

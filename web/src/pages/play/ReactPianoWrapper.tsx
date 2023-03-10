@@ -39,9 +39,9 @@ export default function ReactPianoWrapper(props: ReactPianoWrapperProps) {
     return <ReactPiano
         // activeNotes={synthesizer.activeNotes}
         className="mx-auto my-auto"
-        noteRange={{ first: props.rootKey, last: props.rootKey + (true ? 11 : props.scaleConfig.keysPerOctave - 1)}} // thoughts? TODO
-        playNote={(note: any) => {props.midiReceiver.noteOn(translateNote(note), DEFAULT_VELOCITY)}}
-        stopNote={(note: any) => {props.midiReceiver.noteOff(translateNote(note))}}
+        noteRange={{ first: props.rootKey, last: props.rootKey + (false ? 11 : props.scaleConfig.keysPerOctave)}} // thoughts? TODO
+        playNote={(note: any) => {props.midiReceiver.noteOn(note, DEFAULT_VELOCITY)}}
+        stopNote={(note: any) => {props.midiReceiver.noteOff(note)}}
         keyboardShortcuts={keyboardShortcuts}
     />
 }

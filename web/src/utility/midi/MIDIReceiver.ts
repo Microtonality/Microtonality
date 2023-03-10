@@ -1,5 +1,6 @@
 import {AdditiveSynthesizer} from "../audio/AdditiveSynthesizer"
 import {DEFAULT_SCALE_CONFIG, ScaleConfig} from "../MicrotonalConfig";
+import {RatioNote} from "../microtonal/notes";
 
 export default class MidiReceiver {
 
@@ -69,10 +70,9 @@ export default class MidiReceiver {
             return;
         }
 
-        let frequency = this.MidiNotesToFrequency(note)
-        frequency = 440
+        let frequency = this.MidiNotesToFrequency(note);
 
-        this.synth.onPlayFrequency(frequency, velocity)
+        this.synth.onPlayFrequency(frequency, velocity);
     }
 
     public noteOff(note: number) {
@@ -81,10 +81,9 @@ export default class MidiReceiver {
             return;
         }
 
-        let frequency = this.MidiNotesToFrequency(note)
-        frequency = 440
+        let frequency = this.MidiNotesToFrequency(note);
 
-        this.synth.onStopFrequency(frequency)
+        this.synth.onStopFrequency(frequency);
     }
 
     public MidiNotesToFrequency(MidiNote: number): number {
@@ -103,16 +102,20 @@ export default class MidiReceiver {
         // Now we have the octaveKey and the octaveOffset, we can determine how it should be mapped
         let multiplier;
         let scaleDegree;
+        let note;
         try {
             scaleDegree = this.keyMapping[octaveKey];
-            multiplier = this.config.scale.notes[scaleDegree].multiplier;
+            note = this.config.scale.scaleDegreeToNote(scaleDegree);
+            multiplier = note.multiplier;
         } catch (e) {
             console.log(`Error: key in octave ${octaveKey} (MIDI number: ${MidiNote}) is not assigned to a note in the scale.`)
             // throw e;
             return null;
         }
+        // console.log("multiplier", multiplier, octaveOffset, note);
+        // console.log("full freq multiplier", Math.pow(this.config.scale.octaveMultiplier.multiplier, multiplier - 1), Math.pow(this.config.scale.octaveMultiplier.multiplier, octaveOffset))
 
         // Finally, convert to a frequency.
-        return multiplier * this.config.tuningFrequency * Math.pow(this.config.scale.octaveMultiplier.multiplier, octaveOffset);
+        return this.config.tuningFrequency * Math.pow(this.config.scale.octaveMultiplier.multiplier, multiplier - 1) * Math.pow(this.config.scale.octaveMultiplier.multiplier, octaveOffset);
     }
 }
