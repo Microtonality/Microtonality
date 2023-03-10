@@ -35,12 +35,14 @@ export default function MicrotonalPiano(props: {
         [props.microtonalConfig]
     )
 
-    return <div className="h-full border-gold border-t-2 border-l-2 border-b-2 rounded-tl-xl rounded-bl-xl bg-bglight">
-        <FrequencyBarComponent keyMapping={props.keyMapping} keyboardShortcuts={keyboardShortcuts} scaleConfig={props.microtonalConfig.scaleConfig}
-                                playMidiNote={() => {}} midiReceiver={props.midiReceiver} keyOffset={keyOffset}
-                                setKeyMapping={props.setKeyMapping} octaveOffset={octave}/>
-        <div className="flex w-[85%] h-[70%] mt-[2%] ml-[4%]">
-            <div className="flex flex-row aspect-square w-1/5">
+    return <div className="flex flex-col justify-center h-full border-gold border-t-2 border-l-2 border-b-2 rounded-tl-xl rounded-bl-xl bg-bglight">
+        <div className="flex justify-center">
+            <FrequencyBarComponent  keyMapping={props.keyMapping} keyboardShortcuts={keyboardShortcuts} scaleConfig={props.microtonalConfig.scaleConfig}
+                                    playMidiNote={() => {}} midiReceiver={props.midiReceiver} keyOffset={keyOffset}
+                                    setKeyMapping={props.setKeyMapping} octaveOffset={octave}/>
+        </div>
+        <div className="flex flex-row justify-center mx-[5%] h-[70%] mt-[2%]">
+            <div className="flex w-1/8 mr-[1%]">
                 <Knobs knobLabel="GAIN" onChange={(value) => props.setMicrotonalConfig(setGain(props.microtonalConfig, value)) } />
             </div>
             <OctaveButtons octaveUp={() => setOctave(octave + 1)} octaveDown={() => setOctave(octave - 1)}/>

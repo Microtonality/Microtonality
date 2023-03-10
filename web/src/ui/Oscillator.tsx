@@ -28,9 +28,9 @@ export default function Oscillator(props: OscillatorProps) {
     }
     
     return (
-        <div className="flex flex-col h-full w-full items-center justify-around">
+        <div className="flex flex-col items-center justify-between">
 
-            <select data-te-select-init className="flex w-[80%] h-[7%] rounded-md text-center font-agrandir">
+            <select data-te-select-init className="flex h-6 w-[80%] rounded-md text-center font-agrandir">
                 <option value="sine">SINE</option>
                 <option value="square">SQUARE</option>
                 <option value="triangle">TRIANGLE</option>
@@ -39,7 +39,7 @@ export default function Oscillator(props: OscillatorProps) {
             
             <input
                 type="range"
-                className="transparent h-[2%] w-[200%] my-[80%] cursor-pointer appearance-none rounded-lg border-neutral-500 border-[1px] bg-bgdark transform -rotate-90 accent-neutral-200"
+                className="h-3 w-full accent-neutral-200 cursor-pointer appearance-none rounded-lg border-neutral-500 border-[1px] bg-bglight transform -rotate-90 aspect-auto"
                 id="customRange1" 
                 onChange={handleSliderChange}
                 value={value}
@@ -49,7 +49,7 @@ export default function Oscillator(props: OscillatorProps) {
             />
 
             <input  
-                className={"text-center self-center w-[80%] rounded-md font-agrandir"} 
+                className={"text-center w-[60%] self-center rounded-md font-agrandir"} 
                 type="number" 
                 value={value} 
                 onChange={handleInputChange} 

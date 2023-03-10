@@ -34,20 +34,28 @@ export default function SynthSettings(props: SynthProps) {
         props.setMicrotonalConfig(setOscillator(props.microtonalConfig, settings, index));
     }
 
-    return  <div className="h-full w-full bottom-0 border-gold border-t-2 border-l-2 rounded-tl-xl bg-bglight">
-                <div className="flex">
-                    <div className="mt-[1%] flex flex-col w-1/3 justify-around">
-                        <div className="flex">
-                            <Knobs knobLabel="Attack" value={props.microtonalConfig.synthConfig.attack} onChange={(value) => handleAttackChange(value)} />
-                            <Knobs knobLabel="Decay" value={props.microtonalConfig.synthConfig.decay} onChange={(value) => handleDecayChange(value)} />
-                        </div>
-                        <div className="flex">
-                            <Knobs knobLabel="Sustain" onChange={(value) => handleSustainChange(value)} />
-                            <Knobs knobLabel="Release" onChange={(value) => handleReleaseChange(value)} />
+    return  <div className="flex h-full w-full border-gold border-t-2 border-l-2 rounded-tl-xl bg-bglight justify-around">
+
+                <div className="flex h-full">
+
+                    <div className="flex p-[2%]">
+                        <div className="flex w-[70%]">
+                            <div className="">
+                                <Knobs knobLabel="Attack" value={props.microtonalConfig.synthConfig.attack} onChange={(value) => handleAttackChange(value)} />
+                            </div>
+                            <div className="ml-[2%]">
+                                <Knobs knobLabel="Decay" value={props.microtonalConfig.synthConfig.decay} onChange={(value) => handleDecayChange(value)} />
+                            </div>
+                            <div className="ml-[2%]"> 
+                                <Knobs knobLabel="Sustain" onChange={(value) => handleSustainChange(value)} />
+                            </div>
+                            <div className="ml-[2%]">
+                                <Knobs knobLabel="Release" onChange={(value) => handleReleaseChange(value)} />
+                            </div>
                         </div>
                     </div>
 
-                    <div className="flex flex-row ml-[4%]">
+                    <div className="flex flex-row mx-[2%] mt-[2%] mb-[3%] p-[2%] bg-neutral-700 rounded-xl border-gold border-[3px] overflow-hidden">
                         <Oscillator onChange={(settings) => handleOscillatorChanges(settings, 0)} />
                         <Oscillator onChange={(settings) => handleOscillatorChanges(settings, 1)} />
                         <Oscillator onChange={(settings) => handleOscillatorChanges(settings, 2)} />
@@ -56,6 +64,8 @@ export default function SynthSettings(props: SynthProps) {
                         <Oscillator onChange={(settings) => handleOscillatorChanges(settings, 5)} />
                         <Oscillator onChange={(settings) => handleOscillatorChanges(settings, 6)} />
                     </div>
+
                 </div>
+
             </div>;
 }
