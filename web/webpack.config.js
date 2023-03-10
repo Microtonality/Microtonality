@@ -3,11 +3,12 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const Webpack = require("webpack");
 
 module.exports = (env, options) => {
     const isDevelopment = options.mode !== 'production';
     const isGHActions = process.env.GITHUB_ACTIONS === "true";
-    console.log("is gh", isGHActions);
+    const publicPath = isGHActions ? "/Microtonality" : "/";
     return {
         mode: isDevelopment ? "development" : "production",
         entry: {
@@ -18,7 +19,7 @@ module.exports = (env, options) => {
             filename: '[name].[contenthash].js',
             assetModuleFilename: "images/[name].[hash][ext][query]",
             clean: true,
-            publicPath: isGHActions ? "/Microtonality" : "/"
+            publicPath: publicPath
         },
         module: {
             rules: [
@@ -78,6 +79,9 @@ module.exports = (env, options) => {
             }),
             new MiniCssExtractPlugin({
                 filename: "[name].[contenthash].css"
+            }),
+            new Webpack.DefinePlugin ({
+                'process.env.PUBLIC_PATH': JSON.stringify(publicPath)
             }),
         ],
         optimization: {

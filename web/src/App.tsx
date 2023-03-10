@@ -10,7 +10,7 @@ import {Contact} from "./pages/Contact";
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={process.env.PUBLIC_PATH}>
       <Routes>
         <Route path='/' element={<Layout />}>
           <Route index element={<Learn />}/>
