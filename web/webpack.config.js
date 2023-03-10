@@ -8,7 +8,7 @@ const Webpack = require("webpack");
 module.exports = (env, options) => {
     const isDevelopment = options.mode !== 'production';
     const isGHActions = process.env.GITHUB_ACTIONS === "true";
-    const publicPath = isGHActions ? "/Microtonality" : "/";
+    const publicPath = isGHActions ? "/Microtonality/" : "/";
     return {
         mode: isDevelopment ? "development" : "production",
         entry: {
