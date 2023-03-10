@@ -1,7 +1,7 @@
 // Some code adapted for our use case from https://github.com/facebook/react/issues/18404#issuecomment-605294038
 
 import * as React from "react";
-import hamburger from "../../ui/icons/hamburger.png"
+import hamburger from "../../img/icons/hamburger.png"
 import { MicrotonalConfig } from "../../utility/MicrotonalConfig";
 import { Scale } from "../../utility/microtonal/Scale";
 import { useEffect, useState } from "react";

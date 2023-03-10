@@ -3,6 +3,7 @@ import * as React from "react";
 import {useEffect, useRef} from "react";
 import {KeyShortcut} from "../../utility/microtonal/PianoKeyMapping";
 import {ScaleConfig} from "../../utility/MicrotonalConfig";
+import MidiReceiver from "../../utility/midi/MIDIReceiver";
 
 interface FrequencyBarButton {
     frequency: number,
@@ -14,8 +15,8 @@ function FrequencyBarButton(props: FrequencyBarButton) {
     const updateAssignedKey = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {  };
     return <button
         aria-describedby={"simple-popover"}
-        className={"btn w-8 h-8 font-agrandir text-black bg-gold border-b-2 border-r-2 border-black" +
-            `${props.active ? 'uppercase' : "hover:bg-gray-200"} text-sm`}
+        className={"btn flex flex-1 items-center justify-center md:p-0.5 p-0 font-agrandir text-black bg-gold border-b-2 border-r-2 border-black" +
+            `${props.active ? 'uppercase' : "hover:bg-gray-200"} md:text-sm text-xs`}
         onClick={(e) => updateAssignedKey(e)}>
         {Math.round(props.frequency)}
         <br/>
@@ -38,37 +39,50 @@ function FrequencyBarComponent(props: {
     setKeyMapping: Function,
     octaveOffset: number,
     keyboardShortcuts: Array<KeyShortcut>
+    midiReceiver: MidiReceiver,
+    keyOffset: number,  // How many keys up should be displaying from the root key? Used for keyboard moving
 }) {
 
     let freqBarArr = [];
     let reversedMapping = reverseMapping(props.keyMapping);
-    console.log(reversedMapping);
 
-    // Push 1/1 note
-    freqBarArr.push(<FrequencyBarButton frequency={props.scaleConfig.tuningFrequency} keyMapping={props.keyMapping[0].toString()} key={0}/>)
+    // If the user is advancing forward or backwards keys, we need to rotate the frequency bar buttons around
+    let scaleOffset = null;
+    // We might have to search a bit in case the current lowest key isn't bound to anything
+    for (let i=0; i<props.scaleConfig.scale.notes.length; i++) {
+        if (props.keyMapping[props.keyOffset + i] !== undefined) {
+            scaleOffset = props.keyMapping[props.keyOffset + i];
+            break;
+        }
+    }
 
     // Stop before the octave note
-    for (let scaleDegree = 0; scaleDegree < props.scaleConfig.scale.notes.length - 1; scaleDegree++) {
-        let multiplier: number = props.scaleConfig.scale.notes[scaleDegree % props.scaleConfig.scale.notes.length].multiplier;
-        let freq = multiplier * props.scaleConfig.tuningFrequency;
-        let keyboardKeyNum = props.keyMapping[scaleDegree + 1];
+    for (let preScaleDegree = 0; preScaleDegree < props.scaleConfig.scale.notes.length; preScaleDegree++) {
+        // Add the offset to rotate it
+        let scaleDegree = (preScaleDegree + scaleOffset) % props.scaleConfig.scale.notes.length;
+        // If we are rolling keys over, the upper keys should have their octave bumped up
+        let octaveAdditive = Math.floor((preScaleDegree + scaleOffset) / props.scaleConfig.scale.notes.length);
+        // Map the scale degree to the midi keyboard mapping
+        let keyboardKeyNum = reversedMapping[scaleDegree];
         let keyboardKey;
-        if (keyboardKeyNum == undefined) {
+        // If it has a mapping, get the MIDI note for it
+        if (keyboardKeyNum === undefined) {
             keyboardKey = "None";
         } else {
-            keyboardKey = keyboardKeyNum.toString()
+            keyboardKey = props.keyboardShortcuts[(keyboardKeyNum - props.keyOffset + props.keyboardShortcuts.length) % props.keyboardShortcuts.length].key.toUpperCase();
         }
+
         freqBarArr.push
         (
             // <Tooltip describeChild title={"asdf"} key={i}
             //          placement="top">
-                    <FrequencyBarButton frequency={freq} keyMapping={keyboardKey} key={scaleDegree}/>
+                    <FrequencyBarButton frequency={props.midiReceiver.ScaleDegreeToFrequency(scaleDegree, props.octaveOffset + octaveAdditive)} keyMapping={keyboardKey} key={scaleDegree}/>
             // </Tooltip>
         )
     }
 
     return <div className="flex justify-center mt-[2%]">
-        <div>
+        <div className={"flex flex-row justify-center flex-wrap"}>
             {freqBarArr}
         </div>
         <Tooltip describeChild title="Click a frequency box and then press the key on your keyboard you want it to correspond to">

@@ -17,14 +17,14 @@ jobs:
         run: |
           cd web
           npm i
-          PUBLIC_URL="/Microtonality/" npm run build
+          npm run prod
           ls -la
-          ls -la build
+          ls -la dist
       - name: Deploy to GH Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./web/build
+          publish_dir: ./web/dist
           force_orphan: true
 
 

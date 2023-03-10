@@ -18,6 +18,10 @@ export class AdditiveSynthesizer {
         this.masterGain.connect(this.audioContext.destination)
     }
 
+    updateSettings() {
+        this.masterGain.gain.value = this.config.gain;
+    }
+
     onPlayFrequency(frequency: number, velocity: number) {
         if (this.oscillatorStacks[frequency] != null) {
             return;

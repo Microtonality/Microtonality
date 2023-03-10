@@ -3,9 +3,12 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const Webpack = require("webpack");
 
 module.exports = (env, options) => {
     const isDevelopment = options.mode !== 'production';
+    const isGHActions = process.env.GITHUB_ACTIONS === "true";
+    const publicPath = isGHActions ? "/Microtonality/" : "/";
     return {
         mode: isDevelopment ? "development" : "production",
         entry: {
@@ -15,7 +18,8 @@ module.exports = (env, options) => {
             path: path.resolve(__dirname, 'dist'),
             filename: '[name].[contenthash].js',
             assetModuleFilename: "images/[name].[hash][ext][query]",
-            clean: true
+            clean: true,
+            publicPath: publicPath
         },
         module: {
             rules: [
@@ -61,6 +65,10 @@ module.exports = (env, options) => {
                     test: /\.svg$/,
                     type: "asset/resource",
                     use: ['@svgr/webpack', 'svg-url-loader'],
+                },
+                {
+                    test: /\.png$/,
+                    type: "asset/resource",
                 }
             ]
         },
@@ -75,6 +83,9 @@ module.exports = (env, options) => {
             }),
             new MiniCssExtractPlugin({
                 filename: "[name].[contenthash].css"
+            }),
+            new Webpack.DefinePlugin ({
+                'process.env.PUBLIC_PATH': JSON.stringify(publicPath)
             }),
         ],
         optimization: {
@@ -97,6 +108,7 @@ module.exports = (env, options) => {
             static: './dist',
             hot: true,
             historyApiFallback: true,
+            port: 3000
         },
     };
 }

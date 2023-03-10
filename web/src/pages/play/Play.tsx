@@ -11,10 +11,11 @@ import {AdditiveSynthesizer} from "../../utility/audio/AdditiveSynthesizer";
 export default function Play() {
     const [microtonalConfig, setMicrotonalConfig] = useState<MicrotonalConfig>(createMicrotonalConfig());
     const additiveSynth = new AdditiveSynthesizer();
-    const midiReceiver = new MidiReceiver(additiveSynth, microtonalConfig.scaleConfig);
+    const midiReceiver = new MidiReceiver(additiveSynth, microtonalConfig.scaleConfig, microtonalConfig.keyMapping);
 
     useEffect(() => {
         midiReceiver.config = microtonalConfig.scaleConfig;
+        midiReceiver.keyMapping = microtonalConfig.keyMapping;
         additiveSynth.config = microtonalConfig.synthConfig;
     }, [microtonalConfig]);
 
@@ -27,7 +28,8 @@ export default function Play() {
 
             <div className={"flex flex-col w-full ml-[1%]"}>
                 <div className="h-1/2 mb-[1.5%] md:flex-row">
-                    <FullPianoComponent scaleConfig={microtonalConfig.scaleConfig}
+                    <FullPianoComponent microtonalConfig={microtonalConfig}
+                                        setMicrotonalConfig={setMicrotonalConfig}
                                         keyMapping={microtonalConfig.keyMapping}
                                         midiReceiver={midiReceiver}
                                         setKeyMapping={() => {}}/>

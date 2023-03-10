@@ -1,5 +1,6 @@
 import {AdditiveSynthesizer} from "../audio/AdditiveSynthesizer"
-import {ScaleConfig, DEFAULT_SCALE_CONFIG} from "../MicrotonalConfig";
+import {DEFAULT_SCALE_CONFIG, ScaleConfig} from "../MicrotonalConfig";
+import {RatioNote} from "../microtonal/notes";
 
 export default class MidiReceiver {
 
@@ -8,14 +9,16 @@ export default class MidiReceiver {
 
     public synth: AdditiveSynthesizer = new AdditiveSynthesizer()
     public config: ScaleConfig = DEFAULT_SCALE_CONFIG
+    public keyMapping: Record<number, number>
 
     private static NOTE_ON_MESSAGE: number = 144;
     private static NOTE_OFF_MESSAGE: number = 128;
     private static PITCH_BEND_MESSAGE: number = 224;
 
-    constructor(synth: AdditiveSynthesizer, config: ScaleConfig) {
+    constructor(synth: AdditiveSynthesizer, config: ScaleConfig, keyMapping: Record<number, number>) {
         this.synth = synth;
         this.config = config;
+        this.keyMapping = keyMapping;
     }
 
     public connectToInstrument() {
@@ -67,10 +70,9 @@ export default class MidiReceiver {
             return;
         }
 
-        let frequency = this.MidiNotesToFrequency(note)
-        frequency = 440
+        let frequency = this.MidiNotesToFrequency(note);
 
-        this.synth.onPlayFrequency(frequency, velocity)
+        this.synth.onPlayFrequency(frequency, velocity);
     }
 
     public noteOff(note: number) {
@@ -79,34 +81,45 @@ export default class MidiReceiver {
             return;
         }
 
-        let frequency = this.MidiNotesToFrequency(note)
-        frequency = 440
+        let frequency = this.MidiNotesToFrequency(note);
 
-        this.synth.onStopFrequency(frequency)
+        this.synth.onStopFrequency(frequency);
     }
 
-    private MidiNotesToFrequency(MidiNote: number): number {
+    public MidiNotesToFrequency(MidiNote: number): number {
         // First, we need to determine which key in the octave this is.
+        // This is figuring out where it is on the MIDI keyboard, so we can map it to our scale
         let octaveKey = (MidiNote - this.config.rootKey) % this.config.keysPerOctave;
-        if (octaveKey < 0) {
+
+        // If this somehow goes negative, bring it positive
+        while (octaveKey < 0) {
             octaveKey += this.config.keysPerOctave;
         }
 
-        // Now, determine how many octaves away we are.
+        // Now, determine how many keyboard octaves away we are from the root key.
         let octaveOffset = Math.floor((MidiNote - this.config.rootKey) / this.config.keysPerOctave);
 
-        // Which multiplier is this key mapped to?
+        // Now we have the octaveKey and the octaveOffset, we can determine how it should be mapped
         let multiplier;
+        let scaleDegree;
+        let note;
         try {
-            multiplier = this.config.scale.notes[octaveKey].multiplier;
+            scaleDegree = this.keyMapping[octaveKey];
+            note = this.config.scale.scaleDegreeToNote(scaleDegree);
+            multiplier = note.multiplier;
         } catch (e) {
             console.log(`Error: key in octave ${octaveKey} (MIDI number: ${MidiNote}) is not assigned to a note in the scale.`)
-            throw e;
+            return null;
         }
 
-        // Finally, convert to a frequency.
-        let noteFrequency = multiplier * this.config.tuningFrequency * Math.pow(2, octaveOffset);
+        return this.ScaleDegreeToFrequency(scaleDegree, octaveOffset)
+    }
 
-        return noteFrequency;
+    public ScaleDegreeToFrequency(scaleDegree: number, octave: number): number {
+        let note = this.config.scale.scaleDegreeToNote(scaleDegree);
+        let multiplier = note.multiplier;
+
+        // Finally, convert to a frequency.
+        return this.config.tuningFrequency * Math.pow(this.config.scale.octaveMultiplier.multiplier, multiplier - 1) * Math.pow(this.config.scale.octaveMultiplier.multiplier, octave);
     }
 }
