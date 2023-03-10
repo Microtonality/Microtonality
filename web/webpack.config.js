@@ -18,7 +18,7 @@ module.exports = (env, options) => {
             filename: '[name].[contenthash].js',
             assetModuleFilename: "images/[name].[hash][ext][query]",
             clean: true,
-            publicPath: isGHActions ? "/" : "/Microtonality/"
+            publicPath: isGHActions ? "/Microtonality" : "/"
         },
         module: {
             rules: [
