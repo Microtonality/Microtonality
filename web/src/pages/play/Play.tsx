@@ -28,7 +28,8 @@ export default function Play() {
 
             <div className={"flex flex-col w-full ml-[1%]"}>
                 <div className="h-1/2 mb-[1.5%] md:flex-row">
-                    <FullPianoComponent scaleConfig={microtonalConfig.scaleConfig}
+                    <FullPianoComponent microtonalConfig={microtonalConfig}
+                                        setMicrotonalConfig={setMicrotonalConfig}
                                         keyMapping={microtonalConfig.keyMapping}
                                         midiReceiver={midiReceiver}
                                         setKeyMapping={() => {}}/>
