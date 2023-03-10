@@ -85,4 +85,9 @@ const setRelease = (microtonalConfig: MicrotonalConfig, release: number) => {
     return createMicrotonalConfig(microtonalConfig, synthConfig, null);
 }
 
-export {setScale, addNote, deleteNote, swapNotes, editNote, setTuningFrequency, setOscillator, setAttack, setDecay, setSustain, setRelease}
+const setGain = (microtonalConfig: MicrotonalConfig, gain: number) => {
+    let synthConfig = {...microtonalConfig.synthConfig, gain: gain} as SynthConfig;
+    return createMicrotonalConfig(microtonalConfig, synthConfig, null);
+}
+
+export {setScale, addNote, deleteNote, swapNotes, editNote, setTuningFrequency, setOscillator, setAttack, setDecay, setSustain, setRelease, setGain}
