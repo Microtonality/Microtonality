@@ -28,6 +28,10 @@ module.exports = (env, options) => {
                     exclude: /node_modules/,
                 },
                 {
+                    test: /\.png$/,
+                    type: "asset/resource"
+                },
+                {
                     test: /\.html$/,
                     use: [
                         {
