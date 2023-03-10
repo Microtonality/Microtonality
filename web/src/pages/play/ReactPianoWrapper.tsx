@@ -11,7 +11,8 @@ interface ReactPianoWrapperProps {
     keyMapping: Record<number, number>, 
     keyboardShortcuts: Array<KeyShortcut>,
     scaleConfig: ScaleConfig, 
-    rootKey: number
+    rootKey: number,
+    keyOffset: number
 }
 
 const DEFAULT_VELOCITY = 60;
@@ -20,10 +21,10 @@ const DEFAULT_VELOCITY = 60;
 // note. Ex. A4 == 440 but keyboard starts a C3
 export default function ReactPianoWrapper(props: ReactPianoWrapperProps) {
 
-    let keyboardShortcuts = createPianoKeyboardShortcuts(props.rootKey, props.scaleConfig.keysPerOctave);
+    let keyboardShortcuts = createPianoKeyboardShortcuts(props.rootKey + props.keyOffset, props.scaleConfig.keysPerOctave);
 
     useEffect(() => {
-        keyboardShortcuts = createPianoKeyboardShortcuts(props.rootKey, props.scaleConfig.keysPerOctave)
+        keyboardShortcuts = createPianoKeyboardShortcuts(props.rootKey+ props.keyOffset, props.scaleConfig.keysPerOctave)
     },
         [props.scaleConfig]
     )
@@ -39,7 +40,7 @@ export default function ReactPianoWrapper(props: ReactPianoWrapperProps) {
     return <ReactPiano
         // activeNotes={synthesizer.activeNotes}
         className="mx-auto my-auto"
-        noteRange={{ first: props.rootKey, last: props.rootKey + (false ? 11 : props.scaleConfig.keysPerOctave)}} // thoughts? TODO
+        noteRange={{ first: props.rootKey + props.keyOffset, last: props.rootKey + (false ? 11 : props.scaleConfig.keysPerOctave) + props.keyOffset}} // thoughts? TODO
         playNote={(note: any) => {props.midiReceiver.noteOn(note, DEFAULT_VELOCITY)}}
         stopNote={(note: any) => {props.midiReceiver.noteOff(note)}}
         keyboardShortcuts={keyboardShortcuts}

@@ -21,6 +21,7 @@ export default function MicrotonalPiano(props: {
     setKeyMapping: Function
 }) {
     const [octave, setOctave] = useState(0);
+    const [keyOffset, setKeyOffset] = useState(3);
 
     useEffect(() => {
         console.log("octave", octave);
@@ -30,7 +31,7 @@ export default function MicrotonalPiano(props: {
 
     return <div className="h-full border-gold border-t-2 border-l-2 border-b-2 rounded-tl-xl rounded-bl-xl bg-bglight">
         <FrequencyBarComponent keyMapping={props.keyMapping} keyboardShortcuts={keyboardShortcuts} scaleConfig={props.microtonalConfig.scaleConfig}
-                                playMidiNote={() => {}} midiReceiver={props.midiReceiver}
+                                playMidiNote={() => {}} midiReceiver={props.midiReceiver} keyOffset={keyOffset}
                                 setKeyMapping={props.setKeyMapping} octaveOffset={octave}/>
         <div className="flex w-[85%] h-[70%] mt-[2%] ml-[4%]">
             <div className="flex flex-row aspect-square w-1/5">
@@ -38,7 +39,7 @@ export default function MicrotonalPiano(props: {
             </div>
             <OctaveButtons octaveUp={() => setOctave(octave + 1)} octaveDown={() => setOctave(octave - 1)}/>
             <ReactPianoWrapper keyboardShortcuts={keyboardShortcuts} keyMapping={props.keyMapping}
-                scaleConfig={props.microtonalConfig.scaleConfig}
+                scaleConfig={props.microtonalConfig.scaleConfig} keyOffset={keyOffset}
                                 midiReceiver={props.midiReceiver}
                                 rootKey={props.microtonalConfig.scaleConfig.rootKey + octave * props.microtonalConfig.scaleConfig.keysPerOctave}/>
         </div>
