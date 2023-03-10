@@ -6,6 +6,8 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = (env, options) => {
     const isDevelopment = options.mode !== 'production';
+    const isGHActions = process.env.GITHUB_ACTIONS === "true";
+    console.log("is gh", isGHActions);
     return {
         mode: isDevelopment ? "development" : "production",
         entry: {
@@ -15,7 +17,8 @@ module.exports = (env, options) => {
             path: path.resolve(__dirname, 'dist'),
             filename: '[name].[contenthash].js',
             assetModuleFilename: "images/[name].[hash][ext][query]",
-            clean: true
+            clean: true,
+            publicPath: isGHActions ? "/" : "/Microtonality/"
         },
         module: {
             rules: [
@@ -97,6 +100,7 @@ module.exports = (env, options) => {
             static: './dist',
             hot: true,
             historyApiFallback: true,
+            port: 3000
         },
     };
 }

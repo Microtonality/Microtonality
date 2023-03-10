@@ -4,11 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "webpack serve",
+    "build": "webpack build --mode development",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "wp-start": "webpack serve"
+    "wp-start": "webpack serve",
+    "prod": "webpack build --mode production"
   },
   "author": "",
   "license": "ISC",
