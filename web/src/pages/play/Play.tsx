@@ -17,6 +17,7 @@ export default function Play() {
         midiReceiver.config = microtonalConfig.scaleConfig;
         midiReceiver.keyMapping = microtonalConfig.keyMapping;
         additiveSynth.config = microtonalConfig.synthConfig;
+        additiveSynth.updateSettings();
     }, [microtonalConfig]);
 
     return (

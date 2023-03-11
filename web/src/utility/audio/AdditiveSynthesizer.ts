@@ -20,12 +20,15 @@ export class AdditiveSynthesizer {
 
     updateSettings() {
         this.masterGain.gain.value = this.config.gain;
+        console.log(this.config)
     }
 
     onPlayFrequency(frequency: number, velocity: number) {
         if (this.oscillatorStacks[frequency] != null) {
             return;
         }
+
+        console.log(this.config.oscillators[0])
 
         this.oscillatorStacks[frequency] = new OscillatorStack(
                 this.config.oscillators,

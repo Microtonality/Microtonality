@@ -19,18 +19,41 @@ export default function Oscillator(props: OscillatorProps) {
         let val = parseFloat(event.currentTarget.value)
         if (val > 1.00) val = 1.00
         setValue(val)
+
+        let newSettings = new OscillatorSettings(props.settings.pitchRatio, val, props.settings.waveType)
+        props.onChange(newSettings)
     }
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         let val = parseFloat(event.currentTarget.value)
         if (val > 1.00) val = 1.00
         setValue(parseFloat(val.toFixed(2)))
+
+        let newSettings = new OscillatorSettings(props.settings.pitchRatio, val, props.settings.waveType)
+        props.onChange(newSettings)
     }
-    
+
+    const handleWaveTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        let val = event.currentTarget.value;
+
+        switch (val) {
+            case "SINE":
+                props.settings.waveType = "sine"
+            case "SQUARE":
+                props.settings.waveType = "square"
+            case "TRIANGLE":
+                props.settings.waveType = "triangle"
+            case "SAWTOOTH":
+                props.settings.waveType = "sawtooth"
+        }
+
+        props.onChange(props.settings)
+    }
+
     return (
         <div className="flex flex-col items-center justify-between">
 
-            <select data-te-select-init className="flex h-6 w-[80%] rounded-md text-center font-agrandir">
+            <select data-te-select-init className="flex h-6 w-[80%] rounded-md text-center font-agrandir" onChange={handleWaveTypeChange}>
                 <option value="sine">SINE</option>
                 <option value="square">SQUARE</option>
                 <option value="triangle">TRIANGLE</option>
