@@ -1,9 +1,12 @@
 import * as React from 'react'
+import BorderedContainer from '../ui/BorderedContainer'
 
 export function Learn() {
     return (
-        
-        <div className={"text-black px-16 py-8 text-left text-base"}> This project works on multiple fronts to bring microtonal works to life. As a starting point,
+        <div className={"w-full p-10"}>
+        <BorderedContainer className={"flex justify-center px-8 py-8 text-left text-base"}>
+        <article className={"prose prose-white prose-invert"}>
+        This project works on multiple fronts to bring microtonal works to life. As a starting point,
         Easley Blackwood's microtonal etudes provide a number of difficulties to overcome in order to
         produce a full performance. You can read about the ideas to tackle these challenges in the
         paper below.
@@ -66,7 +69,8 @@ export function Learn() {
         <br></br>
         <br></br>
         Michael Crisaf
+        </article>
+        </BorderedContainer>
         </div>
-        
     )
 }
