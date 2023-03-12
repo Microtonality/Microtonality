@@ -13,6 +13,10 @@ export function generateScalaFile(scale: Scale): File {
 
     file.push(scale.description + '\n');
 
+    // Remove 1/1 note before printing, 
+    // this isn't present in Scala files.
+    scale.notes.shift();
+
     file.push('  ' + scale.notes.length + '\n');
     file.push('!\n');
 

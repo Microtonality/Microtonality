@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import hamburger from "../../img/icons/hamburger.png"
+import disabledHamburger from "../../img/icons/hamburger-disabled.png"
 import { MicrotonalConfig } from "../../utility/MicrotonalConfig";
 import { Scale } from "../../utility/microtonal/Scale";
 import { useEffect, useState } from "react";
@@ -17,9 +18,9 @@ interface ScaleEditorInputProps {
 export default function ScaleEditorInput(props: ScaleEditorInputProps) {
 
     // Check top of file.
-    // This prevents the cursor from moving to the end of input field
-    // when the user enters a character that isn't accepted.
-    const [selection, setSelection] = React.useState<[number | null, number | null] | null>(null); // whole lotta code for a whole lotta null ahaahahhaa
+    // This prevents the cursor from moving to the end of the input field
+    // when a user enters a character that isn't accepted (ex: a letter).
+    const [selection, setSelection] = React.useState<[number | null, number | null] | null>(null);
     const noteInputSelection = React.useRef<HTMLInputElement>(null);
     React.useLayoutEffect(() => {
         if (selection && noteInputSelection.current) {
@@ -28,8 +29,8 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
     }, [selection]);
 
 
-    const [noteValue, setNoteValue] = useState(props.scale.notes[props.noteIndex].num);
-    const [isRatio, setIsRatio] = useState((props.scale.notes[props.noteIndex].num.includes('.') ? false : true))
+    const [noteValue, setNoteValue] = useState((props.noteIndex === -1) ? props.scale.octaveMultiplier.num : props.scale.notes[props.noteIndex].num);
+    const [isRatio, setIsRatio] = useState((noteValue.includes('.') ? false : true))
 
     useEffect(() => {
         wrapSetNoteValue(props.scale.notes[props.noteIndex].num);
@@ -87,8 +88,6 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
         }
 
         setSelection([event.target.selectionStart, event.target.selectionEnd]); 
-        // console.log(event.target.selectionStart); 
-        // console.log(event.target.selectionEnd);
         setNoteValue(() => update);
     }
 
@@ -102,7 +101,18 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
 
     return (
         <div className="inline-flex items-center my-[2.5%]">
-            <img src={hamburger} className="w-[6%] min-w-[1.5rem] cursor-pointer"/>
+
+            {(props.noteIndex === -1) ? 
+                /* Octave note, no image */
+                <></>
+            :
+            ((props.noteIndex === 0) ? 
+                /* 1/1 note, greyed image */
+                <img src={disabledHamburger} className="w-[6%] min-w-[1.5rem]"/>
+            :
+                /* Every other note, white image */
+                <img src={hamburger} className="w-[6%] min-w-[1.5rem]"/>
+            )}
 
             <label htmlFor={props.noteIndex.toString()} className="inline-flex flex-wrap items-center cursor-pointer text-gray-800 w-[50%] h-10 text-center ml-[1%] min-w-[6rem]">
                 <input id={props.noteIndex.toString()} checked={isRatio} type="checkbox" className="hidden peer" readOnly={true}/>
@@ -111,7 +121,12 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
             </label>
 
             <div className="flex w-full h-10 ml-[1%] max-w-[50%]">
-                <input type="string" value={noteValue} ref={noteInputSelection} onChange={(e) => wrapSetNoteValue(e)} onKeyDown={(e) => handleKeyDown(e)} className="w-full rounded-md font-agrandir pl-[2%] min-w-[3rem]" />
+                {(props.noteIndex === 0) ? 
+                    /* 1/1 note, disabled input */
+                    <input type="string" disabled={true} value={noteValue} ref={noteInputSelection} onChange={(e) => wrapSetNoteValue(e)} className="w-full rounded-md font-agrandir pl-[2%] min-w-[3rem]" />
+                :
+                    <input type="string" value={noteValue} ref={noteInputSelection} onChange={(e) => wrapSetNoteValue(e)} onKeyDown={(e) => handleKeyDown(e)} className="w-full rounded-md font-agrandir pl-[2%] min-w-[3rem]" />
+                }
             </div>
         </div>
     );

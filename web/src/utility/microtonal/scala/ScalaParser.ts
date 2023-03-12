@@ -1,12 +1,17 @@
 import { Scale } from '../Scale'
 import { ScaleNote, RatioNote, CentNote, IntRatioNote } from '../notes'
 
+// TODO Test base cases like a scale with only an octave note
+
 export function parseScalaFile(file: string): Scale {
 
     let title: string = '';
     let description: string = '';
+    // Note: keysPerOctave does not include the initial '1/1' note,
+    // but does include the octave value.
     let keysPerOctave: number = 0;
     let notes: ScaleNote[] = [];
+    let octaveNote: ScaleNote = null;
 
     // Read scala file
     let phase: ParserPhase = ParserPhase.TITLE;
@@ -54,20 +59,26 @@ export function parseScalaFile(file: string): Scale {
                 continue;
 
             case ParserPhase.PITCH_VALUES:
-                notes.push(parsePitchValue(line));
-
-                if (keysPerOctave === notes.length)
+                // Check for the octave note
+                if (notes.length === keysPerOctave - 1) {
+                    octaveNote = parsePitchValue(line);
                     phase = ParserPhase.DONE
+                }
+                else {
+                    notes.push(parsePitchValue(line));
+                }
         }
 
         if (phase === ParserPhase.DONE)
             break;
     }
 
-    if (notes.length !== keysPerOctave)
-        throw new InsufficientPitchValuesException(`The Scala file has ${keysPerOctave} notes but only ${notes.length} pitch values.`);
+    if (octaveNote === null)
+        throw new InsufficientPitchValuesException(`The Scala file needs ${keysPerOctave} pitch values but only has ${notes.length}`);
 
-    return new Scale(notes, title, description);
+    // Add the 1/1 note to the beginning
+    notes.unshift(new RatioNote('1/1'));
+    return new Scale(notes, title, description, octaveNote);
 }
 
 export function parsePitchValue(line: string): ScaleNote {

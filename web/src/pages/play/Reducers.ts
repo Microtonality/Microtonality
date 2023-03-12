@@ -9,19 +9,18 @@ const setScale = (microtonalConfig: MicrotonalConfig, scale: Scale) => {
     return createMicrotonalConfig(microtonalConfig, null, scaleConfig);
 }
 
-// Insert the note before the octave note
 const addNote = (microtonalConfig: MicrotonalConfig, note: ScaleNote) => {
-    let notes: ScaleNote[] = [...microtonalConfig.scaleConfig.scale.notes];
-    let octaveNote: ScaleNote = notes[notes.length - 1];
-    notes[notes.length - 1] = note;
-    notes.push(octaveNote);
-
+    let notes: ScaleNote[] = [...microtonalConfig.scaleConfig.scale.notes, note];
     let scale = {...microtonalConfig.scaleConfig.scale, notes: notes} as Scale;
     let scaleConfig = {...microtonalConfig.scaleConfig, scale: scale, keysPerOctave: scale.notes.length} as ScaleConfig;
     return createMicrotonalConfig(microtonalConfig, null, scaleConfig);
 }
 
 const deleteNote = (microtonalConfig: MicrotonalConfig, noteIndex: number) => {
+    // Don't delete the 1/1 note
+    if (noteIndex === 0)
+        return;
+    
     let notes = [...microtonalConfig.scaleConfig.scale.notes];
     notes.splice(noteIndex, 1);
 

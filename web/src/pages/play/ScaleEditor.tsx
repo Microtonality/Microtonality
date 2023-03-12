@@ -3,12 +3,14 @@ import { MicrotonalConfig } from "../../utility/MicrotonalConfig";
 import { useEffect, useState } from "react";
 
 import close from "../../img/icons/close.png"
+import disabledClose from "../../img/icons/close-disabled.png"
 import { CentNote, RatioNote, ScaleNote } from "../../utility/microtonal/notes";
 import { addNote, deleteNote, setScale, swapNotes } from "./Reducers";
 import { parseScalaFile } from "../../utility/microtonal/scala/ScalaParser";
 import { Scale, scaleFromCents } from "../../utility/microtonal/Scale";
 import { generateScalaFile } from "../../utility/microtonal/scala/ScalaGenerator";
 import ScaleEditorInput from "./ScaleEditorInput";
+import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
 
 interface ScaleEditorProps {
     microtonalConfig: MicrotonalConfig
@@ -56,7 +58,7 @@ export default function ScaleEditor(props: ScaleEditorProps) {
         element.remove();
     }
     
-    // Insert the note before the octave note
+    // Insert a generated note at the end of the scale
     const handleAddNote = () => {
     
         // TODO addNote settings? maybe stretch goal
@@ -65,9 +67,9 @@ export default function ScaleEditor(props: ScaleEditorProps) {
         // if all ratios, change other ratios' denominators as well? 
 
         // For now we just average the last two notes,
-        // the final note in the scale and the octave note respectively.
+        // the final note in the scale and the octave note.
         let notes: ScaleNote[] = props.microtonalConfig.scaleConfig.scale.notes;
-        let note: ScaleNote = ScaleNote.average(notes[notes.length - 2], notes[notes.length - 1])
+        let note: ScaleNote = ScaleNote.average(notes[notes.length - 1], props.microtonalConfig.scaleConfig.scale.octaveMultiplier);
         
         props.setMicrotonalConfig(addNote(props.microtonalConfig, note));
     }
@@ -99,6 +101,44 @@ export default function ScaleEditor(props: ScaleEditorProps) {
         setDragOverIndex(null);
     }
 
+    const mapNotes = (): ReactJSXElement[] => {
+
+        let notesJSX: ReactJSXElement[] = [];
+        let notes: ScaleNote[] = props.microtonalConfig.scaleConfig.scale.notes;
+
+        // We want the 1/1 note to not be interactable with the user.
+        // Every other note can be moved/edited/deleted.
+        for (let i = 0; i < notes.length; i++) {
+
+            if (i === 0) {
+                notesJSX.push(
+                    <div 
+                        key={0}
+                        className={`inline-flex items-center`}>
+                        <ScaleEditorInput noteIndex={0} scale={props.microtonalConfig.scaleConfig.scale} microtonalConfig={props.microtonalConfig} setMicrotonalConfig={props.setMicrotonalConfig} />
+                        <img src={disabledClose} className="w-[8%] h-[8%] min-w-[1.5rem]" />
+                    </div>
+                );
+            }
+            else {
+                notesJSX.push(
+                    <div 
+                        draggable
+                        key={i}
+                        onDragStart={() => handleDragStart(i)}
+                        onDragOver={() => handleDragOver(i)}
+                        onDragEnd={handleDragEnd}
+                        className={`inline-flex items-center ${dragOverIndex === i ? 'drag-over' : ''}`}>
+                        <ScaleEditorInput noteIndex={i} scale={props.microtonalConfig.scaleConfig.scale} microtonalConfig={props.microtonalConfig} setMicrotonalConfig={props.setMicrotonalConfig} />
+                        <img src={close} onClick={() => handleDeleteNote(i)} className="w-[8%] h-[8%] min-w-[1.5rem] cursor-pointer" />
+                    </div>
+                );
+            }
+        }
+
+        return notesJSX;
+    }
+
     return(
         <div className="">
             <div
@@ -128,7 +168,8 @@ export default function ScaleEditor(props: ScaleEditorProps) {
             </div>
 
             <div
-                className="2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide text-white mt-[5%] mx-[7%]">BASE
+                className="2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide text-white mt-[5%] mx-[7%]">
+                    BASE
                 FREQUENCY
             </div>
             <div className="flex w-[85%] h-10 mt-[2%] mx-[7%]">
@@ -139,21 +180,20 @@ export default function ScaleEditor(props: ScaleEditorProps) {
                 className="2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide text-white mt-[5%] mx-[7%]">
                     SCALE
             </div>
+
+            <div
+                className="2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide text-white mt-[5%] mx-[7%]">
+                    Octave Note
+            </div>
+            <div 
+                className={`inline-flex items-center`}>
+                <ScaleEditorInput noteIndex={-1} scale={props.microtonalConfig.scaleConfig.scale} microtonalConfig={props.microtonalConfig} setMicrotonalConfig={props.setMicrotonalConfig} />
+                <img src={disabledClose} className="w-[8%] h-[8%] min-w-[1.5rem]" />
+            </div>
+
             <div className="flex flex-col my-[1%]">
-                <button onClick={() => handleAddNote()} className="w-[85%] mx-[7%] mb-[2.5%] border-[1px] bg-white hover:bg-neutral-100 rounded-md flex-auto cursor-pointer font-agrandir text-bgdark">ADD ROW</button>
-                {props.microtonalConfig.scaleConfig.scale.notes.map((note, index) => (
-                    <div 
-                        draggable
-                        key={index}
-                        onDragStart={() => handleDragStart(index)}
-                        onDragOver={() => handleDragOver(index)}
-                        onDragEnd={handleDragEnd}
-                        className={`inline-flex items-center ${dragOverIndex === index ? 'drag-over' : ''}`}>
-                        <ScaleEditorInput noteIndex={index} scale={props.microtonalConfig.scaleConfig.scale} microtonalConfig={props.microtonalConfig} setMicrotonalConfig={props.setMicrotonalConfig} />
-                        <img src={close} onClick={() => handleDeleteNote(index)} className="w-[8%] h-[8%] min-w-[1.5rem] cursor-pointer" />
-                    </div>
-                ))}
-                
+                <button onClick={() => handleAddNote()} className="w-[85%] mx-[7%] mb-[2.5%] border-[1px] bg-white hover:bg-neutral-100 rounded-md flex-auto cursor-pointer font-agrandir text-bgdark">ADD NOTE</button>
+                {mapNotes()}
             </div>
 
             <div className="flex flex-col my-[1%]">                
