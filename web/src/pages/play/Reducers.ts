@@ -96,4 +96,26 @@ const setGain = (microtonalConfig: MicrotonalConfig, gain: number) => {
     return createMicrotonalConfig(microtonalConfig, synthConfig, null);
 }
 
+enum MCActions {
+    SET_SCALE,
+    ADD_NOTE
+}
+
+type Action =
+    | {type: MCActions.SET_SCALE, scale: Scale}
+    | {type: MCActions.ADD_NOTE, note: ScaleNote}
+
+const MicrotonalConfigReducer = (state: MicrotonalConfig, action: Action) => {
+    if (action.type == MCActions.SET_SCALE) {
+        let scaleConfig = {...state.scaleConfig, scale: action.scale, keysPerOctave: action.scale.notes.length} as ScaleConfig;
+        return createMicrotonalConfig(state, null, scaleConfig);
+    }
+    if (action.type == MCActions.ADD_NOTE) {
+        let notes: ScaleNote[] = [...state.scaleConfig.scale.notes, action.note];
+        let scale = new Scale(notes, state.scaleConfig.scale.title, state.scaleConfig.scale.description, state.scaleConfig.scale.octaveNote);
+        let scaleConfig = {...state.scaleConfig, scale: scale, keysPerOctave: scale.notes.length} as ScaleConfig;
+        return createMicrotonalConfig(state, null, scaleConfig);
+    }
+}
+
 export {setScale, addNote, deleteNote, swapNotes, editNote, editOctaveNote, setTuningFrequency, setOscillator, setAttack, setDecay, setSustain, setRelease, setGain}
