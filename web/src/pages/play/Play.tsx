@@ -39,7 +39,7 @@ export default function Play() {
                 </div>
 
                 <div className="h-1/2 md:flex-row">
-                    <SynthSettings microtonalConfig={microtonalConfig} setMicrotonalConfig={mcDispatch} />
+                    <SynthSettings microtonalConfig={microtonalConfig} mcDispatch={mcDispatch} />
                 </div>
             </div>
 

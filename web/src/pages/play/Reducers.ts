@@ -178,23 +178,30 @@ const MicrotonalConfigReducer = (state: MicrotonalConfig, action: Action): Micro
 
     // Synthesizer Changes
     if (action.type == MCActions.SET_OSCILLATOR) {
-
+        let newOscillators = [...state.synthConfig.oscillators];
+        newOscillators[action.oscIndex] = action.osc;
+        let synthConfig = {...state.synthConfig, oscillators: newOscillators} as SynthConfig;
+        return createMicrotonalConfig(state, synthConfig, null);
     }
     if (action.type == MCActions.SET_ATTACK) {
         let synthConfig = {...state.synthConfig, attack: action.attack} as SynthConfig;
         return createMicrotonalConfig(state, synthConfig, null);
     }
     if (action.type == MCActions.SET_DECAY) {
-
+        let synthConfig = {...state.synthConfig, decay: action.decay} as SynthConfig;
+        return createMicrotonalConfig(state, synthConfig, null);
     }
     if (action.type == MCActions.SET_SUSTAIN) {
-
+        let synthConfig = {...state.synthConfig, sustain: action.sustain} as SynthConfig;
+        return createMicrotonalConfig(state, synthConfig, null);
     }
     if (action.type == MCActions.SET_RELEASE) {
-
+        let synthConfig = {...state.synthConfig, release: action.release} as SynthConfig;
+        return createMicrotonalConfig(state, synthConfig, null);
     }
     if (action.type == MCActions.SET_MASTER_GAIN) {
-
+        let synthConfig = {...state.synthConfig, gain: action.gain} as SynthConfig;
+        return createMicrotonalConfig(state, synthConfig, null);
     }
 }
 
