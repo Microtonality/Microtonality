@@ -15,7 +15,7 @@ interface ScaleSettingsProps {
 export default function ScaleSettings(props: ScaleSettingsProps) {
     const [openTab, setOpenTab] = React.useState(1);
 
-    return <div className="h-full border-gold border-t-2 border-r-2 rounded-tr-xl bg-bglight">
+    return <div className="h-full w-full border-gold border-t-2 border-r-2 rounded-tr-xl bg-bglight">
         <div className="w-full flex flex-col">
             <ul
                 className="flex mb-0 list-none flex-wrap pt-3 pb-4 flex-row border-b-2 border-gold"
@@ -55,14 +55,14 @@ export default function ScaleSettings(props: ScaleSettingsProps) {
                 </li>
             </ul>
 
-            <div className="container max-w-2xl bg-bglight mr-auto">
-                <div className="px-4 py-5 flex-auto">
+            <div className="container h-full flex bg-bglight mr-auto">
+                <div className="px-4 py-5 flex-auto ">
                     <div className="tab-content tab-space">
                         <div className={openTab === 1 ? "block" : "hidden"} id="link1">
                             <BasicSettings microtonalConfig={props.microtonalConfig} mcDispatch={props.mcDispatch}/>
                         </div>
 
-                        <div className={(openTab === 2 ? "block" : "hidden") + " max-h-[75vh] overflow-y-scroll"} id="link2">
+                        <div className={(openTab === 2 ? "block" : "hidden") + " 2xl:max-h-[65vh] xl:max-h-[50vh] md:max-h-[40vh] overflow-auto"} id="link2">
                             <ScaleEditor microtonalConfig={props.microtonalConfig} mcDispatch={props.mcDispatch}/>
                         </div>
                     </div>

@@ -27,7 +27,7 @@ export default function Play() {
     return (
         <div className="mt-[1%] flex-1 flex h-screen w-screen">
 
-            <div className="w-[30%] h-full">
+            <div className="w-[35vw] h-full">
                 <ScaleSettings microtonalConfig={microtonalConfig} mcDispatch={mcDispatch}/>
             </div>
 
