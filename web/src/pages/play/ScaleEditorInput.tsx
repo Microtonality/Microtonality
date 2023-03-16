@@ -6,7 +6,7 @@ import disabledHamburger from "../../img/icons/hamburger-disabled.png"
 import { MicrotonalConfig } from "../../utility/MicrotonalConfig";
 import { Scale } from "../../utility/microtonal/Scale";
 import { useEffect, useState } from "react";
-import { editNote } from "./Reducers";
+import { editOctaveNote, editNote } from "./Reducers";
 
 interface ScaleEditorInputProps {
     noteIndex: number,
@@ -29,15 +29,19 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
     }, [selection]);
 
 
-    const [noteValue, setNoteValue] = useState((props.noteIndex === -1) ? props.scale.octaveMultiplier.num : props.scale.notes[props.noteIndex].num);
+    const [noteValue, setNoteValue] = useState((props.noteIndex === -1) ? props.scale.octaveNote.num : props.scale.notes[props.noteIndex].num);
     const [isRatio, setIsRatio] = useState((noteValue.includes('.') ? false : true))
 
     useEffect(() => {
-        wrapSetNoteValue(props.scale.notes[props.noteIndex].num);
-    }, [props.scale])
+        wrapSetNoteValue((props.noteIndex === -1) ? props.scale.octaveNote.num : props.scale.notes[props.noteIndex].num);
+    }, [props.microtonalConfig])
 
     const handleEditNote = () => {
-        props.setMicrotonalConfig(editNote(props.microtonalConfig, noteValue, props.noteIndex));
+        console.log('here');
+        if (props.noteIndex === -1)
+            props.setMicrotonalConfig(editOctaveNote(props.microtonalConfig, noteValue));
+        else
+            props.setMicrotonalConfig(editNote(props.microtonalConfig, noteValue, props.noteIndex));
     };
 
     const wrapSetNoteValue = (event: React.ChangeEvent<HTMLInputElement> | string) => {
@@ -103,14 +107,14 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
         <div className="inline-flex items-center my-[2.5%]">
 
             {(props.noteIndex === -1) ? 
-                /* Octave note, no image */
+                /* If Octave note, no image */
                 <></>
             :
             ((props.noteIndex === 0) ? 
-                /* 1/1 note, greyed image */
+                /* If 1/1 note, greyed image */
                 <img src={disabledHamburger} className="w-[6%] min-w-[1.5rem]"/>
             :
-                /* Every other note, white image */
+                /* Otherwise, white image */
                 <img src={hamburger} className="w-[6%] min-w-[1.5rem]"/>
             )}
 
@@ -122,9 +126,10 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
 
             <div className="flex w-full h-10 ml-[1%] max-w-[50%]">
                 {(props.noteIndex === 0) ? 
-                    /* 1/1 note, disabled input */
+                    /* If 1/1 note, disabled input */
                     <input type="string" disabled={true} value={noteValue} ref={noteInputSelection} onChange={(e) => wrapSetNoteValue(e)} className="w-full rounded-md font-agrandir pl-[2%] min-w-[3rem]" />
                 :
+                    /* Otherwise, enabled */
                     <input type="string" value={noteValue} ref={noteInputSelection} onChange={(e) => wrapSetNoteValue(e)} onKeyDown={(e) => handleKeyDown(e)} className="w-full rounded-md font-agrandir pl-[2%] min-w-[3rem]" />
                 }
             </div>

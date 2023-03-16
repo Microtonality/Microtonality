@@ -1,7 +1,7 @@
-import {scaleFromCents, scaleFromRatios} from "./Scale";
+import {Scale, scaleFromCents, scaleFromRatios} from "./Scale";
 import {CentNote} from "./notes/CentNote";
 
-export function generateEqualTemperedScale(numberOfNotes: number) {
+export function generateEqualTemperedScale(numberOfNotes: number): Scale {
     let ratios = [];
 
     for (let i = 0; i < numberOfNotes; i++) {

@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import close from "../../img/icons/close.png"
 import disabledClose from "../../img/icons/close-disabled.png"
 import { CentNote, RatioNote, ScaleNote } from "../../utility/microtonal/notes";
-import { addNote, deleteNote, setScale, swapNotes } from "./Reducers";
+import { addNote, deleteNote, setBaseFrequency, setScale, swapNotes } from "./Reducers";
 import { parseScalaFile } from "../../utility/microtonal/scala/ScalaParser";
 import { Scale, scaleFromCents } from "../../utility/microtonal/Scale";
 import { generateScalaFile } from "../../utility/microtonal/scala/ScalaGenerator";
@@ -69,7 +69,7 @@ export default function ScaleEditor(props: ScaleEditorProps) {
         // For now we just average the last two notes,
         // the final note in the scale and the octave note.
         let notes: ScaleNote[] = props.microtonalConfig.scaleConfig.scale.notes;
-        let note: ScaleNote = ScaleNote.average(notes[notes.length - 1], props.microtonalConfig.scaleConfig.scale.octaveMultiplier);
+        let note: ScaleNote = ScaleNote.average(notes[notes.length - 1], props.microtonalConfig.scaleConfig.scale.octaveNote);
         
         props.setMicrotonalConfig(addNote(props.microtonalConfig, note));
     }
@@ -101,6 +101,17 @@ export default function ScaleEditor(props: ScaleEditorProps) {
         setDragOverIndex(null);
     }
 
+    const [tuningFrequency, setTuningFrequency] = useState(props.microtonalConfig.scaleConfig.tuningFrequency);
+    const handleTuningFrequencyChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setTuningFrequency(() => parseFloat(event.target.value));
+    }
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') {
+            props.setMicrotonalConfig(setBaseFrequency(props.microtonalConfig, tuningFrequency));
+            return;
+        }
+    }
+
     const mapNotes = (): ReactJSXElement[] => {
 
         let notesJSX: ReactJSXElement[] = [];
@@ -113,9 +124,9 @@ export default function ScaleEditor(props: ScaleEditorProps) {
             if (i === 0) {
                 notesJSX.push(
                     <div 
-                        key={0}
+                        key={i}
                         className={`inline-flex items-center`}>
-                        <ScaleEditorInput noteIndex={0} scale={props.microtonalConfig.scaleConfig.scale} microtonalConfig={props.microtonalConfig} setMicrotonalConfig={props.setMicrotonalConfig} />
+                        <ScaleEditorInput noteIndex={i} scale={props.microtonalConfig.scaleConfig.scale} microtonalConfig={props.microtonalConfig} setMicrotonalConfig={props.setMicrotonalConfig} />
                         <img src={disabledClose} className="w-[8%] h-[8%] min-w-[1.5rem]" />
                     </div>
                 );
@@ -173,12 +184,17 @@ export default function ScaleEditor(props: ScaleEditorProps) {
                 FREQUENCY
             </div>
             <div className="flex w-[85%] h-10 mt-[2%] mx-[7%]">
-                <input type="number" defaultValue={props.microtonalConfig.scaleConfig.tuningFrequency} step="0.0001" className="w-full rounded-md font-agrandir pl-[2%]" />
+                <input type="number" defaultValue={props.microtonalConfig.scaleConfig.tuningFrequency} onChange={(e) => handleTuningFrequencyChange(e)} onKeyDown={(e) => handleKeyDown(e)} step="0.0001" className="w-full rounded-md font-agrandir pl-[2%]" />
             </div>
  
             <div
                 className="2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide text-white mt-[5%] mx-[7%]">
                     SCALE
+            </div>
+
+            <div className="flex flex-col my-[1%]">
+                <button onClick={() => handleAddNote()} className="w-[85%] mx-[7%] mb-[2.5%] border-[1px] bg-white hover:bg-neutral-100 rounded-md flex-auto cursor-pointer font-agrandir text-bgdark">ADD NOTE</button>
+                {mapNotes()}
             </div>
 
             <div
@@ -188,12 +204,6 @@ export default function ScaleEditor(props: ScaleEditorProps) {
             <div 
                 className={`inline-flex items-center`}>
                 <ScaleEditorInput noteIndex={-1} scale={props.microtonalConfig.scaleConfig.scale} microtonalConfig={props.microtonalConfig} setMicrotonalConfig={props.setMicrotonalConfig} />
-                <img src={disabledClose} className="w-[8%] h-[8%] min-w-[1.5rem]" />
-            </div>
-
-            <div className="flex flex-col my-[1%]">
-                <button onClick={() => handleAddNote()} className="w-[85%] mx-[7%] mb-[2.5%] border-[1px] bg-white hover:bg-neutral-100 rounded-md flex-auto cursor-pointer font-agrandir text-bgdark">ADD NOTE</button>
-                {mapNotes()}
             </div>
 
             <div className="flex flex-col my-[1%]">                

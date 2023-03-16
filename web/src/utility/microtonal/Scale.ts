@@ -4,15 +4,13 @@ export class Scale {
     public notes: ScaleNote[];
     public title: string;
     public description: string;
-    public octaveMultiplier: ScaleNote = new RatioNote("2/1");
+    public octaveNote: ScaleNote;
 
-    constructor(notes: ScaleNote[], title: string = '', description: string = '', octaveMultiplier: ScaleNote = null) {
+    constructor(notes: ScaleNote[], title: string = '', description: string = '', octaveNote: ScaleNote = null) {
         this.notes = notes;
         this.title = title;
         this.description = description;
-        if (octaveMultiplier !== null) {
-            this.octaveMultiplier = octaveMultiplier;
-        }
+        this.octaveNote = (octaveNote !== null) ? octaveNote : new RatioNote("2/1");
     }
 
     scaleDegreeToNote(scaleDegree: number): ScaleNote {
