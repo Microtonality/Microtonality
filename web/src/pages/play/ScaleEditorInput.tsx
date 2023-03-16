@@ -6,28 +6,16 @@ import disabledHamburger from "../../img/icons/hamburger-disabled.png"
 import { MicrotonalConfig } from "../../utility/MicrotonalConfig";
 import { Scale } from "../../utility/microtonal/Scale";
 import { useEffect, useState } from "react";
-import { editOctaveNote, editNote } from "./Reducers";
+import {MCActions} from "./Reducers";
 
 interface ScaleEditorInputProps {
     noteIndex: number,
     scale: Scale,
     microtonalConfig: MicrotonalConfig,
-    setMicrotonalConfig: Function
+    mcDispatch: Function
 }
 
 export default function ScaleEditorInput(props: ScaleEditorInputProps) {
-
-    // Check top of file.
-    // This prevents the cursor from moving to the end of the input field
-    // when a user enters a character that isn't accepted (ex: a letter).
-    const [selection, setSelection] = React.useState<[number | null, number | null] | null>(null);
-    const noteInputSelection = React.useRef<HTMLInputElement>(null);
-    React.useLayoutEffect(() => {
-        if (selection && noteInputSelection.current) {
-          [noteInputSelection.current.selectionStart, noteInputSelection.current.selectionEnd] = selection;
-        }
-    }, [selection]);
-
 
     const [noteValue, setNoteValue] = useState((props.noteIndex === -1) ? props.scale.octaveNote.num : props.scale.notes[props.noteIndex].num);
     const [isRatio, setIsRatio] = useState((noteValue.includes('.') ? false : true))
@@ -36,14 +24,24 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
         wrapSetNoteValue((props.noteIndex === -1) ? props.scale.octaveNote.num : props.scale.notes[props.noteIndex].num);
     }, [props.microtonalConfig])
 
-    const handleEditNote = () => {
-        console.log('here');
-        if (props.noteIndex === -1)
-            props.setMicrotonalConfig(editOctaveNote(props.microtonalConfig, noteValue));
-        else
-            props.setMicrotonalConfig(editNote(props.microtonalConfig, noteValue, props.noteIndex));
-    };
+    // Check top of file.
+    // These help prevent the cursor from moving to the end of the input field
+    // when a user enters a character that isn't accepted (ex: a letter).
+    // It allows us to declare exactly where we want the cursor to be placed.
+    const [selection, setSelection] = React.useState<[number | null, number | null] | null>(null);
+    const noteInputField = React.useRef<HTMLInputElement>(null);
+    React.useLayoutEffect(() => {
+        if (selection && noteInputField.current) {
+            [noteInputField.current.selectionStart, noteInputField.current.selectionEnd] = selection;
+        }
+    }, [selection]);
 
+    // This function prevents any characters besides numbers, '.', and '/'
+    // from being entered into the input.
+    // This is needed because a html input of type "number" will not allow for '/',
+    // which are required to write ratios.
+    // setSelection is used to make sure the cursor isn't moved around whenever
+    // a character is prevented from being placed.
     const wrapSetNoteValue = (event: React.ChangeEvent<HTMLInputElement> | string) => {
 
         // This should only be triggered by useEffect()
@@ -57,25 +55,31 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
             return;
         }
 
-        let update: string = event.target.value;
+
+        let updatedInput: string = event.target.value;
+
+        // If the user deleted a character, always accept it
+        if (updatedInput.length < noteValue.length) {
+            // TODO test if this is deleted that a cent value can be entered without a 0 after the decimal place
+            if (updatedInput[updatedInput.length - 1] === '.')
+                setIsRatio(() => true);
+
+            setNoteValue(() => updatedInput);
+            return;
+        }
+
+        // Find the new character
         let newChar: string = '';
         let i: number;
-        for (i = 0; i < update.length; i++) {
-            if (update[i] !== noteValue[i]) {
-                newChar = update[i];
+        for (i = 0; i < updatedInput.length; i++) {
+            if (updatedInput[i] !== noteValue[i]) {
+                newChar = updatedInput[i];
                 break;
             }
         }        
 
-        if (update.length < noteValue.length) {
-            if (noteValue[i] === '.')
-                setIsRatio(() => true);
-
-            setNoteValue(() => update);
-            return;
-        }
-
         if (newChar === '/' || newChar === '.') {
+            // Don't accept duplicates.
             if (noteValue.includes('/') || noteValue.includes('.')) {
                 setSelection([event.target.selectionStart - 1, event.target.selectionEnd - 1]); 
                 return;
@@ -83,21 +87,31 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
             
             if (newChar === '/')
                 setIsRatio(() => true);
-            else
+            else if (newChar === '.')
                 setIsRatio(() => false);
         }
+        // Don't accept any character besides a number.
+        // Note: parseInt('0') return false, so the extra check is necessary
         else if (!parseInt(newChar) && newChar !== '0'){
             setSelection([event.target.selectionStart - 1, event.target.selectionEnd - 1]); 
             return;
         }
 
+        // Looks good, update the input field.
         setSelection([event.target.selectionStart, event.target.selectionEnd]); 
-        setNoteValue(() => update);
+        setNoteValue(() => updatedInput);
     }
+
+    const handleEditNote = () => {
+        if (props.noteIndex === -1)
+            props.mcDispatch({state: props.microtonalConfig, action: {type: MCActions.EDIT_OCTAVE_NOTE, noteValue: noteValue}});
+        else
+            props.mcDispatch({state: props.microtonalConfig, action: {type: MCActions.EDIT_NOTE, noteValue: noteValue}});
+    };
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
-            noteInputSelection.current.blur();
+            noteInputField.current.blur();
             handleEditNote();
             return;
         }
@@ -127,10 +141,10 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
             <div className="flex w-full h-10 ml-[1%] max-w-[50%]">
                 {(props.noteIndex === 0) ? 
                     /* If 1/1 note, disabled input */
-                    <input type="string" disabled={true} value={noteValue} ref={noteInputSelection} onChange={(e) => wrapSetNoteValue(e)} className="w-full rounded-md font-agrandir pl-[2%] min-w-[3rem]" />
+                    <input type="string" disabled={true} ref={noteInputField} value={noteValue} onChange={(e) => wrapSetNoteValue(e)} className="w-full rounded-md font-agrandir pl-[2%] min-w-[3rem]" />
                 :
                     /* Otherwise, enabled */
-                    <input type="string" value={noteValue} ref={noteInputSelection} onChange={(e) => wrapSetNoteValue(e)} onKeyDown={(e) => handleKeyDown(e)} className="w-full rounded-md font-agrandir pl-[2%] min-w-[3rem]" />
+                    <input type="string" ref={noteInputField} value={noteValue} onChange={(e) => wrapSetNoteValue(e)} onKeyDown={(e) => handleKeyDown(e)} onBlur={(e) => handleEditNote()} className="w-full rounded-md font-agrandir pl-[2%] min-w-[3rem]" />
                 }
             </div>
         </div>

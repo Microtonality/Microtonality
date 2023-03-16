@@ -1,10 +1,12 @@
 import * as React from "react";
 import { useState } from "react";
 import {Button, } from "@mui/material";
-import {ScaleConfig} from "../../utility/MicrotonalConfig";
+import {MicrotonalConfig, ScaleConfig} from "../../utility/MicrotonalConfig";
+import TuningFrequencyEditor from "./TuningFrequencyEditor";
 
 interface BasicSettingsProps {
-    scaleConfig: ScaleConfig
+    microtonalConfig: MicrotonalConfig;
+    mcDispatch: Function;
 }
 
 export default function BasicSettings(props: BasicSettingsProps) {
@@ -48,13 +50,7 @@ export default function BasicSettings(props: BasicSettingsProps) {
                 )}
             </div>
 
-            <div
-                className="2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide text-white mt-[6%]">BASE
-                FREQUENCY
-            </div>
-            <div className="flex w-full h-11 mt-[2%]">
-                <input type="number" defaultValue={props.scaleConfig.tuningFrequency} step="0.0001" className="w-full rounded-md font-agrandir pl-[2%]" />
-            </div>
+            <TuningFrequencyEditor microtonalConfig={props.microtonalConfig} mcDispatch={props.mcDispatch}/>
 
             <div
                 className="2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide text-white mt-[9%]">MIDI
