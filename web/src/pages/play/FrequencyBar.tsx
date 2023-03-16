@@ -69,7 +69,7 @@ function FrequencyBarComponent(props: {
         if (keyboardKeyNum === undefined) {
             keyboardKey = "None";
         } else {
-            keyboardKey = props.keyboardShortcuts[(keyboardKeyNum - props.keyOffset + props.keyboardShortcuts.length) % props.keyboardShortcuts.length].key.toUpperCase();
+            keyboardKey = props.keyboardShortcuts[(keyboardKeyNum - props.keyOffset + (octaveAdditive * props.scaleConfig.scale.notes.length)) % props.keyboardShortcuts.length].key.toUpperCase();
         }
 
         freqBarArr.push
