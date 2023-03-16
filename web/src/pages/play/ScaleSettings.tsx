@@ -8,8 +8,8 @@ import BasicSettings from "./BasicSettings";
 
 interface ScaleSettingsProps {
     className?: string,
-    microtonalConfig: MicrotonalConfig
-    setMicrotonalConfig: Function
+    microtonalConfig: MicrotonalConfig,
+    mcDispatch: Function
 }
 
 export default function ScaleSettings(props: ScaleSettingsProps) {
@@ -59,11 +59,11 @@ export default function ScaleSettings(props: ScaleSettingsProps) {
                 <div className="px-4 py-5 flex-auto">
                     <div className="tab-content tab-space">
                         <div className={openTab === 1 ? "block" : "hidden"} id="link1">
-                            <BasicSettings scaleConfig={props.microtonalConfig.scaleConfig}/>
+                            <BasicSettings microtonalConfig={props.microtonalConfig} mcDispatch={props.mcDispatch}/>
                         </div>
 
                         <div className={(openTab === 2 ? "block" : "hidden") + " max-h-[75vh] overflow-y-scroll"} id="link2">
-                            <ScaleEditor microtonalConfig={props.microtonalConfig} setMicrotonalConfig={props.setMicrotonalConfig}/>
+                            <ScaleEditor microtonalConfig={props.microtonalConfig} mcDispatch={props.mcDispatch}/>
                         </div>
                     </div>
                 </div>

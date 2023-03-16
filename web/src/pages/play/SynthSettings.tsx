@@ -3,11 +3,11 @@ import Oscillator from "../../ui/Oscillator";
 import Knobs from "../../ui/Knobs";
 import { MicrotonalConfig } from "../../utility/MicrotonalConfig";
 import OscillatorSettings from "../../utility/audio/OscillatorSettings";
-import { setAttack, setDecay, setSustain, setRelease, setOscillator } from "./Reducers";
+import {setAttack, setDecay, setSustain, setRelease, setOscillator, MCActions} from "./Reducers";
 
 interface SynthProps {
     microtonalConfig: MicrotonalConfig,
-    setMicrotonalConfig: Function
+    mcDispatch: Function
 }
 
 const textClassName = "2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide uppercase px-5 py-3 rounded block leading-normal text-white text-center"
@@ -15,23 +15,23 @@ const textClassName = "2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs x
 export default function SynthSettings(props: SynthProps) {
 
     const handleAttackChange = (value: number) => {
-        props.setMicrotonalConfig(setAttack(props.microtonalConfig, value));
+        props.mcDispatch({type: MCActions.SET_ATTACK, attack: value});
     }
 
     const handleDecayChange = (value: number) => {
-        props.setMicrotonalConfig(setDecay(props.microtonalConfig, value));
+        props.mcDispatch({type: MCActions.SET_DECAY, decay: value});
     }
 
     const handleSustainChange = (value: number) => {
-        props.setMicrotonalConfig(setSustain(props.microtonalConfig, value));
+        props.mcDispatch({type: MCActions.SET_SUSTAIN, sustain: value});
     }
 
     const handleReleaseChange = (value: number) => {
-        props.setMicrotonalConfig(setRelease(props.microtonalConfig, value));
+        props.mcDispatch({type: MCActions.SET_RELEASE, release: value});
     }
 
     const handleOscillatorChanges = (settings: OscillatorSettings, index: number) => {
-        props.setMicrotonalConfig(setOscillator(props.microtonalConfig, settings, index));
+        props.mcDispatch({type: MCActions.SET_OSCILLATOR, osc: settings, oscIndex: index});
     }
 
     return  <div className="flex h-full w-full border-gold border-t-2 border-l-2 rounded-tl-xl bg-bglight justify-around">
