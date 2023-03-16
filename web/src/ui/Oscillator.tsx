@@ -1,6 +1,8 @@
 import * as React from "react";
 import { useState } from "react";
 import OscillatorSettings from "../utility/audio/OscillatorSettings";
+import { Range, Direction } from 'react-range';
+import { borderRadius } from "@mui/system";
 
 interface OscillatorProps {
     settings: OscillatorSettings;
@@ -13,23 +15,23 @@ const defaultProps = {
 
 export default function Oscillator(props: OscillatorProps) {
 
-    const [value, setValue] = useState<number>(0)
+    const [value, setValue] = useState<number[]>([0])
 
-    const handleSliderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        let val = parseFloat(event.currentTarget.value)
-        if (val > 1.00) val = 1.00
+    const handleSliderChange = (val: number[]) => {
+        if (val[0] > 1.00) val[0] = 1.00
         setValue(val)
 
-        let newSettings = new OscillatorSettings(props.settings.pitchRatio, val, props.settings.waveType)
+        let newSettings = new OscillatorSettings(props.settings.pitchRatio, val[0], props.settings.waveType)
         props.onChange(newSettings)
     }
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        let val = parseFloat(event.currentTarget.value)
-        if (val > 1.00) val = 1.00
-        setValue(parseFloat(val.toFixed(2)))
+        let val : number[] = []
+        val[0] = parseFloat(event.currentTarget.value)
+        if (val[0] > 1.00) val[0] = 1.00
+        setValue(val)
 
-        let newSettings = new OscillatorSettings(props.settings.pitchRatio, val, props.settings.waveType)
+        let newSettings = new OscillatorSettings(props.settings.pitchRatio, val[0], props.settings.waveType)
         props.onChange(newSettings)
     }
 
@@ -59,22 +61,49 @@ export default function Oscillator(props: OscillatorProps) {
                 <option value="triangle">TRIANGLE</option>
                 <option value="sawtooth">SAWTOOTH</option>
             </select>
-            
-            <input
-                type="range"
-                className="h-3 w-full accent-neutral-200 cursor-pointer appearance-none rounded-lg border-neutral-500 border-[1px] bg-bglight transform -rotate-90 aspect-auto"
-                id="customRange1" 
-                onChange={handleSliderChange}
-                value={value}
-                min={0}
-                max={1}
-                step={0.01}
+
+            <Range
+            step={0.01}
+            min={0}
+            max={1}
+            values={value}
+            onChange={handleSliderChange}
+            direction={Direction.Up}
+            renderTrack={({ props, children }) => (
+                <div
+                {...props}
+                style={{
+                    ...props.style,
+                    border: '1px solid',
+                    borderColor: 'gray',
+                    borderRadius: '10px',
+                    height: '60%',
+                    width: '10%',
+                    backgroundColor: '#212121'
+                }}
+                >
+                {children}
+                </div>
+            )}
+            renderThumb={({ props }) => (
+                <div
+                {...props}
+                style={{
+                    ...props.style,
+                    width: '1rem',
+                    height: '1rem',
+                    border: '1px-solid',
+                    backgroundColor: 'white',
+                    borderRadius: '100%'
+                }}
+                />
+            )}
             />
 
             <input  
                 className={"text-center w-[60%] self-center rounded-md font-agrandir"} 
                 type="number" 
-                value={value} 
+                value={value[0]} 
                 onChange={handleInputChange} 
                 min={0} 
                 max={1} 
