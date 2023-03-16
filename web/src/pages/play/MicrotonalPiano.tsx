@@ -49,7 +49,7 @@ export default function MicrotonalPiano(props: MicrotonalPianoProps) {
         </div>
         <div className="flex flex-row justify-center mx-[5%] h-[70%] mt-[2%]">
             <div className="flex w-1/8 mr-[1%]">
-                <Knobs knobLabel="GAIN" onChange={(value) => handleMasterGainChange(value)} />
+                <Knobs knobLabel="GAIN" onChange={(value) => handleMasterGainChange(value)} className="border-gold border-[3px]"/>
             </div>
             <OctaveButtons octaveUp={() => setOctave(octave + 1)} octaveDown={() => setOctave(octave - 1)}/>
             <ReactPianoWrapper keyboardShortcuts={keyboardShortcuts} keyMapping={props.keyMapping}

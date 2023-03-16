@@ -41,16 +41,16 @@ export default function SynthSettings(props: SynthProps) {
                     <div className="flex p-[2%]">
                         <div className="flex w-[70%]">
                             <div className="">
-                                <Knobs knobLabel="Attack" value={props.microtonalConfig.synthConfig.attack} onChange={(value) => handleAttackChange(value)} />
+                                <Knobs knobLabel="Attack" value={props.microtonalConfig.synthConfig.attack} onChange={(value) => handleAttackChange(value)} className="border-gold border-[3px]"/>
                             </div>
                             <div className="ml-[2%]">
-                                <Knobs knobLabel="Decay" value={props.microtonalConfig.synthConfig.decay} onChange={(value) => handleDecayChange(value)} />
+                                <Knobs knobLabel="Decay" value={props.microtonalConfig.synthConfig.decay} onChange={(value) => handleDecayChange(value)} className="border-gold border-[3px]"/>
                             </div>
                             <div className="ml-[2%]"> 
-                                <Knobs knobLabel="Sustain" onChange={(value) => handleSustainChange(value)} />
+                                <Knobs knobLabel="Sustain" onChange={(value) => handleSustainChange(value)} className="border-gold border-[3px]"/>
                             </div>
                             <div className="ml-[2%]">
-                                <Knobs knobLabel="Release" onChange={(value) => handleReleaseChange(value)} />
+                                <Knobs knobLabel="Release" onChange={(value) => handleReleaseChange(value)} className="border-gold border-[3px]"/>
                             </div>
                         </div>
                     </div>

@@ -2,7 +2,7 @@ import * as React from "react";
 import { useState } from "react";
 import OscillatorSettings from "../utility/audio/OscillatorSettings";
 import { Range, Direction } from 'react-range';
-import { borderRadius } from "@mui/system";
+import Knob from "./Knobs";
 
 interface OscillatorProps {
     settings: OscillatorSettings;
@@ -52,6 +52,10 @@ export default function Oscillator(props: OscillatorProps) {
         props.onChange(props.settings)
     }
 
+    const changeMultiplier = (value: number) => {
+        return;
+    }
+
     return (
         <div className="flex flex-col items-center justify-between">
 
@@ -79,7 +83,9 @@ export default function Oscillator(props: OscillatorProps) {
                     borderRadius: '10px',
                     height: '60%',
                     width: '10%',
-                    backgroundColor: '#212121'
+                    backgroundColor: '#212121',
+                    marginTop: '10%',
+                    marginBottom: '20%'
                 }}
                 >
                 {children}
@@ -109,6 +115,15 @@ export default function Oscillator(props: OscillatorProps) {
                 max={1} 
                 step={0.01}
             />
+
+            <div className="h-[10vw] w-[3.5vw]">
+                <Knob 
+                    max={16}
+                    onChange={(value) => changeMultiplier(value)} 
+                    knobLabel=""
+                    className=""
+                />
+            </div>
         </div>
     )
 }
