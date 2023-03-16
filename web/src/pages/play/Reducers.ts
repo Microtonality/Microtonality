@@ -181,7 +181,8 @@ const MicrotonalConfigReducer = (state: MicrotonalConfig, action: Action): Micro
 
     }
     if (action.type == MCActions.SET_ATTACK) {
-
+        let synthConfig = {...state.synthConfig, attack: action.attack} as SynthConfig;
+        return createMicrotonalConfig(state, synthConfig, null);
     }
     if (action.type == MCActions.SET_DECAY) {
 

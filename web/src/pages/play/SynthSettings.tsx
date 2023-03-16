@@ -3,7 +3,7 @@ import Oscillator from "../../ui/Oscillator";
 import Knobs from "../../ui/Knobs";
 import { MicrotonalConfig } from "../../utility/MicrotonalConfig";
 import OscillatorSettings from "../../utility/audio/OscillatorSettings";
-import { setAttack, setDecay, setSustain, setRelease, setOscillator } from "./Reducers";
+import {setAttack, setDecay, setSustain, setRelease, setOscillator, MCActions} from "./Reducers";
 
 interface SynthProps {
     microtonalConfig: MicrotonalConfig,
@@ -15,7 +15,7 @@ const textClassName = "2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs x
 export default function SynthSettings(props: SynthProps) {
 
     const handleAttackChange = (value: number) => {
-        props.setMicrotonalConfig(setAttack(props.microtonalConfig, value));
+        props.setMicrotonalConfig({state: props.microtonalConfig, action: {type: MCActions.SET_ATTACK, attack: value}});
     }
 
     const handleDecayChange = (value: number) => {
