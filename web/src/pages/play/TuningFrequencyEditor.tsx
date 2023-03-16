@@ -20,7 +20,7 @@ export default function TuningFrequencyEditor(props: TuningFrequencyEditorProps)
     }
 
     const handleTuningFrequencyChange = () => {
-        props.mcDispatch({action: {type: MCActions.SET_TUNING_FREQUENCY, tuningFrequency: tuningFrequency}});
+        props.mcDispatch({type: MCActions.SET_TUNING_FREQUENCY, tuningFrequency: tuningFrequency});
     }
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {

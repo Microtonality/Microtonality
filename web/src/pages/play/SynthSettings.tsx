@@ -15,23 +15,23 @@ const textClassName = "2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs x
 export default function SynthSettings(props: SynthProps) {
 
     const handleAttackChange = (value: number) => {
-        props.mcDispatch({action: {type: MCActions.SET_ATTACK, attack: value}});
+        props.mcDispatch({type: MCActions.SET_ATTACK, attack: value});
     }
 
     const handleDecayChange = (value: number) => {
-        props.mcDispatch({action: {type: MCActions.SET_DECAY, decay: value}});
+        props.mcDispatch({type: MCActions.SET_DECAY, decay: value});
     }
 
     const handleSustainChange = (value: number) => {
-        props.mcDispatch({action: {type: MCActions.SET_SUSTAIN, sustain: value}});
+        props.mcDispatch({type: MCActions.SET_SUSTAIN, sustain: value});
     }
 
     const handleReleaseChange = (value: number) => {
-        props.mcDispatch({action: {type: MCActions.SET_RELEASE, release: value}});
+        props.mcDispatch({type: MCActions.SET_RELEASE, release: value});
     }
 
     const handleOscillatorChanges = (settings: OscillatorSettings, index: number) => {
-        props.mcDispatch({action: {type: MCActions.SET_OSCILLATOR, osc: settings, oscIndex: index}});
+        props.mcDispatch({type: MCActions.SET_OSCILLATOR, osc: settings, oscIndex: index});
     }
 
     return  <div className="flex h-full w-full border-gold border-t-2 border-l-2 rounded-tl-xl bg-bglight justify-around">

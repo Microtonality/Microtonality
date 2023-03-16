@@ -38,7 +38,7 @@ export default function MicrotonalPiano(props: MicrotonalPianoProps) {
     )
 
     const handleMasterGainChange = (value: number) => {
-        props.mcDispatch({action: {type: MCActions.SET_MASTER_GAIN, gain: value}});
+        props.mcDispatch({type: MCActions.SET_MASTER_GAIN, gain: value});
     }
 
     return <div className="flex flex-col justify-center h-full border-gold border-t-2 border-l-2 border-b-2 rounded-tl-xl rounded-bl-xl bg-bglight">
