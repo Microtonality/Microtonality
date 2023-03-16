@@ -3,6 +3,8 @@ import { useState } from "react";
 import {Button, } from "@mui/material";
 import {MicrotonalConfig, ScaleConfig} from "../../utility/MicrotonalConfig";
 import TuningFrequencyEditor from "./TuningFrequencyEditor";
+import {MCActions} from "./Reducers";
+import {generateEqualTemperedScale} from "../../utility/microtonal/ScaleGeneration";
 
 interface BasicSettingsProps {
     microtonalConfig: MicrotonalConfig;
@@ -12,18 +14,23 @@ interface BasicSettingsProps {
 export default function BasicSettings(props: BasicSettingsProps) {
 
     const [rangeValue, setRangeValue] = useState<number>(12);
-    const [hideRangeValue, setHideRangeValue] = useState<boolean>(false)
+    const [hideRangeValue, setHideRangeValue] = useState<boolean>(false);
 
-    const handleRangeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const wrapSetRangeValue = (event: React.ChangeEvent<HTMLInputElement>) => {
         setRangeValue(Number(event.target.value));
+    }
+
+    const handleRangeChange = () => {
+        props.mcDispatch({type: MCActions.SET_SCALE, scale: generateEqualTemperedScale(rangeValue)});
     };
 
-    function beginAdjustment() {
+    const beginAdjustment = () => {
         setHideRangeValue(true)
     }
 
-    function endAdjustment() {
+    const endAdjustment = () => {
         setHideRangeValue(false)
+        handleRangeChange();
     }
 
     return(
@@ -35,11 +42,10 @@ export default function BasicSettings(props: BasicSettingsProps) {
             <div className="relative mt-[6%]">
                 <input type="range" step={1} min={12} max={32} className="range h-3 w-full  mx-[1%] accent-neutral-200 cursor-pointer appearance-none rounded-lg border-neutral-500 border-[1px] bg-bgdark"
                     value={rangeValue}
-                    onMouseDown={beginAdjustment}
-                    onMouseUp={endAdjustment}
-                    onChange={handleRangeChange}>
+                    onMouseDown={() => beginAdjustment()}
+                    onMouseUp={() => endAdjustment()}
+                    onChange={(e) => wrapSetRangeValue(e)}/>
 
-                </input>
                 {hideRangeValue && (
                     <label
                     style={{ left: `${((rangeValue-12)/21) * 100}%` }}

@@ -9,7 +9,7 @@ import {createPianoKeyboardShortcuts} from "../../utility/microtonal/PianoKeyMap
 import Knobs from '../../ui/Knobs'
 import {AdditiveSynthesizer} from "../../utility/audio/AdditiveSynthesizer";
 import MidiReceiver from "../../utility/midi/MIDIReceiver";
-import {MCActions, setGain} from "./Reducers";
+import {MCActions} from "./Reducers";
 
 const MIDDLE_C = 60;
 

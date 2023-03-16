@@ -1,7 +1,6 @@
 import * as React from "react";
 import { MicrotonalConfig } from "../../utility/MicrotonalConfig";
 import { useEffect, useState } from "react";
-
 import close from "../../img/icons/close.png"
 import disabledClose from "../../img/icons/close-disabled.png"
 import { CentNote, RatioNote, ScaleNote } from "../../utility/microtonal/notes";
@@ -11,7 +10,6 @@ import { Scale, scaleFromCents } from "../../utility/microtonal/Scale";
 import { generateScalaFile } from "../../utility/microtonal/scala/ScalaGenerator";
 import ScaleEditorInput from "./ScaleEditorInput";
 import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
-import BaseFrequencyEditor from "./TuningFrequencyEditor";
 import TuningFrequencyEditor from "./TuningFrequencyEditor";
 
 interface ScaleEditorProps {
