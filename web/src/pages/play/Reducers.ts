@@ -118,4 +118,4 @@ const MicrotonalConfigReducer = (state: MicrotonalConfig, action: Action) => {
     }
 }
 
-export {setScale, addNote, deleteNote, swapNotes, editNote, editOctaveNote, setTuningFrequency, setOscillator, setAttack, setDecay, setSustain, setRelease, setGain}
+export {setScale, addNote, deleteNote, swapNotes, editNote, editOctaveNote, setTuningFrequency, setOscillator, setAttack, setDecay, setSustain, setRelease, setGain, MicrotonalConfigReducer, MCActions}
