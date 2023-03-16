@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import close from "../../img/icons/close.png"
 import disabledClose from "../../img/icons/close-disabled.png"
 import { CentNote, RatioNote, ScaleNote } from "../../utility/microtonal/notes";
-import { addNote, deleteNote, setBaseFrequency, setScale, swapNotes } from "./Reducers";
+import { addNote, deleteNote, setTuningFrequency as setTuningFrequencyReducer, setScale, swapNotes } from "./Reducers";
 import { parseScalaFile } from "../../utility/microtonal/scala/ScalaParser";
 import { Scale, scaleFromCents } from "../../utility/microtonal/Scale";
 import { generateScalaFile } from "../../utility/microtonal/scala/ScalaGenerator";
@@ -107,7 +107,7 @@ export default function ScaleEditor(props: ScaleEditorProps) {
     }
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
-            props.setMicrotonalConfig(setBaseFrequency(props.microtonalConfig, tuningFrequency));
+            props.setMicrotonalConfig(setTuningFrequencyReducer(props.microtonalConfig, tuningFrequency));
             return;
         }
     }

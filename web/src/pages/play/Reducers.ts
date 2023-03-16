@@ -11,7 +11,7 @@ const setScale = (microtonalConfig: MicrotonalConfig, scale: Scale) => {
 
 const addNote = (microtonalConfig: MicrotonalConfig, note: ScaleNote) => {
     let notes: ScaleNote[] = [...microtonalConfig.scaleConfig.scale.notes, note];
-    let scale = new Scale(notes, microtonalConfig.scaleConfig.scale.title, microtonalConfig.scaleConfig.scale.description, microtonalConfig.scaleConfig.scale.octaveNote);    
+    let scale = new Scale(notes, microtonalConfig.scaleConfig.scale.title, microtonalConfig.scaleConfig.scale.description, microtonalConfig.scaleConfig.scale.octaveNote);
     let scaleConfig = {...microtonalConfig.scaleConfig, scale: scale, keysPerOctave: scale.notes.length} as ScaleConfig;
     return createMicrotonalConfig(microtonalConfig, null, scaleConfig);
 }
@@ -24,7 +24,7 @@ const deleteNote = (microtonalConfig: MicrotonalConfig, noteIndex: number) => {
     let notes = [...microtonalConfig.scaleConfig.scale.notes];
     notes.splice(noteIndex, 1);
 
-    let scale = new Scale(notes, microtonalConfig.scaleConfig.scale.title, microtonalConfig.scaleConfig.scale.description, microtonalConfig.scaleConfig.scale.octaveNote);    
+    let scale = new Scale(notes, microtonalConfig.scaleConfig.scale.title, microtonalConfig.scaleConfig.scale.description, microtonalConfig.scaleConfig.scale.octaveNote);
     let scaleConfig = {...microtonalConfig.scaleConfig, scale: scale, keysPerOctave: scale.notes.length} as ScaleConfig;
     return createMicrotonalConfig(microtonalConfig, null, scaleConfig);
 }
@@ -37,7 +37,7 @@ const swapNotes = (microtonalConfig: MicrotonalConfig, noteIndex: number, newInd
     notes.splice(newIndex, 1, note);
     notes.splice(noteIndex, 1, swapWith);
 
-    let scale = new Scale(notes, microtonalConfig.scaleConfig.scale.title, microtonalConfig.scaleConfig.scale.description, microtonalConfig.scaleConfig.scale.octaveNote);    
+    let scale = new Scale(notes, microtonalConfig.scaleConfig.scale.title, microtonalConfig.scaleConfig.scale.description, microtonalConfig.scaleConfig.scale.octaveNote);
     let scaleConfig = {...microtonalConfig.scaleConfig, scale: scale, keysPerOctave: scale.notes.length} as ScaleConfig;
     return createMicrotonalConfig(microtonalConfig, null, scaleConfig);
 }
@@ -47,20 +47,20 @@ const editNote = (microtonalConfig: MicrotonalConfig, newValue: string, noteInde
     let note: ScaleNote = parsePitchValue(`${newValue} ${notes[noteIndex].comments}`);
     notes.splice(noteIndex, 1, note);
 
-    let scale = new Scale(notes, microtonalConfig.scaleConfig.scale.title, microtonalConfig.scaleConfig.scale.description, microtonalConfig.scaleConfig.scale.octaveNote);    
+    let scale = new Scale(notes, microtonalConfig.scaleConfig.scale.title, microtonalConfig.scaleConfig.scale.description, microtonalConfig.scaleConfig.scale.octaveNote);
     let scaleConfig = {...microtonalConfig.scaleConfig, scale: scale, keysPerOctave: scale.notes.length} as ScaleConfig;
     return createMicrotonalConfig(microtonalConfig, null, scaleConfig);
 }
 
 const editOctaveNote = (microtonalConfig: MicrotonalConfig, newValue: string) => {
     let octaveNote: ScaleNote = parsePitchValue(`${newValue} ${microtonalConfig.scaleConfig.scale.octaveNote.comments}`);
-    let scale = new Scale(microtonalConfig.scaleConfig.scale.notes, microtonalConfig.scaleConfig.scale.title, microtonalConfig.scaleConfig.scale.description, octaveNote);    
+    let scale = new Scale(microtonalConfig.scaleConfig.scale.notes, microtonalConfig.scaleConfig.scale.title, microtonalConfig.scaleConfig.scale.description, octaveNote);
     let scaleConfig = {...microtonalConfig.scaleConfig, scale: scale, keysPerOctave: scale.notes.length} as ScaleConfig;
     return createMicrotonalConfig(microtonalConfig, null, scaleConfig);
 }
 
-const setBaseFrequency = (microtonalConfig: MicrotonalConfig, baseFrequency: number) => {
-    let scaleConfig = {...microtonalConfig.scaleConfig, tuningFrequency: baseFrequency} as ScaleConfig;
+const setTuningFrequency = (microtonalConfig: MicrotonalConfig, tuningFrequency: number) => {
+    let scaleConfig = {...microtonalConfig.scaleConfig, tuningFrequency: tuningFrequency} as ScaleConfig;
     return createMicrotonalConfig(microtonalConfig, null, scaleConfig);
 }
 
@@ -96,4 +96,4 @@ const setGain = (microtonalConfig: MicrotonalConfig, gain: number) => {
     return createMicrotonalConfig(microtonalConfig, synthConfig, null);
 }
 
-export {setScale, addNote, deleteNote, swapNotes, editNote, editOctaveNote, setBaseFrequency, setOscillator, setAttack, setDecay, setSustain, setRelease, setGain}
+export {setScale, addNote, deleteNote, swapNotes, editNote, editOctaveNote, setTuningFrequency, setOscillator, setAttack, setDecay, setSustain, setRelease, setGain}
