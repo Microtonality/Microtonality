@@ -104,9 +104,9 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
 
     const handleEditNote = () => {
         if (props.noteIndex === -1)
-            props.mcDispatch({state: props.microtonalConfig, action: {type: MCActions.EDIT_OCTAVE_NOTE, noteValue: noteValue}});
+            props.mcDispatch({action: {type: MCActions.EDIT_OCTAVE_NOTE, noteValue: noteValue}});
         else
-            props.mcDispatch({state: props.microtonalConfig, action: {type: MCActions.EDIT_NOTE, noteValue: noteValue}});
+            props.mcDispatch({action: {type: MCActions.EDIT_NOTE, noteValue: noteValue}});
     };
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {

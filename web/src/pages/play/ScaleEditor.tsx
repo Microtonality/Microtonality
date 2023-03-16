@@ -15,7 +15,7 @@ import BaseFrequencyEditor from "./TuningFrequencyEditor";
 import TuningFrequencyEditor from "./TuningFrequencyEditor";
 
 interface ScaleEditorProps {
-    microtonalConfig: MicrotonalConfig
+    microtonalConfig: MicrotonalConfig,
     mcDispatch: Function
 }
 
@@ -38,7 +38,7 @@ export default function ScaleEditor(props: ScaleEditorProps) {
                 fileAsText = readerResult;
 
             let scale: Scale = parseScalaFile(fileAsText);
-            props.mcDispatch({state: props.microtonalConfig, action: {type: MCActions.SET_SCALE, scale: scale}});
+            props.mcDispatch({action: {type: MCActions.SET_SCALE, scale: scale}});
         }
 
         reader.onerror = () => {
@@ -72,12 +72,12 @@ export default function ScaleEditor(props: ScaleEditorProps) {
         let notes: ScaleNote[] = props.microtonalConfig.scaleConfig.scale.notes;
         let note: ScaleNote = ScaleNote.average(notes[notes.length - 1], props.microtonalConfig.scaleConfig.scale.octaveNote);
         
-        props.mcDispatch({state: props.microtonalConfig, action: {type: MCActions.ADD_NOTE, note: note}});
+        props.mcDispatch({action: {type: MCActions.ADD_NOTE, note: note}});
 
     }
 
     const handleDeleteNote = (noteIndex: number) => {
-        props.mcDispatch({state: props.microtonalConfig, action: {type: MCActions.DELETE_NOTE, noteIndex: noteIndex}});
+        props.mcDispatch({action: {type: MCActions.DELETE_NOTE, noteIndex: noteIndex}});
     }
 
     // Swap Notes
@@ -97,7 +97,7 @@ export default function ScaleEditor(props: ScaleEditorProps) {
         setDragOverIndex(null);
     }
     const handleSwapNotes = () => {
-        props.mcDispatch({state: props.microtonalConfig, action: {type: MCActions.SWAP_NOTES, currentIndex: draggingIndex, newIndex: dragOverIndex}});
+        props.mcDispatch({action: {type: MCActions.SWAP_NOTES, currentIndex: draggingIndex, newIndex: dragOverIndex}});
     }
 
     const mapNotes = (): ReactJSXElement[] => {

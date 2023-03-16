@@ -9,17 +9,19 @@ import {createPianoKeyboardShortcuts} from "../../utility/microtonal/PianoKeyMap
 import Knobs from '../../ui/Knobs'
 import {AdditiveSynthesizer} from "../../utility/audio/AdditiveSynthesizer";
 import MidiReceiver from "../../utility/midi/MIDIReceiver";
-import { setGain } from "./Reducers";
+import {MCActions, setGain} from "./Reducers";
 
 const MIDDLE_C = 60;
 
-export default function MicrotonalPiano(props: {
+interface MicrotonalPianoProps {
     microtonalConfig: MicrotonalConfig,
-    setMicrotonalConfig: Function,
+    mcDispatch: Function,
     keyMapping: Record<string, number>,
     midiReceiver: MidiReceiver,
     setKeyMapping: Function
-}) {
+}
+
+export default function MicrotonalPiano(props: MicrotonalPianoProps) {
     const [octave, setOctave] = useState(0);
     const [keyOffset, setKeyOffset] = useState(3);
 
@@ -35,6 +37,10 @@ export default function MicrotonalPiano(props: {
         [props.microtonalConfig]
     )
 
+    const handleMasterGainChange = (value: number) => {
+        props.mcDispatch({action: {type: MCActions.SET_MASTER_GAIN, gain: value}});
+    }
+
     return <div className="flex flex-col justify-center h-full border-gold border-t-2 border-l-2 border-b-2 rounded-tl-xl rounded-bl-xl bg-bglight">
         <div className="flex justify-center">
             <FrequencyBarComponent  keyMapping={props.keyMapping} keyboardShortcuts={keyboardShortcuts} scaleConfig={props.microtonalConfig.scaleConfig}
@@ -43,13 +49,12 @@ export default function MicrotonalPiano(props: {
         </div>
         <div className="flex flex-row justify-center mx-[5%] h-[70%] mt-[2%]">
             <div className="flex w-1/8 mr-[1%]">
-                <Knobs knobLabel="GAIN" onChange={(value) => props.setMicrotonalConfig(setGain(props.microtonalConfig, value)) } />
+                <Knobs knobLabel="GAIN" onChange={(value) => handleMasterGainChange(value)} />
             </div>
             <OctaveButtons octaveUp={() => setOctave(octave + 1)} octaveDown={() => setOctave(octave - 1)}/>
             <ReactPianoWrapper keyboardShortcuts={keyboardShortcuts} keyMapping={props.keyMapping}
-                scaleConfig={props.microtonalConfig.scaleConfig} keyOffset={keyOffset}
-                                midiReceiver={props.midiReceiver}
-                                rootKey={props.microtonalConfig.scaleConfig.rootKey + octave * props.microtonalConfig.scaleConfig.keysPerOctave}/>
+                               scaleConfig={props.microtonalConfig.scaleConfig} keyOffset={keyOffset} midiReceiver={props.midiReceiver}
+                               rootKey={props.microtonalConfig.scaleConfig.rootKey + octave * props.microtonalConfig.scaleConfig.keysPerOctave}/>
         </div>
     </div>;
 }
