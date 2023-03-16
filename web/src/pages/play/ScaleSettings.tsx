@@ -7,8 +7,8 @@ import ScaleEditor from "./ScaleEditor";
 import BasicSettings from "./BasicSettings";
 
 interface ScaleSettingsProps {
-    className?: string
-    microtonalConfig: MicrotonalConfig
+    className?: string,
+    microtonalConfig: MicrotonalConfig,
     mcDispatch: Function
 }
 

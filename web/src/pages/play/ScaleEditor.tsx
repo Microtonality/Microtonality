@@ -15,7 +15,7 @@ import BaseFrequencyEditor from "./TuningFrequencyEditor";
 import TuningFrequencyEditor from "./TuningFrequencyEditor";
 
 interface ScaleEditorProps {
-    microtonalConfig: MicrotonalConfig
+    microtonalConfig: MicrotonalConfig,
     mcDispatch: Function
 }
 
