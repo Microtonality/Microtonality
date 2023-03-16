@@ -62,7 +62,7 @@ export default function ScaleSettings(props: ScaleSettingsProps) {
                             <BasicSettings microtonalConfig={props.microtonalConfig} mcDispatch={props.mcDispatch}/>
                         </div>
 
-                        <div className={(openTab === 2 ? "block" : "hidden") + " max-h-[75vh] overflow-y-scroll"} id="link2">
+                        <div className={(openTab === 2 ? "block" : "hidden") + " max-h-[50vh] max-w-[30vw] overflow-y-scroll"} id="link2">
                             <ScaleEditor microtonalConfig={props.microtonalConfig} mcDispatch={props.mcDispatch}/>
                         </div>
                     </div>
