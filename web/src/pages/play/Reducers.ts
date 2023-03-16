@@ -4,40 +4,6 @@ import { Scale } from "../../utility/microtonal/Scale";
 import { ScaleNote } from "../../utility/microtonal/notes";
 import { parsePitchValue } from "../../utility/microtonal/scala/ScalaParser";
 
-
-
-const setOscillator = (microtonalConfig: MicrotonalConfig, oscillator: OscillatorSettings, oscIndex: number) => {
-    let newOscillators = [...microtonalConfig.synthConfig.oscillators];
-    newOscillators[oscIndex] = oscillator;
-    let synthConfig = {...microtonalConfig.synthConfig, oscillators: newOscillators} as SynthConfig;
-    return createMicrotonalConfig(microtonalConfig, synthConfig, null);
-}
-
-const setAttack = (microtonalConfig: MicrotonalConfig, attack: number) => {
-    let synthConfig = {...microtonalConfig.synthConfig, attack: attack} as SynthConfig;
-    return createMicrotonalConfig(microtonalConfig, synthConfig, null);
-}
-
-const setDecay = (microtonalConfig: MicrotonalConfig, decay: number) => {
-    let synthConfig = {...microtonalConfig.synthConfig, decay: decay} as SynthConfig;
-    return createMicrotonalConfig(microtonalConfig, synthConfig, null);
-}
-
-const setSustain = (microtonalConfig: MicrotonalConfig, sustain: number) => {
-    let synthConfig = {...microtonalConfig.synthConfig, sustain: sustain} as SynthConfig;
-    return createMicrotonalConfig(microtonalConfig, synthConfig, null);
-}
-
-const setRelease = (microtonalConfig: MicrotonalConfig, release: number) => {
-    let synthConfig = {...microtonalConfig.synthConfig, release: release} as SynthConfig;
-    return createMicrotonalConfig(microtonalConfig, synthConfig, null);
-}
-
-const setGain = (microtonalConfig: MicrotonalConfig, gain: number) => {
-    let synthConfig = {...microtonalConfig.synthConfig, gain: gain} as SynthConfig;
-    return createMicrotonalConfig(microtonalConfig, synthConfig, null);
-}
-
 enum MCActions {
     SET_SCALE,
     ADD_NOTE,
@@ -147,4 +113,4 @@ const MicrotonalConfigReducer = (state: MicrotonalConfig, action: Action): Micro
     }
 }
 
-export {setOscillator, setAttack, setDecay, setSustain, setRelease, setGain, MicrotonalConfigReducer, MCActions}
+export {MicrotonalConfigReducer, MCActions}

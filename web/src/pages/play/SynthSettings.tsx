@@ -3,7 +3,7 @@ import Oscillator from "../../ui/Oscillator";
 import Knobs from "../../ui/Knobs";
 import { MicrotonalConfig } from "../../utility/MicrotonalConfig";
 import OscillatorSettings from "../../utility/audio/OscillatorSettings";
-import {setAttack, setDecay, setSustain, setRelease, setOscillator, MCActions} from "./Reducers";
+import {MCActions} from "./Reducers";
 
 interface SynthProps {
     microtonalConfig: MicrotonalConfig,
