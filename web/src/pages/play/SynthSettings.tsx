@@ -56,13 +56,20 @@ export default function SynthSettings(props: SynthProps) {
                     </div>
 
                     <div className="flex flex-row mx-[2%] mt-[2%] mb-[3%] p-[2%] bg-neutral-700 rounded-xl border-gold border-[3px] overflow-hidden">
-                        <Oscillator onChange={(settings) => handleOscillatorChanges(settings, 0)} />
-                        <Oscillator onChange={(settings) => handleOscillatorChanges(settings, 1)} />
-                        <Oscillator onChange={(settings) => handleOscillatorChanges(settings, 2)} />
-                        <Oscillator onChange={(settings) => handleOscillatorChanges(settings, 3)} />
-                        <Oscillator onChange={(settings) => handleOscillatorChanges(settings, 4)} />
-                        <Oscillator onChange={(settings) => handleOscillatorChanges(settings, 5)} />
-                        <Oscillator onChange={(settings) => handleOscillatorChanges(settings, 6)} />
+                        <Oscillator settings={props.microtonalConfig.synthConfig.oscillators[0]}
+                            onChange={(settings) => handleOscillatorChanges(settings, 0)} />
+                        <Oscillator settings={props.microtonalConfig.synthConfig.oscillators[1]}
+                            onChange={(settings) => handleOscillatorChanges(settings, 1)} />
+                        <Oscillator settings={props.microtonalConfig.synthConfig.oscillators[2]}
+                            onChange={(settings) => handleOscillatorChanges(settings, 2)} />
+                        <Oscillator settings={props.microtonalConfig.synthConfig.oscillators[3]}
+                            onChange={(settings) => handleOscillatorChanges(settings, 3)} />
+                        <Oscillator settings={props.microtonalConfig.synthConfig.oscillators[4]}
+                            onChange={(settings) => handleOscillatorChanges(settings, 4)} />
+                        <Oscillator settings={props.microtonalConfig.synthConfig.oscillators[5]}
+                            onChange={(settings) => handleOscillatorChanges(settings, 5)} />
+                        <Oscillator settings={props.microtonalConfig.synthConfig.oscillators[6]}
+                            onChange={(settings) => handleOscillatorChanges(settings, 6)} />
                     </div>
 
                 </div>

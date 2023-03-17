@@ -28,7 +28,7 @@ export class AdditiveSynthesizer {
             return;
         }
 
-        console.log(this.config.oscillators[0])
+        console.log(this.config.oscillators)
 
         this.oscillatorStacks[frequency] = new OscillatorStack(
                 this.config.oscillators,

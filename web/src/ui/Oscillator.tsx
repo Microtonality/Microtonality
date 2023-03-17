@@ -15,7 +15,7 @@ const defaultProps = {
 
 export default function Oscillator(props: OscillatorProps) {
 
-    const [value, setValue] = useState<number[]>([0])
+    const [value, setValue] = useState<number[]>([0.5])
 
     const handleSliderChange = (val: number[]) => {
         if (val[0] > 1.00) val[0] = 1.00
@@ -39,16 +39,21 @@ export default function Oscillator(props: OscillatorProps) {
         let val = event.currentTarget.value;
 
         switch (val) {
-            case "SINE":
+            case "sine":
                 props.settings.waveType = "sine"
-            case "SQUARE":
+                break
+            case "square":
                 props.settings.waveType = "square"
-            case "TRIANGLE":
+                break
+            case "triangle":
                 props.settings.waveType = "triangle"
-            case "SAWTOOTH":
+                break
+            case "sawtooth":
                 props.settings.waveType = "sawtooth"
+                break
+            default:
         }
-
+        
         props.onChange(props.settings)
     }
 
@@ -119,6 +124,7 @@ export default function Oscillator(props: OscillatorProps) {
             <div className="h-[10vw] w-[3.5vw]">
                 <Knob 
                     max={16}
+                    value={props.settings.pitchRatio}
                     onChange={(value) => changeMultiplier(value)} 
                     knobLabel=""
                     className=""
