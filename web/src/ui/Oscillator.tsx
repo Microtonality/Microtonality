@@ -15,7 +15,7 @@ const defaultProps = {
 
 export default function Oscillator(props: OscillatorProps) {
 
-    const [value, setValue] = useState<number[]>([0.5])
+    const [value, setValue] = useState<number[]>([0.5, 0.5])
 
     const handleSliderChange = (val: number[]) => {
         if (val[0] > 1.00) val[0] = 1.00
@@ -58,6 +58,9 @@ export default function Oscillator(props: OscillatorProps) {
     }
 
     const changeMultiplier = (value: number) => {
+        props.settings.pitchRatio = value
+
+        props.onChange(props.settings)
         return;
     }
 
