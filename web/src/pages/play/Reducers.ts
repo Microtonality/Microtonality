@@ -38,34 +38,35 @@ type Action =
 const MicrotonalConfigReducer = (state: MicrotonalConfig, action: Action): MicrotonalConfig => {
 
     // Scale Changes
-    if (action.type == MCActions.SET_SCALE) {
+    if (action.type === MCActions.SET_SCALE) {
         let scaleConfig = {...state.scaleConfig, scale: action.scale, keysPerOctave: action.scale.notes.length} as ScaleConfig;
         return createMicrotonalConfig(state, null, scaleConfig);
     }
-    // If some reducers share the same code,
-    // put them together and filter out behavior as needed.
-    if (action.type == MCActions.ADD_NOTE ||
-        action.type == MCActions.EDIT_NOTE ||
-        action.type == MCActions.SWAP_NOTES ||
-        action.type == MCActions.DELETE_NOTE) {
+    if (action.type === MCActions.ADD_NOTE ||
+        action.type === MCActions.EDIT_NOTE ||
+        action.type === MCActions.SWAP_NOTES ||
+        action.type === MCActions.DELETE_NOTE) {
 
         let notes: ScaleNote[] = state.scaleConfig.scale.notes;
 
-        if (action.type == MCActions.ADD_NOTE) {
+        if (action.type === MCActions.ADD_NOTE) {
             notes = [...notes, action.note];
         }
-        else if (action.type == MCActions.EDIT_NOTE) {
+        else if (action.type === MCActions.EDIT_NOTE) {
+            if (action.noteValue === notes[action.noteIndex].num)
+                return state;
+
             let note: ScaleNote = parsePitchValue(`${action.noteValue} ${notes[action.noteIndex].comments}`);
             notes.splice(action.noteIndex, 1, note);
         }
-        else if (action.type == MCActions.SWAP_NOTES) {
+        else if (action.type === MCActions.SWAP_NOTES) {
             let note: ScaleNote = notes[action.currentIndex];
             let swapWith: ScaleNote = notes[action.newIndex];
 
             notes.splice(action.newIndex, 1, note);
             notes.splice(action.currentIndex, 1, swapWith);
         }
-        else if (action.type == MCActions.DELETE_NOTE) {
+        else if (action.type === MCActions.DELETE_NOTE) {
             notes.splice(action.noteIndex, 1);
         }
 
@@ -73,41 +74,67 @@ const MicrotonalConfigReducer = (state: MicrotonalConfig, action: Action): Micro
         let scaleConfig = {...state.scaleConfig, scale: scale, keysPerOctave: scale.notes.length} as ScaleConfig;
         return createMicrotonalConfig(state, null, scaleConfig);
     }
-    if (action.type == MCActions.EDIT_OCTAVE_NOTE) {
+    if (action.type === MCActions.EDIT_OCTAVE_NOTE) {
+        if (action.noteValue === state.scaleConfig.scale.octaveNote.num)
+            return state;
+
         let octaveNote: ScaleNote = parsePitchValue(`${action.noteValue} ${state.scaleConfig.scale.octaveNote.comments}`);
         let scale = new Scale(state.scaleConfig.scale.notes, state.scaleConfig.scale.title, state.scaleConfig.scale.description, octaveNote);
         let scaleConfig = {...state.scaleConfig, scale: scale, keysPerOctave: scale.notes.length} as ScaleConfig;
         return createMicrotonalConfig(state, null, scaleConfig);
     }
-    if (action.type == MCActions.SET_TUNING_FREQUENCY) {
+    if (action.type === MCActions.SET_TUNING_FREQUENCY) {
+        if (action.tuningFrequency === state.scaleConfig.tuningFrequency)
+            return state;
+
         let scaleConfig = {...state.scaleConfig, tuningFrequency: action.tuningFrequency} as ScaleConfig;
         return createMicrotonalConfig(state, null, scaleConfig);
     }
 
     // Synthesizer Changes
-    if (action.type == MCActions.SET_OSCILLATOR) {
+    if (action.type === MCActions.SET_OSCILLATOR) {
+        let oldOscillator: OscillatorSettings = state.synthConfig.oscillators[action.oscIndex];
+        let newOscillator: OscillatorSettings = action.osc;
+        if (newOscillator.equals(oldOscillator))
+            return state;
+
         let newOscillators = [...state.synthConfig.oscillators];
-        newOscillators[action.oscIndex] = action.osc;
+        newOscillators.splice(action.oscIndex, 1, newOscillator);
         let synthConfig = {...state.synthConfig, oscillators: newOscillators} as SynthConfig;
         return createMicrotonalConfig(state, synthConfig, null);
     }
-    if (action.type == MCActions.SET_ATTACK) {
+    if (action.type === MCActions.SET_ATTACK) {
+        if (action.attack === state.synthConfig.attack)
+            return state;
+
         let synthConfig = {...state.synthConfig, attack: action.attack} as SynthConfig;
         return createMicrotonalConfig(state, synthConfig, null);
     }
-    if (action.type == MCActions.SET_DECAY) {
+    if (action.type === MCActions.SET_DECAY) {
+        if (action.decay === state.synthConfig.decay)
+            return state;
+
         let synthConfig = {...state.synthConfig, decay: action.decay} as SynthConfig;
         return createMicrotonalConfig(state, synthConfig, null);
     }
-    if (action.type == MCActions.SET_SUSTAIN) {
+    if (action.type === MCActions.SET_SUSTAIN) {
+        if (action.sustain === state.synthConfig.sustain)
+            return state;
+
         let synthConfig = {...state.synthConfig, sustain: action.sustain} as SynthConfig;
         return createMicrotonalConfig(state, synthConfig, null);
     }
-    if (action.type == MCActions.SET_RELEASE) {
+    if (action.type === MCActions.SET_RELEASE) {
+        if (action.release === state.synthConfig.release)
+            return state;
+
         let synthConfig = {...state.synthConfig, release: action.release} as SynthConfig;
         return createMicrotonalConfig(state, synthConfig, null);
     }
-    if (action.type == MCActions.SET_MASTER_GAIN) {
+    if (action.type === MCActions.SET_MASTER_GAIN) {
+        if (action.gain === state.synthConfig.gain)
+            return state;
+
         let synthConfig = {...state.synthConfig, gain: action.gain} as SynthConfig;
         return createMicrotonalConfig(state, synthConfig, null);
     }

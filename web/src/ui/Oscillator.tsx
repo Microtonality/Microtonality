@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState } from "react";
+import {useRef, useState} from "react";
 import OscillatorSettings from "../utility/audio/OscillatorSettings";
 import { Range, Direction } from 'react-range';
 import Knob from "./Knobs";
@@ -18,6 +18,7 @@ export default function Oscillator(props: OscillatorProps) {
 
     const supportedWaveTypes: Array<string> = ['sine', 'square', 'triangle', 'sawtooth'];
     const [localGain, setLocalGain] = useState<number>(props.settings.localGain);
+    const gainInputRef = useRef<HTMLInputElement>(null);
 
     const handleWaveTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         let wave: string = event.currentTarget.value;
@@ -31,9 +32,9 @@ export default function Oscillator(props: OscillatorProps) {
     const mapWaveTypes = (): ReactJSXElement[] => {
         let wavesJSX: ReactJSXElement[] = [];
 
-        supportedWaveTypes.forEach((waveType) => {
+        supportedWaveTypes.forEach((waveType, i) => {
             wavesJSX.push(
-                <option value={waveType}>{waveType.toUpperCase()}</option>
+                <option value={waveType} key={i}>{waveType.toUpperCase()}</option>
             );
         });
 
@@ -58,9 +59,17 @@ export default function Oscillator(props: OscillatorProps) {
         return Math.min(1, Math.max(0, gain));
     }
 
-    const handleMultiplierChange = (value: number) => {
+    const handleMultiplierSubmit = (value: number) => {
         props.settings.pitchRatio = value;
         props.onChange(props.settings);
+    }
+
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') {
+            gainInputRef.current.blur();
+            handleGainSubmit();
+            return;
+        }
     }
 
     return (
@@ -113,10 +122,12 @@ export default function Oscillator(props: OscillatorProps) {
 
             <input  
                 className={"text-center w-[60%] self-center rounded-md font-agrandir"} 
-                type="number" 
+                type="number"
+                ref={gainInputRef}
                 value={localGain}
                 onChange={(e) => handleGainInputChange(e)}
                 onBlur={() => handleGainSubmit()}
+                onKeyDown={(e) => handleKeyDown(e)}
                 min={0} 
                 max={1} 
                 step={0.01}
@@ -127,7 +138,7 @@ export default function Oscillator(props: OscillatorProps) {
                     min={0}
                     max={16}
                     value={props.settings.pitchRatio}
-                    onChange={(value) => handleMultiplierChange(value)}
+                    onChange={(value) => handleMultiplierSubmit(value)}
                     knobLabel=""
                     className=""
                 />

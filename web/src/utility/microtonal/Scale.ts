@@ -16,6 +16,25 @@ export class Scale {
     scaleDegreeToNote(scaleDegree: number): ScaleNote {
         return this.notes[scaleDegree % this.notes.length];
     }
+
+    equals(other: Scale): boolean {
+        if (this.notes.length !== other.notes.length)
+            return false;
+
+        let i: number;
+        for (i = 0; i < this.notes.length; i++) {
+            if (this.notes[i].num !== other.notes[i].num)
+                return false;
+        }
+
+        if (this.octaveNote.num !== other.octaveNote.num ||
+            this.title !== other.title ||
+            this.description !== other.description) {
+            return false;
+        }
+
+        return true;
+    }
 }
 
 export function scaleFromCents(centValues: Array<number>, title: string = '', description: string = '') {

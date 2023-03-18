@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useEffect, useState } from 'react';
+import {useEffect, useRef, useState} from 'react';
 
 interface KnobProps {
   min: number;
@@ -25,10 +25,11 @@ const defaultProps = {
 export default function Knob (props: KnobProps) {
   let [value, setValue] = useState<number>(props.value);
   let [isMouseDown, setIsMouseDown] = useState(false);
+  const valueInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!isMouseDown) {
-      props.onChange(value);
+      handleSubmit();
     }
   }, [isMouseDown]);
 
@@ -61,14 +62,25 @@ export default function Knob (props: KnobProps) {
   const handleMouseUp = () => {
     document.removeEventListener('mousemove', handleMouseMove);
     document.removeEventListener('mouseup', handleMouseUp);
-
     setIsMouseDown(false);
   };
 
   const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    let val = parseFloat(event.target.value);
+    let val: number = parseFloat(event.target.value);
     if (val > props.max) val = props.max;
-    setValue(val)
+    setValue(() => val);
+  }
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      valueInputRef.current.blur();
+      handleSubmit();
+      return;
+    }
+  }
+
+  const handleSubmit = () => {
+      props.onChange(value);
   }
 
     return (
@@ -87,7 +99,7 @@ export default function Knob (props: KnobProps) {
           </div>
         </div>
 
-        <input className={"text-center self-center w-3/4 rounded-md font-agrandir"} type="number" value={parseFloat(value.toFixed(2))} onChange={(e) => handleInput(e)} min={0} max={1} step={0.01} />
+        <input className={"text-center self-center w-3/4 rounded-md font-agrandir"} type="number" ref={valueInputRef} value={parseFloat(value.toFixed(2))} onChange={(e) => handleInput(e)} onBlur={() => handleSubmit()} onKeyDown={(e) => handleKeyDown(e)} min={0} max={1} step={0.01} />
       </div>
     );
 }

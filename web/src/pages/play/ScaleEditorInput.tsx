@@ -5,7 +5,7 @@ import hamburger from "../../img/icons/hamburger.png"
 import disabledHamburger from "../../img/icons/hamburger-disabled.png"
 import { MicrotonalConfig } from "../../utility/MicrotonalConfig";
 import { Scale } from "../../utility/microtonal/Scale";
-import { useEffect, useState } from "react";
+import {useEffect, useRef, useState} from "react";
 import {MCActions} from "./Reducers";
 
 interface ScaleEditorInputProps {
@@ -18,23 +18,11 @@ interface ScaleEditorInputProps {
 export default function ScaleEditorInput(props: ScaleEditorInputProps) {
 
     const [noteValue, setNoteValue] = useState((props.noteIndex === -1) ? props.scale.octaveNote.num : props.scale.notes[props.noteIndex].num);
-    const [isRatio, setIsRatio] = useState((noteValue.includes('.') ? false : true))
+    const [isRatio, setIsRatio] = useState((noteValue.includes('.') ? false : true));
 
     useEffect(() => {
         wrapSetNoteValue((props.noteIndex === -1) ? props.scale.octaveNote.num : props.scale.notes[props.noteIndex].num);
-    }, [props.microtonalConfig])
-
-    // Check top of file.
-    // These help prevent the cursor from moving to the end of the input field
-    // when a user enters a character that isn't accepted (ex: a letter).
-    // It allows us to declare exactly where we want the cursor to be placed.
-    const [selection, setSelection] = React.useState<[number | null, number | null] | null>(null);
-    const noteInputField = React.useRef<HTMLInputElement>(null);
-    React.useLayoutEffect(() => {
-        if (selection && noteInputField.current) {
-            [noteInputField.current.selectionStart, noteInputField.current.selectionEnd] = selection;
-        }
-    }, [selection]);
+    }, [props.microtonalConfig]);
 
     // This function prevents any characters besides numbers, '.', and '/'
     // from being entered into the input.
@@ -51,7 +39,7 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
             else
                 setIsRatio(() => true);
 
-            setNoteValue(event);
+            setNoteValue(() => event);
             return;
         }
 
@@ -81,7 +69,7 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
         if (newChar === '/' || newChar === '.') {
             // Don't accept duplicates.
             if (noteValue.includes('/') || noteValue.includes('.')) {
-                setSelection([event.target.selectionStart - 1, event.target.selectionEnd - 1]); 
+                setSelection(() => [event.target.selectionStart - 1, event.target.selectionEnd - 1]);
                 return;
             }
             
@@ -93,14 +81,14 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
         // Don't accept any character besides a number.
         // Note: parseInt('0') return false, so the extra check is necessary
         else if (!parseInt(newChar) && newChar !== '0'){
-            setSelection([event.target.selectionStart - 1, event.target.selectionEnd - 1]); 
+            setSelection(() => [event.target.selectionStart - 1, event.target.selectionEnd - 1]);
             return;
         }
 
-        // Looks good, update the input field.
-        setSelection([event.target.selectionStart, event.target.selectionEnd]); 
+        // New character is valid, update the input field.
+        setSelection(() => [event.target.selectionStart, event.target.selectionEnd]);
         setNoteValue(() => updatedInput);
-    }
+    };
 
     const handleEditNote = () => {
         if (props.noteIndex === -1)
@@ -115,7 +103,19 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
             handleEditNote();
             return;
         }
-    }
+    };
+
+    // Check top of file.
+    // These help prevent the cursor from moving to the end of the input field
+    // when a user enters a character that isn't accepted (ex: a letter).
+    // It allows us to declare exactly where we want the cursor to be placed.
+    const [selection, setSelection] = React.useState<[number | null, number | null] | null>(null);
+    const noteInputField = useRef<HTMLInputElement>(null);
+    React.useLayoutEffect(() => {
+        if (selection && noteInputField.current) {
+            [noteInputField.current.selectionStart, noteInputField.current.selectionEnd] = selection;
+        }
+    }, [selection]);
 
     return (
         <div className="inline-flex items-center my-[2.5%]">

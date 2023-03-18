@@ -8,4 +8,14 @@ export default class OscillatorSettings {
         this.localGain = localGain
         this.waveType = waveType
     }
+
+    equals(other: OscillatorSettings): boolean {
+        if (this.pitchRatio === other.pitchRatio &&
+            this.localGain === other.localGain &&
+            this.waveType === other.waveType) {
+            return true;
+        }
+
+        return false;
+    }
 }
