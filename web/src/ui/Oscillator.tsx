@@ -3,6 +3,7 @@ import { useState } from "react";
 import OscillatorSettings from "../utility/audio/OscillatorSettings";
 import { Range, Direction } from 'react-range';
 import Knob from "./Knobs";
+import {ReactJSXElement} from "@emotion/react/types/jsx-namespace";
 
 interface OscillatorProps {
     settings: OscillatorSettings;
@@ -10,76 +11,72 @@ interface OscillatorProps {
 }
 
 const defaultProps = {
-    settings: new OscillatorSettings(1, 0.5, "sine"),
+    settings: new OscillatorSettings(1, 0.5, 'sine'),
 }
 
 export default function Oscillator(props: OscillatorProps) {
 
-    const [value, setValue] = useState<number[]>([0.5, 0.5])
-
-    const handleSliderChange = (val: number[]) => {
-        if (val[0] > 1.00) val[0] = 1.00
-        setValue(val)
-
-        let newSettings = new OscillatorSettings(props.settings.pitchRatio, val[0], props.settings.waveType)
-        props.onChange(newSettings)
-    }
-
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        let val : number[] = []
-        val[0] = parseFloat(event.currentTarget.value)
-        if (val[0] > 1.00) val[0] = 1.00
-        setValue(val)
-
-        let newSettings = new OscillatorSettings(props.settings.pitchRatio, val[0], props.settings.waveType)
-        props.onChange(newSettings)
-    }
+    const supportedWaveTypes: Array<string> = ['sine', 'square', 'triangle', 'sawtooth'];
+    const [localGain, setLocalGain] = useState<number>(props.settings.localGain);
 
     const handleWaveTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        let val = event.currentTarget.value;
+        let wave: string = event.currentTarget.value;
+        if (!supportedWaveTypes.includes(wave))
+            return;
 
-        switch (val) {
-            case "sine":
-                props.settings.waveType = "sine"
-                break
-            case "square":
-                props.settings.waveType = "square"
-                break
-            case "triangle":
-                props.settings.waveType = "triangle"
-                break
-            case "sawtooth":
-                props.settings.waveType = "sawtooth"
-                break
-            default:
-        }
-        
-        props.onChange(props.settings)
+        props.settings.waveType = wave as OscillatorType;
+        props.onChange(props.settings);
     }
 
-    const changeMultiplier = (value: number) => {
-        props.settings.pitchRatio = value
+    const mapWaveTypes = (): ReactJSXElement[] => {
+        let wavesJSX: ReactJSXElement[] = [];
 
-        props.onChange(props.settings)
-        return;
+        supportedWaveTypes.forEach((waveType) => {
+            wavesJSX.push(
+                <option value={waveType}>{waveType.toUpperCase()}</option>
+            );
+        });
+
+        return wavesJSX;
+    }
+
+    const handleGainSliderChange = (values: number[]) => {
+        setLocalGain(() => clampGain(values[0]));
+    }
+
+    const handleGainInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        let gain: number = clampGain(parseFloat(event.currentTarget.value));
+        setLocalGain(() => gain);
+    }
+
+    const handleGainSubmit = () => {
+        props.settings.localGain = localGain;
+        props.onChange(props.settings);
+    }
+
+    const clampGain = (gain: number): number => {
+        return Math.min(1, Math.max(0, gain));
+    }
+
+    const handleMultiplierChange = (value: number) => {
+        props.settings.pitchRatio = value;
+        props.onChange(props.settings);
     }
 
     return (
         <div className="flex flex-col items-center justify-between">
 
-            <select data-te-select-init className="flex h-6 w-[80%] rounded-md text-center font-agrandir" onChange={handleWaveTypeChange}>
-                <option value="sine">SINE</option>
-                <option value="square">SQUARE</option>
-                <option value="triangle">TRIANGLE</option>
-                <option value="sawtooth">SAWTOOTH</option>
+            <select data-te-select-init className="flex h-6 w-[80%] rounded-md text-center font-agrandir" onChange={(e) => handleWaveTypeChange(e)}>
+                {mapWaveTypes()}
             </select>
 
             <Range
             step={0.01}
             min={0}
             max={1}
-            values={value}
-            onChange={handleSliderChange}
+            values={[localGain]}
+            onChange={(values) => handleGainSliderChange(values)}
+            onFinalChange={() => handleGainSubmit()}
             direction={Direction.Up}
             renderTrack={({ props, children }) => (
                 <div
@@ -117,18 +114,20 @@ export default function Oscillator(props: OscillatorProps) {
             <input  
                 className={"text-center w-[60%] self-center rounded-md font-agrandir"} 
                 type="number" 
-                value={value[0]} 
-                onChange={handleInputChange} 
+                value={localGain}
+                onChange={(e) => handleGainInputChange(e)}
+                onBlur={() => handleGainSubmit()}
                 min={0} 
                 max={1} 
                 step={0.01}
             />
 
             <div className="h-[10vw] w-[3.5vw]">
-                <Knob 
+                <Knob
+                    min={0}
                     max={16}
                     value={props.settings.pitchRatio}
-                    onChange={(value) => changeMultiplier(value)} 
+                    onChange={(value) => handleMultiplierChange(value)}
                     knobLabel=""
                     className=""
                 />

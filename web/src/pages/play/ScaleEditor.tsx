@@ -26,9 +26,7 @@ export default function ScaleEditor(props: ScaleEditorProps) {
         let readerResult: string | ArrayBuffer;
         let fileAsText: string = "";
 
-        reader.readAsText(file);
         reader.onload = () => {
-
             readerResult = reader.result
             if (readerResult instanceof ArrayBuffer)
                 fileAsText = new TextDecoder().decode(readerResult);
@@ -38,14 +36,13 @@ export default function ScaleEditor(props: ScaleEditorProps) {
             let scale: Scale = parseScalaFile(fileAsText);
             props.mcDispatch({type: MCActions.SET_SCALE, scale: scale});
         }
-
         reader.onerror = () => {
             console.error("ScaleEditor.handleScalaFileUpload(): Could not read file");
         }
+        reader.readAsText(file);
     }
     
     const handleScalaFileGeneration = () => {
-        
         let file: File = generateScalaFile(props.microtonalConfig.scaleConfig.scale);
 
         // Create download link, simulate click
@@ -103,7 +100,7 @@ export default function ScaleEditor(props: ScaleEditorProps) {
         let notesJSX: ReactJSXElement[] = [];
         let notes: ScaleNote[] = props.microtonalConfig.scaleConfig.scale.notes;
 
-        // We want the 1/1 note to not be interactable with the user.
+        // We want the 1/1 note to non-interactable.
         // Every other note can be moved/edited/deleted.
         for (let i = 0; i < notes.length; i++) {
 

@@ -106,7 +106,7 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
         if (props.noteIndex === -1)
             props.mcDispatch({type: MCActions.EDIT_OCTAVE_NOTE, noteValue: noteValue});
         else
-            props.mcDispatch({type: MCActions.EDIT_NOTE, noteValue: noteValue});
+            props.mcDispatch({type: MCActions.EDIT_NOTE, noteValue: noteValue, noteIndex: props.noteIndex});
     };
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
