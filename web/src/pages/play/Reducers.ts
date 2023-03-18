@@ -1,10 +1,11 @@
 import {createMicrotonalConfig, MicrotonalConfig, ScaleConfig, SynthConfig} from "../../utility/MicrotonalConfig";
-import OscillatorSettings from "../../utility/audio/OscillatorSettings";
+import {OscillatorSettings} from "../../utility/audio/OscillatorSettings";
 import { Scale } from "../../utility/microtonal/Scale";
 import { ScaleNote } from "../../utility/microtonal/notes";
 import { parsePitchValue } from "../../utility/microtonal/scala/ScalaParser";
 
 enum MCActions {
+    SET_MICROTONAL_CONFIG,
     SET_SCALE,
     ADD_NOTE,
     EDIT_NOTE,
@@ -21,6 +22,7 @@ enum MCActions {
 }
 
 type Action =
+    | {type: MCActions.SET_MICROTONAL_CONFIG, microtonalConfig: MicrotonalConfig}
     | {type: MCActions.SET_SCALE, scale: Scale}
     | {type: MCActions.ADD_NOTE, note: ScaleNote}
     | {type: MCActions.EDIT_NOTE, noteValue: string, noteIndex: number}
@@ -37,8 +39,20 @@ type Action =
 
 const MicrotonalConfigReducer = (state: MicrotonalConfig, action: Action): MicrotonalConfig => {
 
+    // Config swaps
+    if (action.type === MCActions.SET_MICROTONAL_CONFIG) {
+        // is this comparison safe?
+        if (action.microtonalConfig === state)
+            return state;
+
+        return createMicrotonalConfig(action.microtonalConfig, null, null);
+    }
+
     // Scale Changes
     if (action.type === MCActions.SET_SCALE) {
+        if (action.scale.equals(state.scaleConfig.scale))
+            return state;
+
         let scaleConfig = {...state.scaleConfig, scale: action.scale, keysPerOctave: action.scale.notes.length} as ScaleConfig;
         return createMicrotonalConfig(state, null, scaleConfig);
     }
@@ -93,13 +107,16 @@ const MicrotonalConfigReducer = (state: MicrotonalConfig, action: Action): Micro
 
     // Synthesizer Changes
     if (action.type === MCActions.SET_OSCILLATOR) {
-        let oldOscillator: OscillatorSettings = state.synthConfig.oscillators[action.oscIndex];
-        let newOscillator: OscillatorSettings = action.osc;
-        if (newOscillator.equals(oldOscillator))
+        let oldOsc: OscillatorSettings = state.synthConfig.oscillators[action.oscIndex];
+        let newOsc: OscillatorSettings = action.osc;
+        if (newOsc.pitchRatio === oldOsc.pitchRatio &&
+            newOsc.localGain === oldOsc.localGain &&
+            newOsc.waveType === oldOsc.waveType) {
             return state;
+        }
 
         let newOscillators = [...state.synthConfig.oscillators];
-        newOscillators.splice(action.oscIndex, 1, newOscillator);
+        newOscillators.splice(action.oscIndex, 1, newOsc);
         let synthConfig = {...state.synthConfig, oscillators: newOscillators} as SynthConfig;
         return createMicrotonalConfig(state, synthConfig, null);
     }

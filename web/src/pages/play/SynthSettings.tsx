@@ -2,8 +2,9 @@ import * as React from "react";
 import Oscillator from "../../ui/Oscillator";
 import Knobs from "../../ui/Knobs";
 import { MicrotonalConfig } from "../../utility/MicrotonalConfig";
-import OscillatorSettings from "../../utility/audio/OscillatorSettings";
+import {OscillatorSettings} from "../../utility/audio/OscillatorSettings";
 import {MCActions} from "./Reducers";
+import {ReactJSXElement} from "@emotion/react/types/jsx-namespace";
 
 interface SynthProps {
     microtonalConfig: MicrotonalConfig,
@@ -34,6 +35,23 @@ export default function SynthSettings(props: SynthProps) {
         props.mcDispatch({type: MCActions.SET_OSCILLATOR, osc: settings, oscIndex: index});
     }
 
+    const mapOscillators = (): ReactJSXElement[] => {
+        let oscJSX: ReactJSXElement[] = [];
+        let oscillators = props.microtonalConfig.synthConfig.oscillators;
+
+        for (let i = 0; i < oscillators.length; i++) {
+            oscJSX.push(
+                <Oscillator key={i}
+                            oscIndex={i}
+                            settings={props.microtonalConfig.synthConfig.oscillators[i]}
+                            microtonalConfig={props.microtonalConfig}
+                            mcDispatch={props.mcDispatch}/>
+            );
+        }
+
+        return oscJSX;
+    }
+
     return  <div className="flex h-full w-full border-gold border-t-2 border-l-2 rounded-tl-xl bg-bglight justify-around">
 
                 <div className="flex h-full">
@@ -47,29 +65,16 @@ export default function SynthSettings(props: SynthProps) {
                                 <Knobs knobLabel="Decay" value={props.microtonalConfig.synthConfig.decay} onChange={(value) => handleDecayChange(value)} className="border-gold border-[3px]"/>
                             </div>
                             <div className="ml-[2%]"> 
-                                <Knobs knobLabel="Sustain" onChange={(value) => handleSustainChange(value)} className="border-gold border-[3px]"/>
+                                <Knobs knobLabel="Sustain" value={props.microtonalConfig.synthConfig.sustain} onChange={(value) => handleSustainChange(value)} className="border-gold border-[3px]"/>
                             </div>
                             <div className="ml-[2%]">
-                                <Knobs knobLabel="Release" onChange={(value) => handleReleaseChange(value)} className="border-gold border-[3px]"/>
+                                <Knobs knobLabel="Release" value={props.microtonalConfig.synthConfig.release} onChange={(value) => handleReleaseChange(value)} className="border-gold border-[3px]"/>
                             </div>
                         </div>
                     </div>
 
                     <div className="flex flex-row mx-[2%] mt-[2%] mb-[3%] p-[2%] bg-neutral-700 rounded-xl border-gold border-[3px] overflow-hidden">
-                        <Oscillator settings={props.microtonalConfig.synthConfig.oscillators[0]}
-                            onChange={(settings) => handleOscillatorChanges(settings, 0)} />
-                        <Oscillator settings={props.microtonalConfig.synthConfig.oscillators[1]}
-                            onChange={(settings) => handleOscillatorChanges(settings, 1)} />
-                        <Oscillator settings={props.microtonalConfig.synthConfig.oscillators[2]}
-                            onChange={(settings) => handleOscillatorChanges(settings, 2)} />
-                        <Oscillator settings={props.microtonalConfig.synthConfig.oscillators[3]}
-                            onChange={(settings) => handleOscillatorChanges(settings, 3)} />
-                        <Oscillator settings={props.microtonalConfig.synthConfig.oscillators[4]}
-                            onChange={(settings) => handleOscillatorChanges(settings, 4)} />
-                        <Oscillator settings={props.microtonalConfig.synthConfig.oscillators[5]}
-                            onChange={(settings) => handleOscillatorChanges(settings, 5)} />
-                        <Oscillator settings={props.microtonalConfig.synthConfig.oscillators[6]}
-                            onChange={(settings) => handleOscillatorChanges(settings, 6)} />
+                        {mapOscillators()}
                     </div>
 
                 </div>

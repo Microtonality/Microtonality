@@ -1,4 +1,4 @@
-import OscillatorSettings from "./OscillatorSettings";
+import {OscillatorSettings} from "./OscillatorSettings";
 
 export default class OscillatorStack {
 

@@ -1,17 +1,17 @@
 import * as React from "react";
-import {useRef, useState} from "react";
-import OscillatorSettings from "../utility/audio/OscillatorSettings";
+import {useEffect, useRef, useState} from "react";
+import {OscillatorSettings} from "../utility/audio/OscillatorSettings";
 import { Range, Direction } from 'react-range';
 import Knob from "./Knobs";
 import {ReactJSXElement} from "@emotion/react/types/jsx-namespace";
+import {MicrotonalConfig} from "../utility/MicrotonalConfig";
+import {MCActions} from "../pages/play/Reducers";
 
 interface OscillatorProps {
+    oscIndex: number;
     settings: OscillatorSettings;
-    onChange: (value: OscillatorSettings) => void;
-}
-
-const defaultProps = {
-    settings: new OscillatorSettings(1, 0.5, 'sine'),
+    microtonalConfig: MicrotonalConfig;
+    mcDispatch: Function;
 }
 
 export default function Oscillator(props: OscillatorProps) {
@@ -20,13 +20,21 @@ export default function Oscillator(props: OscillatorProps) {
     const [localGain, setLocalGain] = useState<number>(props.settings.localGain);
     const gainInputRef = useRef<HTMLInputElement>(null);
 
+    useEffect(() => {
+        setLocalGain(() => props.settings.localGain);
+    }, [props.settings.localGain])
+
+    const updateOscillator = (osc: OscillatorSettings) => {
+        props.mcDispatch({type: MCActions.SET_OSCILLATOR, osc: osc, oscIndex: props.oscIndex});
+    }
+
     const handleWaveTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         let wave: string = event.currentTarget.value;
         if (!supportedWaveTypes.includes(wave))
             return;
 
-        props.settings.waveType = wave as OscillatorType;
-        props.onChange(props.settings);
+        let newOsc = {...props.settings, waveType: wave} as OscillatorSettings;
+        updateOscillator(newOsc);
     }
 
     const mapWaveTypes = (): ReactJSXElement[] => {
@@ -51,8 +59,8 @@ export default function Oscillator(props: OscillatorProps) {
     }
 
     const handleGainSubmit = () => {
-        props.settings.localGain = localGain;
-        props.onChange(props.settings);
+        let newOsc = {...props.settings, localGain: localGain} as OscillatorSettings;
+        updateOscillator(newOsc);
     }
 
     const clampGain = (gain: number): number => {
@@ -60,8 +68,8 @@ export default function Oscillator(props: OscillatorProps) {
     }
 
     const handleMultiplierSubmit = (value: number) => {
-        props.settings.pitchRatio = value;
-        props.onChange(props.settings);
+        let newOsc = {...props.settings, pitchRatio: value} as OscillatorSettings;
+        updateOscillator(newOsc);
     }
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -75,7 +83,7 @@ export default function Oscillator(props: OscillatorProps) {
     return (
         <div className="flex flex-col items-center justify-between">
 
-            <select data-te-select-init className="flex h-6 w-[80%] rounded-md text-center font-agrandir" onChange={(e) => handleWaveTypeChange(e)}>
+            <select data-te-select-init value={props.settings.waveType} className="flex h-6 w-[80%] rounded-md text-center font-agrandir" onChange={(e) => handleWaveTypeChange(e)}>
                 {mapWaveTypes()}
             </select>
 
@@ -146,5 +154,3 @@ export default function Oscillator(props: OscillatorProps) {
         </div>
     )
 }
-
-Oscillator.defaultProps = defaultProps;

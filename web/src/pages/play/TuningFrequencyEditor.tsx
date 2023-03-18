@@ -38,7 +38,7 @@ export default function TuningFrequencyEditor(props: TuningFrequencyEditorProps)
                 FREQUENCY
             </div>
             <div className="flex w-[85%] h-10 mt-[2%] mx-[7%]">
-                <input type="number" ref={tuningFrequencyInputField} value={tuningFrequency} onChange={(e) => wrapSetTuningFrequency(e)} onKeyDown={(e) => handleKeyDown(e)} onBlur={() => handleTuningFrequencyChange()} step="0.0001" className="w-full rounded-md font-agrandir pl-[2%]" />
+                <input type="number" ref={tuningFrequencyInputField} value={props.microtonalConfig.scaleConfig.tuningFrequency} onChange={(e) => wrapSetTuningFrequency(e)} onKeyDown={(e) => handleKeyDown(e)} onBlur={() => handleTuningFrequencyChange()} step="0.0001" className="w-full rounded-md font-agrandir pl-[2%]" />
             </div>
         </div>
     );

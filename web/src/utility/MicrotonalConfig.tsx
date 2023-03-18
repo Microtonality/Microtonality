@@ -1,6 +1,6 @@
 import {Scale} from "./microtonal/Scale";
 import {generateEqualTemperedScale} from "./microtonal/ScaleGeneration";
-import OscillatorSettings from "./audio/OscillatorSettings";
+import {OscillatorSettings, DEFAULT_OSCILLATOR_SETTINGS} from "./audio/OscillatorSettings";
 import {createPianoKeyboardShortcuts, mapScaleToKeyboardShortcuts} from "./microtonal/PianoKeyMapping";
 
 export interface MicrotonalConfig {
@@ -39,14 +39,14 @@ export const DEFAULT_SYNTH_CONFIG: SynthConfig = {
     release: 1,
 
     oscillators: [
-        new OscillatorSettings(1, 0.5, "sine"),
-        new OscillatorSettings(2, 0.5, "sine"),
-        new OscillatorSettings(3, 0.5, "sine"),
-        new OscillatorSettings(4, 0.5, "sine"),
-        new OscillatorSettings(5, 0.5, "sine"),
-        new OscillatorSettings(6, 0.5, "sine"),
-        new OscillatorSettings(7, 0.5, "sine"),
-        ]
+        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 1} as OscillatorSettings,
+        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 2} as OscillatorSettings,
+        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 3} as OscillatorSettings,
+        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 4} as OscillatorSettings,
+        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 5} as OscillatorSettings,
+        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 6} as OscillatorSettings,
+        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 7} as OscillatorSettings,
+    ]
 }
 
 export const DEFAULT_SCALE_CONFIG: ScaleConfig = {
