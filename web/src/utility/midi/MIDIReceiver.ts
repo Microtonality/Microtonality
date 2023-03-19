@@ -1,6 +1,7 @@
 import {AdditiveSynthesizer} from "../audio/AdditiveSynthesizer"
 import {DEFAULT_SCALE_CONFIG, ScaleConfig} from "../MicrotonalConfig";
 import {RatioNote} from "../microtonal/notes";
+import {scaleDegreeToNote} from "../microtonal/Scale";
 
 export default class MidiReceiver {
 
@@ -105,7 +106,7 @@ export default class MidiReceiver {
         let note;
         try {
             scaleDegree = this.keyMapping[octaveKey];
-            note = this.config.scale.scaleDegreeToNote(scaleDegree);
+            note = scaleDegreeToNote(this.config.scale, scaleDegree);
             multiplier = note.multiplier;
         } catch (e) {
             console.log(`Error: key in octave ${octaveKey} (MIDI number: ${MidiNote}) is not assigned to a note in the scale.`)
@@ -116,7 +117,7 @@ export default class MidiReceiver {
     }
 
     public ScaleDegreeToFrequency(scaleDegree: number, octave: number): number {
-        let note = this.config.scale.scaleDegreeToNote(scaleDegree);
+        let note = scaleDegreeToNote(this.config.scale, scaleDegree);
         let multiplier = note.multiplier;
 
         // Finally, convert to a frequency.

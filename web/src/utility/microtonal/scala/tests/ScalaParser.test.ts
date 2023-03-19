@@ -1,4 +1,4 @@
-import { Scale } from '../../Scale';
+import {DEFAULT_SCALE, Scale} from '../../Scale';
 import { ScaleNote, CentNote, RatioNote, IntRatioNote } from '../../notes';
 import { CommentPrefixException, InsufficientPitchValuesException, parsePitchValue, parseScalaFile } from '../ScalaParser'
 
@@ -26,12 +26,12 @@ test('parseScalaFile(string) parses valid file and has correct values', () => {
 
     // Create expected scale
     let title: string = 'meanquar';
-    let desc: string = '1/4-comma meantone scale. Pietro Aaron\'s temperament (1523)';
+    let description: string = '1/4-comma meantone scale. Pietro Aaron\'s temperament (1523)';
     let notes: ScaleNote[] = [];
     let pitchVals: string[] = ['76.04900', '193.15686', '310.26471', '5/4', '503.42157', '579.47057', '696.57843', '25/16', '889.73529', '1006.84314', '1082.89214', '2'];
     for (let val of pitchVals)
         notes.push(parsePitchValue(val));
-    let expectedScale: Scale = new Scale(notes, title, desc);
+    let expectedScale: Scale = {...DEFAULT_SCALE, notes, title, description};
 
     // Act
     let scale: Scale = parseScalaFile(file);
@@ -65,7 +65,7 @@ test('ScalaParser.parseScalaFile(string) doesn\'t throw error or save when there
 
     // Create expected scale
     let pitchVal: string = '310.26471';
-    let expectedScale: Scale = new Scale([parsePitchValue(pitchVal)], '', '');
+    let expectedScale: Scale = {...DEFAULT_SCALE, notes: [parsePitchValue(pitchVal)]};
 
     // Act
     let scale: Scale = parseScalaFile(file);

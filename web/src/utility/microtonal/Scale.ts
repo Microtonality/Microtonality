@@ -1,48 +1,40 @@
 import { ScaleNote, CentNote, RatioNote } from "./notes";
 
-export class Scale {
-    public notes: ScaleNote[];
-    public title: string;
-    public description: string;
-    public octaveNote: ScaleNote;
+export interface Scale {
+    notes?: ScaleNote[],
+    title?: string,
+    description?: string,
+    octaveNote?: ScaleNote
+}
 
-    constructor(notes: ScaleNote[], title: string = '', description: string = '', octaveNote: ScaleNote = null) {
-        this.notes = notes;
-        this.title = title;
-        this.description = description;
-        this.octaveNote = (octaveNote !== null) ? octaveNote : new RatioNote("2/1");
-    }
+export const DEFAULT_SCALE: Scale = {
+    notes: [],
+    title: '',
+    description: '',
+    octaveNote: new RatioNote('2/1')
+}
 
-    scaleDegreeToNote(scaleDegree: number): ScaleNote {
-        return this.notes[scaleDegree % this.notes.length];
-    }
-
-    equals(other: Scale): boolean {
-        if (this.notes.length !== other.notes.length)
-            return false;
-
-        let i: number;
-        for (i = 0; i < this.notes.length; i++) {
-            if (this.notes[i].num !== other.notes[i].num)
-                return false;
-        }
-
-        if (this.octaveNote.num !== other.octaveNote.num ||
-            this.title !== other.title ||
-            this.description !== other.description) {
-            return false;
-        }
-
-        return true;
-    }
+export function scaleDegreeToNote(scale: Scale, scaleDegree: number): ScaleNote {
+    return scale.notes[scaleDegree % scale.notes.length];
 }
 
 export function scaleFromCents(centValues: Array<number>, title: string = '', description: string = '') {
     let notes = centValues.map(value => new CentNote(value));
-    return new Scale(notes, title, ((description) ? description : `Microtonal scale with ${centValues.length} notes as cent values`));
-}
+    return {
+        ...DEFAULT_SCALE,
+        notes: notes,
+        title: title,
+        description: ((description) ?
+            description : `Microtonal scale with ${centValues.length} notes as cent values`),
+    } as Scale;}
 
 export function scaleFromRatios(ratioValues: Array<string>, title: string = '', description: string = '') {
     let notes = ratioValues.map(value => new RatioNote(value));
-    return new Scale(notes, title, ((description) ? description : `Microtonal scale with ${ratioValues.length} notes as ratio values`));
+    return {
+        ...DEFAULT_SCALE,
+        notes: notes,
+        title: title,
+        description: ((description) ?
+            description : `Microtonal scale with ${ratioValues.length} notes as ratio values`),
+    } as Scale;
 }

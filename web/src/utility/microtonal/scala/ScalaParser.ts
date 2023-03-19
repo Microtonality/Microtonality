@@ -1,4 +1,4 @@
-import { Scale } from '../Scale'
+import {DEFAULT_SCALE, Scale} from '../Scale'
 import { ScaleNote, RatioNote, CentNote, IntRatioNote } from '../notes'
 
 // TODO Test base cases like a scale with only an octave note
@@ -78,7 +78,7 @@ export function parseScalaFile(file: string): Scale {
 
     // Add the 1/1 note to the beginning
     notes.unshift(new RatioNote('1/1'));
-    return new Scale(notes, title, description, octaveNote);
+    return {...DEFAULT_SCALE, notes, title, description, octaveNote};
 }
 
 export function parsePitchValue(line: string): ScaleNote {

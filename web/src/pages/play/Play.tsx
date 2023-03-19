@@ -4,95 +4,66 @@ import {useState, useEffect, useReducer} from 'react';
 import SynthSettings from "./SynthSettings";
 import ScaleSettings from "./ScaleSettings";
 import FullPianoComponent from "./MicrotonalPiano"
-import {MicrotonalConfig, createMicrotonalConfig} from "../../utility/MicrotonalConfig";
+import {createMicrotonalConfig, MicrotonalConfig} from "../../utility/MicrotonalConfig";
 import MidiReceiver from "../../utility/midi/MIDIReceiver";
 import {AdditiveSynthesizer} from "../../utility/audio/AdditiveSynthesizer";
-import {MCActions, MicrotonalConfigReducer} from "./Reducers";
-import {Button} from "@mui/material";
+import {MCActions, MicrotonalConfigHistory, MicrotonalConfigReducer} from "./Reducers";
+import Button from "../../ui/Button";
 
 export default function Play() {
-
-    const [microtonalConfig, mcDispatch] = useReducer(MicrotonalConfigReducer, createMicrotonalConfig());
-    const [currentConfig, setCurrentConfig] = useState(0);
-    const [microtonalConfigHistory, setMicrotonalConfigHistory] = useState([microtonalConfig]);
+    const [microtonalConfigHistory, mcDispatch] = useReducer(
+        MicrotonalConfigReducer,
+        {
+            previous: [],
+            current: createMicrotonalConfig(),
+            next: []
+        } as MicrotonalConfigHistory
+    );
 
     const additiveSynth = new AdditiveSynthesizer();
-    const midiReceiver = new MidiReceiver(additiveSynth, microtonalConfig.scaleConfig, microtonalConfig.keyMapping);
+    const midiReceiver = new MidiReceiver(additiveSynth, microtonalConfigHistory.current.scaleConfig, microtonalConfigHistory.current.keyMapping);
 
     useEffect(() => {
-        // Check if the config we switched to is in the history.
-        let mConfig: MicrotonalConfig;
-        let thisConfigJSON = JSON.stringify(microtonalConfig);
-        for (mConfig of microtonalConfigHistory) {
-            if (thisConfigJSON === JSON.stringify(mConfig))
-                return;
-        }
-
-        // If not, create a new history.
-        let newHistory: MicrotonalConfig[];
-
-        // If we not at the end of the history, remove everything in front.
-        if (currentConfig !== microtonalConfigHistory.length - 1)
-            newHistory = microtonalConfigHistory.slice(0, currentConfig + 1);
-        else
-            newHistory = microtonalConfigHistory;
-
-        newHistory.push(microtonalConfig);
-
-        setMicrotonalConfigHistory(() => newHistory);
-        setCurrentConfig(() => newHistory.length - 1);
-        updateConfig(newHistory[newHistory.length - 1]);
-    }, [microtonalConfig]);
-
-    useEffect(() => {
-        console.log('current', currentConfig, microtonalConfigHistory[currentConfig]);
-        midiReceiver.config = microtonalConfigHistory[currentConfig].scaleConfig;
-        midiReceiver.keyMapping = microtonalConfigHistory[currentConfig].keyMapping;
-        additiveSynth.config = microtonalConfigHistory[currentConfig].synthConfig;
+        midiReceiver.config = microtonalConfigHistory.current.scaleConfig;
+        midiReceiver.keyMapping = microtonalConfigHistory.current.keyMapping;
+        additiveSynth.config = microtonalConfigHistory.current.synthConfig;
         additiveSynth.updateSettings();
-    }, [currentConfig]);
+    }, [microtonalConfigHistory]);
 
     const handleUndo = () => {
-        updateConfig(microtonalConfigHistory[currentConfig - 1]);
-        setCurrentConfig((prevValue) => prevValue - 1);
-    };
-
-    const handleRedo = () => {
-        updateConfig(microtonalConfigHistory[currentConfig + 1]);
-        setCurrentConfig((prevValue) => prevValue + 1);
+        mcDispatch({type: MCActions.UNDO_CONFIG});
     }
 
-    const updateConfig = (config: MicrotonalConfig) => {
-        mcDispatch({type: MCActions.SET_MICROTONAL_CONFIG, microtonalConfig: config});
+    const handleRedo = () => {
+        mcDispatch({type: MCActions.REDO_CONFIG});
     }
 
     return (
-        <div className="mt-[1%] flex-1 flex h-screen w-screen">
+        <div className="mt-1 flex-1 flex h-screen w-screen">
 
             <div className="w-[35vw] h-full">
-                <ScaleSettings microtonalConfig={microtonalConfigHistory[currentConfig]} mcDispatch={mcDispatch}/>
+                <ScaleSettings microtonalConfig={microtonalConfigHistory.current} mcDispatch={mcDispatch}/>
             </div>
 
 
-
-            <div className={"flex flex-col w-full ml-[1%]"}>
+            <div className={"flex flex-col w-full ml-1"}>
 
                 {/* TODO remove and put buttons where they're supposed to go*/}
-                <div className="md:flex-row">
-                    <Button onClick={() => handleUndo()} disabled={currentConfig === 0}>UNDO</Button>
-                    <Button onClick={() => handleRedo()} disabled={currentConfig === microtonalConfigHistory.length - 1}>REDO</Button>
+                <div className="mb-1 md:flex-row">
+                    <Button onClick={() => handleUndo()} disabled={microtonalConfigHistory.previous.length === 0} text={"UNDO"}/>
+                    <Button onClick={() => handleRedo()} disabled={microtonalConfigHistory.next.length === 0} text={"REDO"}/>
                 </div>
 
-                <div className="h-1/2 mb-[1.5%] md:flex-row">
-                    <FullPianoComponent microtonalConfig={microtonalConfigHistory[currentConfig]}
+                <div className="h-1/2 mb-1 md:flex-row">
+                    <FullPianoComponent microtonalConfig={microtonalConfigHistory.current}
                                         mcDispatch={mcDispatch}
-                                        keyMapping={microtonalConfigHistory[currentConfig].keyMapping}
+                                        keyMapping={microtonalConfigHistory.current.keyMapping}
                                         midiReceiver={midiReceiver}
                                         setKeyMapping={() => {}}/>
                 </div>
 
                 <div className="h-1/2 md:flex-row">
-                    <SynthSettings microtonalConfig={microtonalConfigHistory[currentConfig]} mcDispatch={mcDispatch} />
+                    <SynthSettings microtonalConfig={microtonalConfigHistory.current} mcDispatch={mcDispatch} />
                 </div>
 
             </div>

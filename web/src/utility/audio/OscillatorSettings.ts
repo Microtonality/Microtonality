@@ -1,8 +1,8 @@
 
 export interface OscillatorSettings {
-    pitchRatio: number,
-    localGain: number,
-    waveType: OscillatorType,
+    pitchRatio?: number,
+    localGain?: number,
+    waveType?: OscillatorType,
 }
 
 export const DEFAULT_OSCILLATOR_SETTINGS: OscillatorSettings = {

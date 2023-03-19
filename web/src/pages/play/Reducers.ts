@@ -4,8 +4,15 @@ import { Scale } from "../../utility/microtonal/Scale";
 import { ScaleNote } from "../../utility/microtonal/notes";
 import { parsePitchValue } from "../../utility/microtonal/scala/ScalaParser";
 
+export interface MicrotonalConfigHistory {
+    previous: Array<MicrotonalConfig>,
+    current: MicrotonalConfig,
+    next: Array<MicrotonalConfig>
+}
+
 enum MCActions {
-    SET_MICROTONAL_CONFIG,
+    UNDO_CONFIG,
+    REDO_CONFIG,
     SET_SCALE,
     ADD_NOTE,
     EDIT_NOTE,
@@ -22,7 +29,8 @@ enum MCActions {
 }
 
 type Action =
-    | {type: MCActions.SET_MICROTONAL_CONFIG, microtonalConfig: MicrotonalConfig}
+    | {type: MCActions.UNDO_CONFIG}
+    | {type: MCActions.REDO_CONFIG}
     | {type: MCActions.SET_SCALE, scale: Scale}
     | {type: MCActions.ADD_NOTE, note: ScaleNote}
     | {type: MCActions.EDIT_NOTE, noteValue: string, noteIndex: number}
@@ -37,39 +45,39 @@ type Action =
     | {type: MCActions.SET_RELEASE, release: number}
     | {type: MCActions.SET_MASTER_GAIN, gain: number}
 
-const MicrotonalConfigReducer = (state: MicrotonalConfig, action: Action): MicrotonalConfig => {
-
-    // Config swaps
-    if (action.type === MCActions.SET_MICROTONAL_CONFIG) {
-        // is this comparison safe?
-        if (action.microtonalConfig === state)
-            return state;
-
-        return createMicrotonalConfig(action.microtonalConfig, null, null);
+const MicrotonalConfigReducer = (state: MicrotonalConfigHistory, action: Action): MicrotonalConfigHistory => {
+    let newState = {...state};
+    if (action.type === MCActions.UNDO_CONFIG) {
+        if (newState.previous.length !== 0) {
+            newState.next.unshift(newState.current);
+            newState.current = newState.previous.pop();
+        }
     }
+    if (action.type === MCActions.REDO_CONFIG) {
+        if (newState.next.length !== 0) {
+            newState.previous.push(newState.current);
+            newState.current = newState.next.shift();
+        }
+    }
+
+    let configChange: MicrotonalConfig;
+    let config: MicrotonalConfig = newState.current;
 
     // Scale Changes
     if (action.type === MCActions.SET_SCALE) {
-        if (action.scale.equals(state.scaleConfig.scale))
-            return state;
-
-        let scaleConfig = {...state.scaleConfig, scale: action.scale, keysPerOctave: action.scale.notes.length} as ScaleConfig;
-        return createMicrotonalConfig(state, null, scaleConfig);
+        configChange = {scaleConfig: {scale: action.scale}};
     }
     if (action.type === MCActions.ADD_NOTE ||
         action.type === MCActions.EDIT_NOTE ||
         action.type === MCActions.SWAP_NOTES ||
         action.type === MCActions.DELETE_NOTE) {
 
-        let notes: ScaleNote[] = state.scaleConfig.scale.notes;
+        let notes: ScaleNote[] = [...config.scaleConfig.scale.notes];
 
         if (action.type === MCActions.ADD_NOTE) {
-            notes = [...notes, action.note];
+            notes.push(action.note);
         }
         else if (action.type === MCActions.EDIT_NOTE) {
-            if (action.noteValue === notes[action.noteIndex].num)
-                return state;
-
             let note: ScaleNote = parsePitchValue(`${action.noteValue} ${notes[action.noteIndex].comments}`);
             notes.splice(action.noteIndex, 1, note);
         }
@@ -84,77 +92,74 @@ const MicrotonalConfigReducer = (state: MicrotonalConfig, action: Action): Micro
             notes.splice(action.noteIndex, 1);
         }
 
-        let scale: Scale = new Scale(notes, state.scaleConfig.scale.title, state.scaleConfig.scale.description, state.scaleConfig.scale.octaveNote);
-        let scaleConfig = {...state.scaleConfig, scale: scale, keysPerOctave: scale.notes.length} as ScaleConfig;
-        return createMicrotonalConfig(state, null, scaleConfig);
+        configChange = {scaleConfig: {scale: {notes: notes}}};
     }
     if (action.type === MCActions.EDIT_OCTAVE_NOTE) {
-        if (action.noteValue === state.scaleConfig.scale.octaveNote.num)
-            return state;
-
-        let octaveNote: ScaleNote = parsePitchValue(`${action.noteValue} ${state.scaleConfig.scale.octaveNote.comments}`);
-        let scale = new Scale(state.scaleConfig.scale.notes, state.scaleConfig.scale.title, state.scaleConfig.scale.description, octaveNote);
-        let scaleConfig = {...state.scaleConfig, scale: scale, keysPerOctave: scale.notes.length} as ScaleConfig;
-        return createMicrotonalConfig(state, null, scaleConfig);
+        let octaveNote: ScaleNote = parsePitchValue(`${action.noteValue} ${config.scaleConfig.scale.octaveNote.comments}`);
+        configChange = {scaleConfig: {scale: {octaveNote: octaveNote}}};
     }
     if (action.type === MCActions.SET_TUNING_FREQUENCY) {
-        if (action.tuningFrequency === state.scaleConfig.tuningFrequency)
-            return state;
-
-        let scaleConfig = {...state.scaleConfig, tuningFrequency: action.tuningFrequency} as ScaleConfig;
-        return createMicrotonalConfig(state, null, scaleConfig);
+        configChange = {scaleConfig: {tuningFrequency: action.tuningFrequency}};
     }
 
     // Synthesizer Changes
     if (action.type === MCActions.SET_OSCILLATOR) {
-        let oldOsc: OscillatorSettings = state.synthConfig.oscillators[action.oscIndex];
-        let newOsc: OscillatorSettings = action.osc;
-        if (newOsc.pitchRatio === oldOsc.pitchRatio &&
-            newOsc.localGain === oldOsc.localGain &&
-            newOsc.waveType === oldOsc.waveType) {
-            return state;
-        }
-
-        let newOscillators = [...state.synthConfig.oscillators];
-        newOscillators.splice(action.oscIndex, 1, newOsc);
-        let synthConfig = {...state.synthConfig, oscillators: newOscillators} as SynthConfig;
-        return createMicrotonalConfig(state, synthConfig, null);
+        let newOscillators = [...config.synthConfig.oscillators];
+        newOscillators.splice(action.oscIndex, 1, action.osc);
+        configChange = {synthConfig: {oscillators: newOscillators}};
     }
     if (action.type === MCActions.SET_ATTACK) {
-        if (action.attack === state.synthConfig.attack)
-            return state;
-
-        let synthConfig = {...state.synthConfig, attack: action.attack} as SynthConfig;
-        return createMicrotonalConfig(state, synthConfig, null);
+        configChange = {synthConfig: {attack: action.attack}};
     }
     if (action.type === MCActions.SET_DECAY) {
-        if (action.decay === state.synthConfig.decay)
-            return state;
-
-        let synthConfig = {...state.synthConfig, decay: action.decay} as SynthConfig;
-        return createMicrotonalConfig(state, synthConfig, null);
+        configChange = {synthConfig: {decay: action.decay}};
     }
     if (action.type === MCActions.SET_SUSTAIN) {
-        if (action.sustain === state.synthConfig.sustain)
-            return state;
-
-        let synthConfig = {...state.synthConfig, sustain: action.sustain} as SynthConfig;
-        return createMicrotonalConfig(state, synthConfig, null);
+        configChange = {synthConfig: {sustain: action.sustain}};
     }
     if (action.type === MCActions.SET_RELEASE) {
-        if (action.release === state.synthConfig.release)
-            return state;
-
-        let synthConfig = {...state.synthConfig, release: action.release} as SynthConfig;
-        return createMicrotonalConfig(state, synthConfig, null);
+        configChange = {synthConfig: {release: action.release}};
     }
     if (action.type === MCActions.SET_MASTER_GAIN) {
-        if (action.gain === state.synthConfig.gain)
-            return state;
-
-        let synthConfig = {...state.synthConfig, gain: action.gain} as SynthConfig;
-        return createMicrotonalConfig(state, synthConfig, null);
+        configChange = {synthConfig: {gain: action.gain}};
     }
+
+    if (commitChange(config, configChange, true) !== null) {
+        newState.previous.push(newState.current);
+        newState.current = commitChange(config, configChange);
+        newState.next = [];
+    }
+
+    return newState;
+}
+
+const OBJECT_PROTOTYPE = Object.getPrototypeOf({});
+
+const commitChange = (config: any, change: any, dryRun = false) => {
+    let hasChanged = false;
+    let newConfig = config;
+    for (let key in change) {
+        if (Object.getPrototypeOf(change[key]) === OBJECT_PROTOTYPE) {
+            let result = commitChange(newConfig[key], change[key]);
+            if (result !== null) {
+                hasChanged = true;
+                if (!dryRun) {
+                    newConfig = {...newConfig, [key]: result};
+                }
+            }
+        } else if (newConfig[key] !== change[key]) {
+            if (!dryRun) {
+                newConfig = {...newConfig, [key]: change[key]};
+            }
+            hasChanged = true;
+        }
+    }
+
+    if (hasChanged) {
+        return newConfig;
+    }
+
+    return null;
 }
 
 export {MicrotonalConfigReducer, MCActions}

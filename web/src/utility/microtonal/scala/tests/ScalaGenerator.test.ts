@@ -1,4 +1,4 @@
-import { Scale } from "../../Scale";
+import {DEFAULT_SCALE, Scale} from "../../Scale";
 import { CentNote, IntRatioNote, RatioNote, ScaleNote } from "../../notes";
 import { getTitle, validateTitle, GENERATED_TITLE, InvalidFilenameException, generateScalaFile } from "../ScalaGenerator";
 
@@ -7,14 +7,15 @@ let scale: Scale;
 
 beforeAll(() => {
     notes = [new ScaleNote('1', 1)];
-    scale = new Scale([new ScaleNote('1', 1)], '', '');
+    scale = {...DEFAULT_SCALE, notes: [new ScaleNote('1', 1)]};
+
 })
 
 test('getTitle(Scale) takes the scale\'s title and appends \'.scl\'', () => {
 
     // Arrange
     let title: string = 'title';
-    let scale: Scale = new Scale(notes, title, '');
+    let scale: Scale = {...DEFAULT_SCALE, notes, title};
 
     // Act
     let test: string = getTitle(scale);
@@ -27,7 +28,7 @@ test('getTitle(Scale) takes the scale\'s title and does not append \'.scl\'', ()
 
     // Arrange
     let title: string = 'title.scl';
-    let scale: Scale = new Scale(notes, title, '');
+    let scale: Scale = {...DEFAULT_SCALE, notes, title};
 
     // Act
     let test: string = getTitle(scale);
