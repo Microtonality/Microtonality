@@ -3,6 +3,8 @@
 import * as React from "react";
 import hamburger from "../../img/icons/hamburger.png"
 import disabledHamburger from "../../img/icons/hamburger-disabled.png"
+import close from "../../img/icons/close.png"
+import disabledClose from "../../img/icons/close-disabled.png";
 import { MicrotonalConfig } from "../../utility/MicrotonalConfig";
 import { Scale } from "../../utility/microtonal/Scale";
 import {useEffect, useRef, useState} from "react";
@@ -18,7 +20,7 @@ interface ScaleEditorInputProps {
 export default function ScaleEditorInput(props: ScaleEditorInputProps) {
 
     const [noteValue, setNoteValue] = useState((props.noteIndex === -1) ? props.scale.octaveNote.num : props.scale.notes[props.noteIndex].num);
-    const [isRatio, setIsRatio] = useState((noteValue.includes('.') ? false : true));
+    const [isRatio, setIsRatio] = useState(!noteValue.includes('.'));
 
     useEffect(() => {
         wrapSetNoteValue((props.noteIndex === -1) ? props.scale.octaveNote.num : props.scale.notes[props.noteIndex].num);
@@ -42,7 +44,6 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
             setNoteValue(() => event);
             return;
         }
-
 
         let updatedInput: string = event.target.value;
 
@@ -91,6 +92,11 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
     };
 
     const handleEditNote = () => {
+        if (noteValue === '') {
+            setNoteValue(() => (props.noteIndex === -1) ? props.scale.octaveNote.num : props.scale.notes[props.noteIndex].num);
+            return;
+        }
+
         if (props.noteIndex === -1)
             props.mcDispatch({type: MCActions.EDIT_OCTAVE_NOTE, noteValue: noteValue});
         else
@@ -104,6 +110,10 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
             return;
         }
     };
+
+    const handleDeleteNote = () => {
+        props.mcDispatch({type: MCActions.DELETE_NOTE, noteIndex: props.noteIndex});
+    }
 
     // Check top of file.
     // These help prevent the cursor from moving to the end of the input field
@@ -122,14 +132,14 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
 
             {(props.noteIndex === -1) ? 
                 /* If Octave note, no image */
-                <></>
+                <img className="w-[6%] min-w-[1.5rem]" alt={''}/>
             :
             ((props.noteIndex === 0) ? 
                 /* If 1/1 note, greyed image */
-                <img src={disabledHamburger} className="w-[6%] min-w-[1.5rem]"/>
+                <img src={disabledHamburger} className="w-[6%] min-w-[1.5rem]" alt={''}/>
             :
                 /* Otherwise, white image */
-                <img src={hamburger} className="w-[6%] min-w-[1.5rem]"/>
+                <img src={hamburger} className="w-[6%] min-w-[1.5rem]" alt={''}/>
             )}
 
             <label htmlFor={props.noteIndex.toString()} className="inline-flex flex-wrap items-center cursor-pointer text-gray-800 w-[50%] h-10 text-center ml-[1%] min-w-[6rem]">
@@ -139,14 +149,27 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
             </label>
 
             <div className="flex w-full h-10 ml-[1%] max-w-[50%]">
-                {(props.noteIndex === 0) ? 
+                {(props.noteIndex === 0) ?
                     /* If 1/1 note, disabled input */
                     <input type="string" disabled={true} ref={noteInputField} value={noteValue} onChange={(e) => wrapSetNoteValue(e)} className="w-full rounded-md font-agrandir pl-[2%] min-w-[3rem]" />
                 :
                     /* Otherwise, enabled */
-                    <input type="string" ref={noteInputField} value={noteValue} onChange={(e) => wrapSetNoteValue(e)} onKeyDown={(e) => handleKeyDown(e)} onBlur={(e) => handleEditNote()} className="w-full rounded-md font-agrandir pl-[2%] min-w-[3rem]" />
+                    <input type="string" ref={noteInputField} value={noteValue} onChange={(e) => wrapSetNoteValue(e)} onKeyDown={(e) => handleKeyDown(e)} onBlur={() => handleEditNote()} className="w-full rounded-md font-agrandir pl-[2%] min-w-[3rem]" />
                 }
             </div>
+
+            {(props.noteIndex === -1) ?
+                /* If Octave note, no image */
+                <img className="w-[8%] h-[8%] min-w-[1.5rem]" alt={''}/>
+            :
+            ((props.noteIndex === 0) ?
+                /* If 1/1 note, greyed image */
+                <img src={disabledClose} className="w-[8%] h-[8%] min-w-[1.5rem]" alt={''}/>
+            :
+                /* Otherwise, white image */
+                <img src={close} onClick={() => handleDeleteNote()} className="w-[8%] h-[8%] min-w-[1.5rem] cursor-pointer" alt={''}/>
+            )}
+
         </div>
     );
 }

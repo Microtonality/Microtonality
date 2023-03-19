@@ -1,12 +1,10 @@
 import * as React from "react";
 import { MicrotonalConfig } from "../../utility/MicrotonalConfig";
-import { useEffect, useState } from "react";
-import close from "../../img/icons/close.png"
-import disabledClose from "../../img/icons/close-disabled.png"
-import { CentNote, RatioNote, ScaleNote } from "../../utility/microtonal/notes";
+import { useState } from "react";
+import { ScaleNote } from "../../utility/microtonal/notes";
 import { MCActions } from "./Reducers";
 import { parseScalaFile } from "../../utility/microtonal/scala/ScalaParser";
-import { Scale, scaleFromCents } from "../../utility/microtonal/Scale";
+import { Scale } from "../../utility/microtonal/Scale";
 import { generateScalaFile } from "../../utility/microtonal/scala/ScalaGenerator";
 import ScaleEditorInput from "./ScaleEditorInput";
 import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
@@ -68,11 +66,6 @@ export default function ScaleEditor(props: ScaleEditorProps) {
         let note: ScaleNote = ScaleNote.average(notes[notes.length - 1], props.microtonalConfig.scaleConfig.scale.octaveNote);
         
         props.mcDispatch({type: MCActions.ADD_NOTE, note: note});
-
-    }
-
-    const handleDeleteNote = (noteIndex: number) => {
-        props.mcDispatch({type: MCActions.DELETE_NOTE, noteIndex: noteIndex});
     }
 
     // Swap Notes
@@ -110,7 +103,6 @@ export default function ScaleEditor(props: ScaleEditorProps) {
                         key={i}
                         className={`inline-flex items-center`}>
                         <ScaleEditorInput noteIndex={i} scale={props.microtonalConfig.scaleConfig.scale} microtonalConfig={props.microtonalConfig} mcDispatch={props.mcDispatch} />
-                        <img src={disabledClose} className="w-[8%] h-[8%] min-w-[1.5rem]" />
                     </div>
                 );
             }
@@ -124,7 +116,6 @@ export default function ScaleEditor(props: ScaleEditorProps) {
                         onDragEnd={handleDragEnd}
                         className={`inline-flex items-center ${dragOverIndex === i ? 'drag-over' : ''}`}>
                         <ScaleEditorInput noteIndex={i} scale={props.microtonalConfig.scaleConfig.scale} microtonalConfig={props.microtonalConfig} mcDispatch={props.mcDispatch} />
-                        <img src={close} onClick={() => handleDeleteNote(i)} className="w-[8%] h-[8%] min-w-[1.5rem] cursor-pointer" />
                     </div>
                 );
             }
@@ -146,6 +137,15 @@ export default function ScaleEditor(props: ScaleEditorProps) {
                 id="formFile"
                 accept=".scl" 
                 onChange={(event) => handleScalaFileUpload(event)}/>
+            </div>
+
+            <div className="flex flex-col my-[1%]">
+                <button
+                    className="w-[85%] mx-[7%] mb-[2.5%] border-[1px] bg-white hover:bg-neutral-100 rounded-md flex-auto cursor-pointer font-agrandir text-bgdark"
+                    id="formFile"
+                    onClick={() => handleScalaFileGeneration()}>
+                    GENERATE SCALA FILE
+                </button>
             </div>
 
             <div
@@ -180,15 +180,6 @@ export default function ScaleEditor(props: ScaleEditorProps) {
             <div 
                 className={`inline-flex items-center`}>
                 <ScaleEditorInput noteIndex={-1} scale={props.microtonalConfig.scaleConfig.scale} microtonalConfig={props.microtonalConfig} mcDispatch={props.mcDispatch} />
-            </div>
-
-            <div className="flex flex-col my-[1%]">                
-                <button
-                    className="w-[85%] mx-[7%] mb-[2.5%] border-[1px] bg-white hover:bg-neutral-100 rounded-md flex-auto cursor-pointer font-agrandir text-bgdark"
-                    id="formFile"
-                    onClick={() => handleScalaFileGeneration()}> 
-                    GENERATE SCALA FILE 
-                </button>
             </div>
 
         </div>

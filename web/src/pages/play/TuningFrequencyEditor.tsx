@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import {MicrotonalConfig} from "../../utility/MicrotonalConfig";
-import {useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {MCActions} from "./Reducers";
 
 interface TuningFrequencyEditorProps {
@@ -12,21 +12,25 @@ interface TuningFrequencyEditorProps {
 
 export default function TuningFrequencyEditor(props: TuningFrequencyEditorProps) {
 
-    const [tuningFrequency, setTuningFrequency] = useState(props.microtonalConfig.scaleConfig.tuningFrequency);
-    const tuningFrequencyInputField = React.useRef<HTMLInputElement>(null);
+    const [tuningFrequency, setTuningFrequency] = useState(props.microtonalConfig.scaleConfig.tuningFrequency.toString());
+    const tuningFrequencyInputField = useRef(null);
+
+    useEffect(() => {
+        setTuningFrequency(props.microtonalConfig.scaleConfig.tuningFrequency.toString());
+    }, [props.microtonalConfig])
 
     const wrapSetTuningFrequency = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setTuningFrequency(() => parseFloat(event.target.value));
+        setTuningFrequency(event.target.value);
     }
 
-    const handleTuningFrequencyChange = () => {
-        props.mcDispatch({type: MCActions.SET_TUNING_FREQUENCY, tuningFrequency: tuningFrequency});
+    const handleTuningFrequencySubmit = () => {
+        props.mcDispatch({type: MCActions.SET_TUNING_FREQUENCY, tuningFrequency: parseFloat(tuningFrequency)});
     }
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
             tuningFrequencyInputField.current.blur();
-            handleTuningFrequencyChange();
+            handleTuningFrequencySubmit();
             return;
         }
     }
@@ -38,7 +42,7 @@ export default function TuningFrequencyEditor(props: TuningFrequencyEditorProps)
                 FREQUENCY
             </div>
             <div className="flex w-[85%] h-10 mt-[2%] mx-[7%]">
-                <input type="number" ref={tuningFrequencyInputField} value={props.microtonalConfig.scaleConfig.tuningFrequency} onChange={(e) => wrapSetTuningFrequency(e)} onKeyDown={(e) => handleKeyDown(e)} onBlur={() => handleTuningFrequencyChange()} step="0.0001" className="w-full rounded-md font-agrandir pl-[2%]" />
+                <input type="number" ref={tuningFrequencyInputField} value={(tuningFrequency === '') ? 0 : parseFloat(tuningFrequency)} onChange={(e) => wrapSetTuningFrequency(e)} onKeyDown={(e) => handleKeyDown(e)} onBlur={() => handleTuningFrequencySubmit()} step="0.0001" className="w-full rounded-md font-agrandir pl-[2%]" />
             </div>
         </div>
     );

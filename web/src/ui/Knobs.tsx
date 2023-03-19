@@ -6,8 +6,8 @@ interface KnobProps {
   max: number;
   value: number;
   onChange: (value: number) => void;
-  minAngle: number;
-  maxAngle: number;
+  minAngle?: number;
+  maxAngle?: number;
   className: string;
   knobLabel: string;
 }
@@ -23,7 +23,7 @@ const defaultProps = {
 }
 
 export default function Knob (props: KnobProps) {
-  let [value, setValue] = useState<number>(props.value);
+  let [value, setValue] = useState<string>(props.value.toFixed(2));
   let [isMouseDown, setIsMouseDown] = useState(false);
   const valueInputRef = useRef<HTMLInputElement>(null);
 
@@ -34,7 +34,7 @@ export default function Knob (props: KnobProps) {
   }, [isMouseDown]);
 
   useEffect(() => {
-    setValue(props.value);
+    setValue(props.value.toString());
   }, [props.value]);
 
 
@@ -55,7 +55,7 @@ export default function Knob (props: KnobProps) {
   const handleMouseMove = (event: MouseEvent) => {
     const { movementX, movementY } = event;
     setValue((prevValue) => {
-      return Math.min(props.max, Math.max(props.min, (movementX/(100/props.max)) + (-1)*(movementY/(100/props.max)) + prevValue));
+      return Math.min(props.max, Math.max(props.min, (movementX/(100/props.max)) + (-1)*(movementY/(100/props.max)) + parseFloat(prevValue))).toFixed(2);
     });
   };
 
@@ -66,9 +66,14 @@ export default function Knob (props: KnobProps) {
   };
 
   const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    let val: number = parseFloat(event.target.value);
+    if (event.target.value === '') {
+      setValue('');
+      return;
+    }
+
+    let val: number = Math.abs(parseFloat(event.target.value));
     if (val > props.max) val = props.max;
-    setValue(() => val);
+    setValue(val.toString());
   }
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -80,7 +85,7 @@ export default function Knob (props: KnobProps) {
   }
 
   const handleSubmit = () => {
-      props.onChange(value);
+    props.onChange(parseFloat(value));
   }
 
     return (
@@ -92,14 +97,14 @@ export default function Knob (props: KnobProps) {
 
         <div className={"aspect-square rounded-full p-2 bg-gradient-to-b from-neutral-500 to-neutral-900 flex w-3/4"} onMouseDown={(e) => handleMouseDown(e)}>
           <div className={"w-full h-full rounded-full p-0.5 bg-gradient-to-b from-stone-700 to-neutral-800 flex-1"} >
-            <div style={{transform: `rotate(${valueToAngle(value)}deg)`}} className={"w-full h-full flex items-start justify-center"}>
+            <div style={{transform: `rotate(${valueToAngle(parseFloat(value))}deg)`}} className={"w-full h-full flex items-start justify-center"}>
               <div className={"w-2.5 h-2.5 rounded-full bg-black"}>
               </div>
             </div>
           </div>
         </div>
 
-        <input className={"text-center self-center w-3/4 rounded-md font-agrandir"} type="number" ref={valueInputRef} value={parseFloat(value.toFixed(2))} onChange={(e) => handleInput(e)} onBlur={() => handleSubmit()} onKeyDown={(e) => handleKeyDown(e)} min={0} max={1} step={0.01} />
+        <input className={"text-center self-center w-3/4 rounded-md font-agrandir"} type="number" ref={valueInputRef} value={(value === '') ? '' : parseFloat(value)} onChange={(e) => handleInput(e)} onBlur={() => handleSubmit()} onKeyDown={(e) => handleKeyDown(e)} min={0} max={1} step={0.01} />
       </div>
     );
 }
