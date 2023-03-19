@@ -13,6 +13,7 @@ export interface MicrotonalConfigHistory {
 enum MCActions {
     UNDO_CONFIG,
     REDO_CONFIG,
+    SET_CONFIG,
     SET_SCALE,
     ADD_NOTE,
     EDIT_NOTE,
@@ -31,6 +32,7 @@ enum MCActions {
 type Action =
     | {type: MCActions.UNDO_CONFIG}
     | {type: MCActions.REDO_CONFIG}
+    | {type: MCActions.SET_CONFIG, config: MicrotonalConfig}
     | {type: MCActions.SET_SCALE, scale: Scale}
     | {type: MCActions.ADD_NOTE, note: ScaleNote}
     | {type: MCActions.EDIT_NOTE, noteValue: string, noteIndex: number}
@@ -47,6 +49,7 @@ type Action =
 
 const MicrotonalConfigReducer = (state: MicrotonalConfigHistory, action: Action): MicrotonalConfigHistory => {
     let newState = {...state};
+    console.log({...action, theAction: MCActions[action.type]});
     if (action.type === MCActions.UNDO_CONFIG) {
         if (newState.previous.length !== 0) {
             newState.next.unshift(newState.current);
@@ -62,6 +65,10 @@ const MicrotonalConfigReducer = (state: MicrotonalConfigHistory, action: Action)
 
     let configChange: MicrotonalConfig;
     let config: MicrotonalConfig = newState.current;
+
+    if (action.type === MCActions.SET_CONFIG) {
+        configChange = action.config;
+    }
 
     // Scale Changes
     if (action.type === MCActions.SET_SCALE) {

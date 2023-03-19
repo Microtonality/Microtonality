@@ -4,6 +4,7 @@ import {OscillatorSettings, DEFAULT_OSCILLATOR_SETTINGS} from "./audio/Oscillato
 import {createPianoKeyboardShortcuts, mapScaleToKeyboardShortcuts} from "./microtonal/PianoKeyMapping";
 
 export interface MicrotonalConfig {
+    title?: string; // currently the title can only be changed by changing the file name itself
     keyMapping?: Record<number, number>; // Map keyboard keys (0-keysPerOctave) to scale degrees, ex. 0: 1
     scaleConfig?: ScaleConfig;
     synthConfig?: SynthConfig;
@@ -57,6 +58,7 @@ export const DEFAULT_SCALE_CONFIG: ScaleConfig = {
 }
 
 export const DEFAULT_MICROTONAL_CONFIG: MicrotonalConfig = {
+    title: 'MicrotonalSynthConfig',
     keyMapping: mapScaleToKeyboardShortcuts(DEFAULT_SCALE_CONFIG.scale, DEFAULT_SCALE_CONFIG.keysPerOctave),
     scaleConfig: DEFAULT_SCALE_CONFIG,
     synthConfig: DEFAULT_SYNTH_CONFIG
