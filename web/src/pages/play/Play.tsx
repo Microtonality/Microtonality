@@ -1,6 +1,6 @@
 import * as React from 'react';
 import './piano.css';
-import {useState, useEffect, useReducer} from 'react';
+import {useState, useEffect, useReducer, useRef} from 'react';
 import SynthSettings from "./SynthSettings";
 import ScaleSettings from "./ScaleSettings";
 import FullPianoComponent from "./MicrotonalPiano"
@@ -9,6 +9,9 @@ import MidiReceiver from "../../utility/midi/MIDIReceiver";
 import {AdditiveSynthesizer} from "../../utility/audio/AdditiveSynthesizer";
 import {MCActions, MicrotonalConfigHistory, MicrotonalConfigReducer} from "./Reducers";
 import Button from "../../ui/Button";
+
+
+const additiveSynth = new AdditiveSynthesizer();
 
 export default function Play() {
     const [microtonalConfigHistory, mcDispatch] = useReducer(
@@ -19,15 +22,14 @@ export default function Play() {
             next: []
         } as MicrotonalConfigHistory
     );
-
-    const additiveSynth = new AdditiveSynthesizer();
+    
     const midiReceiver = new MidiReceiver(additiveSynth, microtonalConfigHistory.current.scaleConfig, microtonalConfigHistory.current.keyMapping);
 
     useEffect(() => {
-        midiReceiver.config = microtonalConfigHistory.current.scaleConfig;
-        midiReceiver.keyMapping = microtonalConfigHistory.current.keyMapping;
-        additiveSynth.config = microtonalConfigHistory.current.synthConfig;
-        additiveSynth.updateSettings();
+        midiReceiver.config = microtonalConfigHistory.current.scaleConfig
+        midiReceiver.keyMapping = microtonalConfigHistory.current.keyMapping
+        additiveSynth.config = microtonalConfigHistory.current.synthConfig
+        additiveSynth.updateSettings()
     }, [microtonalConfigHistory]);
 
     const handleUndo = () => {

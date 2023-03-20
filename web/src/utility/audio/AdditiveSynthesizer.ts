@@ -26,7 +26,6 @@ export class AdditiveSynthesizer {
 
     clearOscillators() {
         for (let frequency in this.oscillatorStacks) {
-            console.log("Frequency is " + frequency)
             this.oscillatorStacks[frequency].endPlay(this.audioContext, this.config.release)
             delete this.oscillatorStacks[frequency]
         }
@@ -36,8 +35,6 @@ export class AdditiveSynthesizer {
         if (this.oscillatorStacks[frequency] != null) {
             return;
         }
-
-        console.log(this.config.oscillators)
 
         this.oscillatorStacks[frequency] = new OscillatorStack(
                 this.config.oscillators,

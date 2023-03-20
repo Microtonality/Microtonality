@@ -31,7 +31,7 @@ export default class OscillatorStack {
 
     beginPlay() {
         this.oscillatorNodes.forEach(function (oscillator) {
-            oscillator.start()
+            oscillator.start(0)
         })
     }
 
@@ -43,7 +43,7 @@ export default class OscillatorStack {
         await new Promise(f => setTimeout(f, release * 2000));
 
         this.oscillatorNodes.forEach(function (oscillator) {
-            oscillator.stop()
+            oscillator.stop(1)
         })
     }
 }
