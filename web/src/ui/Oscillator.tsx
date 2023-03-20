@@ -97,7 +97,7 @@ export default function Oscillator(props: OscillatorProps) {
             step={0.01}
             min={0}
             max={1}
-            values={[localGain]}
+            values={[((localGainInput === '') ? 0 : clampGain(parseFloat(localGainInput)))]}
             onChange={(values) => setLocalGainInput(values[0].toString())}
             onFinalChange={() => submitLocalGainInput()}
             direction={Direction.Up}

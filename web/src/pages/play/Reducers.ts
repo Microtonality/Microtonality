@@ -73,8 +73,7 @@ const MicrotonalConfigReducer = (state: MicrotonalConfigHistory, action: Action)
 
     // Scale Changes
     if (action.type === MCActions.SET_SCALE) {
-        configChange = {scaleConfig: {scale: action.scale}};
-        configChange.keyMapping = mapScaleToKeyboardShortcuts(configChange.scaleConfig.scale, newState.current.scaleConfig.keysPerOctave);
+        configChange = {scaleConfig: {scale: action.scale}, keyMapping: mapScaleToKeyboardShortcuts(configChange.scaleConfig.scale, newState.current.scaleConfig.keysPerOctave)};
     }
     if (action.type === MCActions.ADD_NOTE ||
         action.type === MCActions.EDIT_NOTE ||
