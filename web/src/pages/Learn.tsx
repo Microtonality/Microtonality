@@ -68,7 +68,7 @@ export function Learn() {
         performance on the microtonal synthesizer using a standard keyboard controller.
         <br></br>
         <br></br>
-        Michael Crisaf
+        Michael Crisafi
         </article>
         </BorderedContainer>
         </div>
