@@ -63,7 +63,7 @@ export default function Knob (props: KnobProps) {
   const handleMouseMove = (event: MouseEvent) => {
     const { movementX, movementY } = event;
     setValue((prevValue) => {
-      return Math.min(props.max, Math.max(props.min, (movementX/(100/props.max)) + (-1)*(movementY/(100/props.max)) + prevValue));
+      return clampValue((movementX/(100/props.max)) + (-1)*(movementY/(100/props.max)) + prevValue);
     });
   };
 
@@ -74,18 +74,17 @@ export default function Knob (props: KnobProps) {
   };
 
   const submitTextbox = () => {
-    let val: number = clampValue(parseFloat(textBox));
-    setValue(val);
+    let val = clampValue(parseFloat(textBox));
+    // If the user didn't give us a valid number, reset the textbox
+    if (isNaN(val)) {
+      updateTextbox();
+      return;
+    }
 
-    // This won't trigger useEffect() if it's
-    // the same value, so we have to call this.
-    updateTextbox();
+    setValue(val);
   }
 
   const clampValue = (val: number): number => {
-    if (isNaN(val))
-      return value; // from useState()
-
     return Math.min(props.max, Math.max(props.min, val));
   }
 
