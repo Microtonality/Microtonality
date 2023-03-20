@@ -71,13 +71,13 @@ export default function BasicSettings(props: BasicSettingsProps) {
     }
 
     return(
-        <div>
+        <div className="flex flex-col">
 
             <div
                 className="2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide text-white mt-[1%] mx-[7%]">
                 UPLOAD SYNTH CONFIG
             </div>
-            <div className="mb-3 w-[85%] mx-[7%]">
+            <div className="w-[85%] mx-[7%] mb-3">
                 <input
                     className="relative m-0 block w-full min-w-0 flex-auto cursor-pointer rounded border border-solid border-neutral-300 bg-white bg-clip-padding px-3 py-1.5 text-base font-agrandir text-neutral-700 outline-none transition duration-300 ease-in-out file:-mx-3 file:-my-1.5 file:cursor-pointer file:overflow-hidden file:rounded-none file:border-0 file:border-solid file:border-inherit file:bg-neutral-100 file:px-3 file:py-1.5 file:text-neutral-700 file:transition file:duration-150 file:ease-in-out file:[margin-inline-end:0.75rem] file:[border-inline-end-width:1px] hover:file:bg-neutral-200 focus:border-primary focus:bg-white focus:text-neutral-700 focus:shadow-[0_0_0_1px] focus:shadow-primary focus:outline-none dark:bg-transparent dark:text-neutral-200 dark:focus:bg-transparent"
                     type="file"
@@ -85,14 +85,18 @@ export default function BasicSettings(props: BasicSettingsProps) {
                     accept=".mConfig"
                     onChange={(event) => handleConfigUpload(event)}/>
             </div>
-            <Button onClick={() => handleConfigDownload()} text={"DOWNLOAD SYNTH CONFIG"} disabled={false}/>
+
+            <div className="mx-[7%]">
+                <Button className="w-[99%]" onClick={() => handleConfigDownload()} text={"DOWNLOAD SYNTH CONFIG"} disabled={false}/>
+            </div>
 
             <div
-                className="2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide text-white mt-[5%]">
+                className="2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide text-white mt-[5%] mx-[7%]">
                     EQUAL-TEMPERED SCALE
             </div>
-            <div className="relative mt-[6%]">
-                <input type="range" step={1} min={12} max={32} className="range h-3 w-full  mx-[1%] accent-neutral-200 cursor-pointer appearance-none rounded-lg border-neutral-500 border-[1px] bg-bgdark"
+
+            <div className="mx-[7%] w-[85%] relative mt-[5%]">
+                <input type="range" step={1} min={12} max={32} className="range h-3 w-full accent-neutral-200 cursor-pointer appearance-none rounded-lg border-neutral-500 border-[1px] bg-bgdark"
                     value={rangeValue}
                     onMouseDown={() => beginAdjustment()}
                     onMouseUp={() => endAdjustment()}
@@ -100,10 +104,10 @@ export default function BasicSettings(props: BasicSettingsProps) {
 
                 {hideRangeValue && (
                     <label
-                    style={{ left: `${((rangeValue-12)/21) * 100}%` }}
-                    className="absolute transform -translate-y-full w-[7%] top-0 text-center bg-gray-200 px-1 rounded text-sm font-agrandir pt-[1%]"
-                    >
-                    {rangeValue}
+                        style={{ left: `${((rangeValue-12)/21) * 100}%` }}
+                        className="absolute transform -translate-y-full top-0 text-center bg-gray-200 px-1 rounded text-sm font-agrandir pt-[1%]"
+                        >
+                        {rangeValue}
                     </label>
                 )}
             </div>
@@ -111,10 +115,10 @@ export default function BasicSettings(props: BasicSettingsProps) {
             <TuningFrequencyEditor microtonalConfig={props.microtonalConfig} mcDispatch={props.mcDispatch}/>
 
             <div
-                className="2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide text-white mt-[9%]">MIDI
+                className="2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide text-white mt-[9%] mx-[7%]">MIDI
                 DEVICE
             </div>
-            <div className="flex w-full h-11 mt-[2%]">
+            <div className="flex w-[85%] h-11 mt-[2%] mx-[7%]">
                 <select data-te-select-init className="w-full rounded-md font-agrandir pl-[2%]">
                     <option value="1">MIDI Device 1</option>
                     <option value="2">MIDI Device 2</option>

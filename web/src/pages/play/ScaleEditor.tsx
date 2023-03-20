@@ -9,6 +9,7 @@ import { generateScalaFile } from "../../utility/microtonal/scala/ScalaGenerator
 import ScaleEditorInput from "./ScaleEditorInput";
 import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
 import TuningFrequencyEditor from "./TuningFrequencyEditor";
+import Button from "../../ui/Button";
 
 interface ScaleEditorProps {
     microtonalConfig: MicrotonalConfig,
@@ -139,13 +140,13 @@ export default function ScaleEditor(props: ScaleEditorProps) {
                 onChange={(event) => handleScalaFileUpload(event)}/>
             </div>
 
-            <div className="flex flex-col my-[1%]">
-                <button
-                    className="w-[85%] mx-[7%] mb-[2.5%] border-[1px] bg-white hover:bg-neutral-100 rounded-md flex-auto cursor-pointer font-agrandir text-bgdark"
-                    id="formFile"
-                    onClick={() => handleScalaFileGeneration()}>
-                    GENERATE SCALA FILE
-                </button>
+            <div className="flex flex-col my-[1%] mx-[7%]">
+                <Button
+                    className="w-[99%]"
+                    onClick={() => handleScalaFileGeneration()}
+                    text="GENERATE SCALA FILE"
+                    disabled={false}
+                />
             </div>
 
             <div
@@ -169,7 +170,12 @@ export default function ScaleEditor(props: ScaleEditorProps) {
             </div>
 
             <div className="flex flex-col my-[1%]">
-                <button onClick={() => handleAddNote()} className="w-[85%] mx-[7%] mb-[2.5%] border-[1px] bg-white hover:bg-neutral-100 rounded-md flex-auto cursor-pointer font-agrandir text-bgdark">ADD NOTE</button>
+                <Button 
+                    onClick={() => handleAddNote()} 
+                    className="w-[85%] mx-[7%] mb-[1%]"
+                    text="ADD NOTE"
+                    disabled={false}
+                />
                 {mapNotes()}
             </div>
 
