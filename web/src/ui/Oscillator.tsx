@@ -16,18 +16,12 @@ interface OscillatorProps {
 
 export default function Oscillator(props: OscillatorProps) {
 
-    const supportedWaveTypes: Array<string> = ['sine', 'square', 'triangle', 'sawtooth'];
-    const [localGain, setLocalGain] = useState<string>(props.settings.localGain.toString());
+    let [localGain, setLocalGain] = useState<number>(props.settings.localGain);
+    let [localGainInput, setLocalGainInput] = useState<string>(props.settings.localGain.toString());
     const gainInputRef = useRef<HTMLInputElement>(null);
+    const supportedWaveTypes: Array<string> = ['sine', 'square', 'triangle', 'sawtooth'];
 
-    useEffect(() => {
-        setLocalGain(props.settings.localGain.toString());
-    }, [props.settings.localGain])
-
-    const updateOscillator = (osc: OscillatorSettings) => {
-        props.mcDispatch({type: MCActions.SET_OSCILLATOR, osc: osc, oscIndex: props.oscIndex});
-    }
-
+    // Wave Type (dropdown menu)
     const handleWaveTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         let wave: string = event.currentTarget.value;
         if (!supportedWaveTypes.includes(wave))
@@ -49,40 +43,47 @@ export default function Oscillator(props: OscillatorProps) {
         return wavesJSX;
     }
 
-    const handleGainSliderChange = (values: number[]) => {
-        setLocalGain(clampGain(values[0]).toString());
+    // Local Gain (slider and input field)
+    useEffect(() => {
+        setLocalGain(props.settings.localGain);
+    }, [props.microtonalConfig]);
+
+    useEffect(() => {
+        setLocalGainInput(localGain.toString());
+    }, [localGain]);
+
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') {
+            gainInputRef.current.blur();
+            submitLocalGainInput();
+            return;
+        }
     }
 
-    const handleGainInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.value === '') {
-            setLocalGain('');
+    const submitLocalGainInput = () => {
+        let gain: number = parseFloat(localGainInput);
+        if (isNaN(gain) || gain < 0) {
+            setLocalGainInput(localGain.toString());
             return;
         }
 
-        let gain: number = clampGain(parseFloat(event.target.value));
-        setLocalGain(gain.toString());
-    }
-
-    const handleGainSubmit = () => {
-        let newOsc = {...props.settings, localGain: parseFloat(localGain)} as OscillatorSettings;
+        let newOsc = {...props.settings, localGain: clampGain(gain)} as OscillatorSettings;
         updateOscillator(newOsc);
     }
 
     const clampGain = (gain: number): number => {
-        return Math.min(1, Math.max(0, gain));
+        return Math.min(1, gain);
     }
 
+    // Pitch Multiplier (knob and input field)
     const handleMultiplierSubmit = (value: number) => {
         let newOsc = {...props.settings, pitchRatio: value} as OscillatorSettings;
         updateOscillator(newOsc);
     }
 
-    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === 'Enter') {
-            gainInputRef.current.blur();
-            handleGainSubmit();
-            return;
-        }
+    // Actions
+    const updateOscillator = (osc: OscillatorSettings) => {
+        props.mcDispatch({type: MCActions.SET_OSCILLATOR, osc: osc, oscIndex: props.oscIndex});
     }
 
     return (
@@ -96,9 +97,9 @@ export default function Oscillator(props: OscillatorProps) {
             step={0.01}
             min={0}
             max={1}
-            values={[((localGain === '') ? 0 : parseFloat(localGain))]}
-            onChange={(values) => handleGainSliderChange(values)}
-            onFinalChange={() => handleGainSubmit()}
+            values={[((localGainInput === '') ? 0 : parseFloat(localGainInput))]}
+            onChange={(values) => setLocalGainInput(values[0].toString())}
+            onFinalChange={() => submitLocalGainInput()}
             direction={Direction.Up}
             renderTrack={({ props, children }) => (
                 <div
@@ -137,9 +138,9 @@ export default function Oscillator(props: OscillatorProps) {
                 className={"text-center w-[60%] self-center rounded-md font-agrandir"} 
                 type="number"
                 ref={gainInputRef}
-                value={(localGain === '') ? '' : parseFloat(localGain)}
-                onChange={(e) => handleGainInputChange(e)}
-                onBlur={() => handleGainSubmit()}
+                value={localGainInput}
+                onChange={(e) => setLocalGainInput(e.target.value)}
+                onBlur={() => submitLocalGainInput()}
                 onKeyDown={(e) => handleKeyDown(e)}
                 min={0} 
                 max={1} 
