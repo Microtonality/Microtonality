@@ -62,19 +62,16 @@ export default function Oscillator(props: OscillatorProps) {
 
     const submitLocalGainInput = () => {
         let gain: number = clampGain(parseFloat(localGainInput));
-
-        if (gain !== localGain) {
-            let newOsc = {...props.settings, localGain: gain} as OscillatorSettings;
-            updateOscillator(newOsc);
+        if (isNaN(gain) || gain === localGain) {
+            setLocalGainInput(localGain.toString());
+            return;
         }
 
-        setLocalGainInput(gain.toString());
+        let newOsc = {...props.settings, localGain: gain} as OscillatorSettings;
+        updateOscillator(newOsc);
     }
 
     const clampGain = (gain: number): number => {
-        if (isNaN(gain))
-            return localGain;
-
         return Math.min(1, Math.max(0, gain));
     }
 
