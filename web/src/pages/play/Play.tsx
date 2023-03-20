@@ -9,9 +9,8 @@ import MidiReceiver from "../../utility/midi/MIDIReceiver";
 import {AdditiveSynthesizer} from "../../utility/audio/AdditiveSynthesizer";
 import {MCActions, MicrotonalConfigHistory, MicrotonalConfigReducer} from "./Reducers";
 import Button from "../../ui/Button";
+import {useRefFn} from "../../utility/useRefFn";
 
-
-const additiveSynth = new AdditiveSynthesizer();
 
 export default function Play() {
     const [microtonalConfigHistory, mcDispatch] = useReducer(
@@ -22,14 +21,15 @@ export default function Play() {
             next: []
         } as MicrotonalConfigHistory
     );
-    
-    const midiReceiver = new MidiReceiver(additiveSynth, microtonalConfigHistory.current.scaleConfig, microtonalConfigHistory.current.keyMapping);
+
+    const additiveSynth = useRefFn(() => new AdditiveSynthesizer());
+    const midiReceiver = useRefFn(() => new MidiReceiver(additiveSynth.current, microtonalConfigHistory.current.scaleConfig, microtonalConfigHistory.current.keyMapping));
 
     useEffect(() => {
-        midiReceiver.config = microtonalConfigHistory.current.scaleConfig
-        midiReceiver.keyMapping = microtonalConfigHistory.current.keyMapping
-        additiveSynth.config = microtonalConfigHistory.current.synthConfig
-        additiveSynth.updateSettings()
+        midiReceiver.current.config = microtonalConfigHistory.current.scaleConfig;
+        midiReceiver.current.keyMapping = microtonalConfigHistory.current.keyMapping;
+        additiveSynth.current.config = microtonalConfigHistory.current.synthConfig;
+        additiveSynth.current.updateSettings();
     }, [microtonalConfigHistory]);
 
     const handleUndo = () => {
@@ -60,7 +60,7 @@ export default function Play() {
                     <FullPianoComponent microtonalConfig={microtonalConfigHistory.current}
                                         mcDispatch={mcDispatch}
                                         keyMapping={microtonalConfigHistory.current.keyMapping}
-                                        midiReceiver={midiReceiver}
+                                        midiReceiver={midiReceiver.current}
                                         setKeyMapping={() => {}}/>
                 </div>
 
