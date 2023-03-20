@@ -12,27 +12,33 @@ interface TuningFrequencyEditorProps {
 
 export default function TuningFrequencyEditor(props: TuningFrequencyEditorProps) {
 
-    const [tuningFrequency, setTuningFrequency] = useState(props.microtonalConfig.scaleConfig.tuningFrequency.toString());
-    const tuningFrequencyInputField = useRef(null);
+    let [tuningFrequency, setTuningFrequency] = useState<number>(props.microtonalConfig.scaleConfig.tuningFrequency);
+    let [tuningFreqInput, setTuningFreqInput] = useState<string>(props.microtonalConfig.scaleConfig.tuningFrequency.toString())
+    const tuningFrequencyInputField = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
-        setTuningFrequency(props.microtonalConfig.scaleConfig.tuningFrequency.toString());
-    }, [props.microtonalConfig])
+        setTuningFrequency(props.microtonalConfig.scaleConfig.tuningFrequency);
+    }, [props.microtonalConfig]);
 
-    const wrapSetTuningFrequency = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setTuningFrequency(event.target.value);
-    }
-
-    const handleTuningFrequencySubmit = () => {
-        props.mcDispatch({type: MCActions.SET_TUNING_FREQUENCY, tuningFrequency: parseFloat(tuningFrequency)});
-    }
+    useEffect(() => {
+        setTuningFreqInput(tuningFrequency.toString());
+    }, [tuningFrequency]);
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
             tuningFrequencyInputField.current.blur();
-            handleTuningFrequencySubmit();
+            submitTuningFreqInput();
+        }
+    }
+
+    const submitTuningFreqInput = () => {
+        let frequency: number = parseFloat(tuningFreqInput);
+        if (isNaN(frequency) || frequency < 0) {
+            setTuningFreqInput(tuningFrequency.toString());
             return;
         }
+
+        props.mcDispatch({type: MCActions.SET_TUNING_FREQUENCY, tuningFrequency: frequency});
     }
 
     return (
@@ -42,7 +48,7 @@ export default function TuningFrequencyEditor(props: TuningFrequencyEditorProps)
                 FREQUENCY
             </div>
             <div className="flex w-[85%] h-10 mt-[2%] mx-[7%]">
-                <input type="number" ref={tuningFrequencyInputField} value={(tuningFrequency === '') ? 0 : parseFloat(tuningFrequency)} onChange={(e) => wrapSetTuningFrequency(e)} onKeyDown={(e) => handleKeyDown(e)} onBlur={() => handleTuningFrequencySubmit()} step="0.0001" className="w-full rounded-md font-agrandir pl-[2%]" />
+                <input type="number" ref={tuningFrequencyInputField} value={tuningFreqInput} onChange={(e) => setTuningFreqInput(e.target.value)} onKeyDown={(e) => handleKeyDown(e)} onBlur={() => submitTuningFreqInput()} step="0.0001" className="w-full rounded-md font-agrandir pl-[2%]" />
             </div>
         </div>
     );
