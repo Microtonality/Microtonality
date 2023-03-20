@@ -74,14 +74,19 @@ export default function Knob (props: KnobProps) {
   };
 
   const submitTextbox = () => {
-    let val: number = Math.abs(parseFloat(textBox));
-    if (isNaN(val)) {
-      updateTextbox();
-      return
-    }
-
-    if (val > props.max) val = props.max;
+    let val: number = clampValue(parseFloat(textBox));
     setValue(val);
+
+    // This won't trigger useEffect() if it's
+    // the same value, so we have to call this.
+    updateTextbox();
+  }
+
+  const clampValue = (val: number): number => {
+    if (isNaN(val))
+      return value; // from useState()
+
+    return Math.min(props.max, Math.max(props.min, val));
   }
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {

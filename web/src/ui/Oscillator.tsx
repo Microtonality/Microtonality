@@ -61,18 +61,21 @@ export default function Oscillator(props: OscillatorProps) {
     }
 
     const submitLocalGainInput = () => {
-        let gain: number = parseFloat(localGainInput);
-        if (isNaN(gain) || gain < 0) {
-            setLocalGainInput(localGain.toString());
-            return;
+        let gain: number = clampGain(parseFloat(localGainInput));
+
+        if (gain !== localGain) {
+            let newOsc = {...props.settings, localGain: gain} as OscillatorSettings;
+            updateOscillator(newOsc);
         }
 
-        let newOsc = {...props.settings, localGain: clampGain(gain)} as OscillatorSettings;
-        updateOscillator(newOsc);
+        setLocalGainInput(gain.toString());
     }
 
     const clampGain = (gain: number): number => {
-        return Math.min(1, gain);
+        if (isNaN(gain))
+            return localGain;
+
+        return Math.min(1, Math.max(0, gain));
     }
 
     // Pitch Multiplier (knob and input field)
@@ -97,7 +100,7 @@ export default function Oscillator(props: OscillatorProps) {
             step={0.01}
             min={0}
             max={1}
-            values={[((localGainInput === '') ? 0 : parseFloat(localGainInput))]}
+            values={[localGain]}
             onChange={(values) => setLocalGainInput(values[0].toString())}
             onFinalChange={() => submitLocalGainInput()}
             direction={Direction.Up}

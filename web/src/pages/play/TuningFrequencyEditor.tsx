@@ -32,13 +32,19 @@ export default function TuningFrequencyEditor(props: TuningFrequencyEditorProps)
     }
 
     const submitTuningFreqInput = () => {
-        let frequency: number = parseFloat(tuningFreqInput);
-        if (isNaN(frequency) || frequency < 0) {
-            setTuningFreqInput(tuningFrequency.toString());
-            return;
+        let frequency: number = clampTuningFrequency(parseFloat(tuningFreqInput));
+        if (frequency !== tuningFrequency) {
+            props.mcDispatch({type: MCActions.SET_TUNING_FREQUENCY, tuningFrequency: frequency});
         }
 
-        props.mcDispatch({type: MCActions.SET_TUNING_FREQUENCY, tuningFrequency: frequency});
+        setTuningFreqInput(frequency.toString());
+    }
+
+    const clampTuningFrequency = (freq: number): number => {
+        if (isNaN(freq))
+            return tuningFrequency;
+
+        return Math.max(0, freq);
     }
 
     return (
