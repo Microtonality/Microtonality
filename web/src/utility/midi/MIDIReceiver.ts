@@ -8,8 +8,8 @@ export default class MidiReceiver {
     public midiInput: WebMidi.MIDIInput[] = [];
     public midiOutput: WebMidi.MIDIOutput[] = [];
 
-    public synth: AdditiveSynthesizer = new AdditiveSynthesizer()
-    public config: ScaleConfig = DEFAULT_SCALE_CONFIG
+    public synth: AdditiveSynthesizer
+    public config: ScaleConfig
     public keyMapping: Record<number, number>
 
     private static NOTE_ON_MESSAGE: number = 144;
@@ -20,12 +20,19 @@ export default class MidiReceiver {
         this.synth = synth;
         this.config = config;
         this.keyMapping = keyMapping;
+        this.connectToInstrument()
     }
 
     public connectToInstrument() {
         navigator.requestMIDIAccess().then(
-            (midi) => this.initDevices(midi),
-            (err) => console.warn('unable to connect to midi', err)
+            (midi) => {
+                this.initDevices(midi)
+
+                midi.onstatechange = (event) => {
+                    this.initDevices(midi)
+                };
+            },
+            (err) => console.warn('unable to connect to midi', err),
         )
     }
 
@@ -35,7 +42,7 @@ export default class MidiReceiver {
 
         for (let input of midi.inputs.values()) {
             this.midiInput.push(input)
-            input.onmidimessage = this.onMIDIMessage
+            input.onmidimessage = this.onMIDIMessage.bind(this)
         }
 
         for (let output of midi.outputs.values()) {
@@ -49,6 +56,7 @@ export default class MidiReceiver {
         if (command == MidiReceiver.NOTE_ON_MESSAGE) {
             let note = message.data[1]
             let velocity = message.data[2]
+
 
             this.noteOn(note, velocity)
         } else if (command == MidiReceiver.NOTE_OFF_MESSAGE) {

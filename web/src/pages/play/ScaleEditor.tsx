@@ -149,19 +149,6 @@ export default function ScaleEditor(props: ScaleEditorProps) {
                 />
             </div>
 
-            <div
-                className="2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide text-white mt-[5%] mx-[7%]">
-                    MIDI DEVICE
-            </div>
-            <div className="flex w-[85%] h-10 mt-[2%] mx-[7%]">
-                <select data-te-select-init className="w-full rounded-md font-agrandir pl-[2%]">
-                    <option value="1">MIDI Device 1</option>
-                    <option value="2">MIDI Device 2</option>
-                    <option value="3">MIDI Device 3</option>
-                    <option value="4">MIDI Device 4</option>
-                </select>
-            </div>
-
             <TuningFrequencyEditor microtonalConfig={props.microtonalConfig} mcDispatch={props.mcDispatch}/>
  
             <div
