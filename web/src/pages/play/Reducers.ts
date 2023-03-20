@@ -3,6 +3,7 @@ import {OscillatorSettings} from "../../utility/audio/OscillatorSettings";
 import { Scale } from "../../utility/microtonal/Scale";
 import { ScaleNote } from "../../utility/microtonal/notes";
 import { parsePitchValue } from "../../utility/microtonal/scala/ScalaParser";
+import {mapScaleToKeyboardShortcuts} from "../../utility/microtonal/PianoKeyMapping";
 
 export interface MicrotonalConfigHistory {
     previous: Array<MicrotonalConfig>,
@@ -73,6 +74,7 @@ const MicrotonalConfigReducer = (state: MicrotonalConfigHistory, action: Action)
     // Scale Changes
     if (action.type === MCActions.SET_SCALE) {
         configChange = {scaleConfig: {scale: action.scale}};
+        configChange.keyMapping = mapScaleToKeyboardShortcuts(configChange.scaleConfig.scale, newState.current.scaleConfig.keysPerOctave);
     }
     if (action.type === MCActions.ADD_NOTE ||
         action.type === MCActions.EDIT_NOTE ||
@@ -100,6 +102,10 @@ const MicrotonalConfigReducer = (state: MicrotonalConfigHistory, action: Action)
         }
 
         configChange = {scaleConfig: {scale: {notes: notes}}};
+
+        if (configChange.scaleConfig.scale.notes.length !== state.current.scaleConfig.scale.notes.length) {
+            configChange.keyMapping = mapScaleToKeyboardShortcuts(configChange.scaleConfig.scale, newState.current.scaleConfig.keysPerOctave);
+        }
     }
     if (action.type === MCActions.EDIT_OCTAVE_NOTE) {
         let octaveNote: ScaleNote = parsePitchValue(`${action.noteValue} ${config.scaleConfig.scale.octaveNote.comments}`);
