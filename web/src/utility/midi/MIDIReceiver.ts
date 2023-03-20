@@ -8,7 +8,7 @@ export default class MidiReceiver {
     public midiInput: WebMidi.MIDIInput[] = [];
     public midiOutput: WebMidi.MIDIOutput[] = [];
 
-    public synth: AdditiveSynthesizer = new AdditiveSynthesizer()
+    public synth: AdditiveSynthesizer;
     public config: ScaleConfig = DEFAULT_SCALE_CONFIG
     public keyMapping: Record<number, number>
 
