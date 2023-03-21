@@ -45,7 +45,7 @@ export default function MicrotonalPiano(props: MicrotonalPianoProps) {
         <div className="flex justify-center">
             <FrequencyBarComponent  keyMapping={props.keyMapping} keyboardShortcuts={keyboardShortcuts} scaleConfig={props.microtonalConfig.scaleConfig}
                                     playMidiNote={() => {}} midiReceiver={props.midiReceiver} keyOffset={keyOffset}
-                                    setKeyMapping={props.setKeyMapping} octaveOffset={octave}/>
+                                    setKeyMapping={props.setKeyMapping} octaveOffset={octave} mcDispatch={props.mcDispatch}/>
         </div>
         <div className="flex flex-row justify-center mx-[5%] h-[70%] mt-[2%]">
             <div className="flex w-1/8 mr-[1%]">

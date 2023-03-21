@@ -27,7 +27,9 @@ enum MCActions {
     SET_DECAY,
     SET_SUSTAIN,
     SET_RELEASE,
-    SET_MASTER_GAIN
+    SET_MASTER_GAIN,
+    UNSET_KEYBIND,
+    SET_KEYBIND,
 }
 
 type Action =
@@ -47,6 +49,8 @@ type Action =
     | {type: MCActions.SET_SUSTAIN, sustain: number}
     | {type: MCActions.SET_RELEASE, release: number}
     | {type: MCActions.SET_MASTER_GAIN, gain: number}
+    | {type: MCActions.UNSET_KEYBIND, keyIndex: number}
+    | {type: MCActions.SET_KEYBIND, keyIndex: number, scaleDegree: number}
 
 const MicrotonalConfigReducer = (state: MicrotonalConfigHistory, action: Action): MicrotonalConfigHistory => {
     let newState = {...state};
@@ -136,6 +140,12 @@ const MicrotonalConfigReducer = (state: MicrotonalConfigHistory, action: Action)
     if (action.type === MCActions.SET_MASTER_GAIN) {
         configChange = {synthConfig: {gain: action.gain}};
     }
+    if (action.type === MCActions.UNSET_KEYBIND) {
+        configChange = {keyMapping: {[action.keyIndex]: null}}
+    }
+    if (action.type === MCActions.SET_KEYBIND) {
+        configChange = {keyMapping: {[action.keyIndex]: action.scaleDegree}}
+    }
 
     if (commitChange(config, configChange, true) !== null) {
         newState.previous.push(newState.current);
@@ -152,6 +162,17 @@ const commitChange = (config: any, change: any, dryRun = false) => {
     let hasChanged = false;
     let newConfig = config;
     for (let key in change) {
+        // If this equals null, avoid checking its prototype
+        if (change[key] === null) {
+            if (newConfig[key] !== change[key]) {
+                if (!dryRun) {
+                    newConfig = {...newConfig, [key]: change[key]};
+                }
+                hasChanged = true;
+            }
+            continue;
+        }
+
         if (Object.getPrototypeOf(change[key]) === OBJECT_PROTOTYPE) {
             let result = commitChange(newConfig[key], change[key]);
             if (result !== null) {

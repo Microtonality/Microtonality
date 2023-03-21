@@ -1,38 +1,30 @@
 import {Tooltip} from "@mui/material";
 import * as React from "react";
-import {useEffect, useRef, useState} from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import {KeyShortcut} from "../../utility/microtonal/PianoKeyMapping";
 import {ScaleConfig} from "../../utility/MicrotonalConfig";
 import MidiReceiver from "../../utility/midi/MIDIReceiver";
+import {MCActions} from "./Reducers";
 
 interface FrequencyBarButton {
     frequency: number,
     keyMapping?: string,
     active?: boolean,
-    index: number,
-    length: number,
-    divWidth: number
+    scaleDegree: number,
+    isEditing: boolean,
+    onClick: (index: number) => void
 }
 
 function FrequencyBarButton(props: FrequencyBarButton) {
-    const updateAssignedKey = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {  };
-    const wrapIndex = Math.floor(props.divWidth/40)-1
-
     return <button
         aria-describedby={"simple-popover"}
-        className={"btn w-10 max-w-10 items-center justify-center md:p-0.5 p-0 font-agrandir text-black  border-b-2 border-r-2 border-black md:text-sm text-xs " +
-            `${props.active ? 'bg-gold' : "bg-neutral-200 hover:bg-neutral-300"} ` + 
-            `${props.index === 0 ? 'rounded-l-md' : ''} ` + 
-            `${props.index === props.length ? 'rounded-r-md' : ''} ` +
-            `${props.index === wrapIndex ? 'rounded-r-md' : ''} ` +
-            `${props.index === wrapIndex + 1 ? 'rounded-l-md' : ''} ` +
-            `${props.index === wrapIndex * 2 + 1? 'rounded-r-md' : ''} ` +
-            `${props.index === wrapIndex * 2 + 2 ? 'rounded-l-md' : ''} `
-        }
-        onClick={(e) => updateAssignedKey(e)}>
-        {Math.round(props.frequency)}
-        <br/>
-        {props.keyMapping}
+        className={"flex flex-1 flex-col items-center text-center justify-center md:p-2 p-0.5 font-agrandir " +
+            "text-black bg-gold border-r-2 border-neutral-500 last:border-r-0 hover:bg-gray-200 " +
+            `${props.active ? 'bg-gold' : "bg-white"} md:text-sm text-xs`}
+        onClick={e => props.onClick(props.isEditing ? null : props.scaleDegree)}>
+        <span>{Math.round(props.frequency)}</span>
+        <span className={(props.active || props.isEditing ? "" : "opacity-0")}
+            >{props.isEditing ? "???" : props.keyMapping}</span>
     </button>
 }
 
@@ -44,6 +36,14 @@ const reverseMapping = (mapping: Record<number, number>) => {
     return final;
 }
 
+// Handle modulo with negative numbers
+const modulo = (value: number, divisor: number) => {
+    while (value < 0) {
+        value += divisor;
+    }
+    return value % divisor;
+}
+
 function FrequencyBarComponent(props: {
     keyMapping: Record<number, number>,
     scaleConfig: ScaleConfig,
@@ -52,34 +52,55 @@ function FrequencyBarComponent(props: {
     octaveOffset: number,
     keyboardShortcuts: Array<KeyShortcut>
     midiReceiver: MidiReceiver,
+    mcDispatch: Function,
     keyOffset: number,  // How many keys up should be displaying from the root key? Used for keyboard moving
 }) {
 
-    //Stores width of frequency bar div for wrap styling
-    const divRef = useRef<HTMLDivElement>(null);
-    const [width, setWidth] = useState<number | null>(null);
-
-    let debounceTimeout: ReturnType<typeof setTimeout>;
-    
-    function handleResize() {
-        const div = divRef.current;
-        clearTimeout(debounceTimeout);
-    
-        debounceTimeout = setTimeout(() => {
-          setWidth(div.offsetWidth-44);
-        }, 1);
-    }
-    
-    //Updates width of freq bar on resize
-    useEffect(() => {
-        if (width === null) handleResize();
-        window.addEventListener("resize", handleResize);
-    
-        return () => window.removeEventListener("resize", handleResize);
-    }, [width]);
+    const [editingNote, setEditingNote] = useState<number>(null);
 
     let freqBarArr = [];
     let reversedMapping = reverseMapping(props.keyMapping);
+
+    useEffect(() => {
+        if (editingNote === null) {
+            return;
+        }
+        const onKeyPress = (event: KeyboardEvent) => {
+            if (editingNote !== null) {
+                let keyIndex = -1;
+                // Validate note is currently on the keyboard
+                for (let i=0; i<props.keyboardShortcuts.length; i++) {
+                    let shortcut = props.keyboardShortcuts[i];
+                    if (shortcut.key === event.key.toLowerCase()) {
+                        keyIndex = i;
+                        break;
+                    }
+                }
+                if (keyIndex === -1) {
+                    setEditingNote(null);
+                    document.removeEventListener("keydown", onKeyPress);
+                    return;
+                }
+                // We now have keyIndex and editingNote (scale degree), unset the current note with this degree and then
+                // set the new key to that note
+                let oldKey = reversedMapping[editingNote];
+                let newKey = modulo(keyIndex + props.keyOffset, props.keyboardShortcuts.length)
+                if (oldKey !== undefined) {
+                    oldKey = modulo(reversedMapping[editingNote] + props.keyOffset, props.keyboardShortcuts.length);
+                    props.mcDispatch({type: MCActions.UNSET_KEYBIND, keyIndex: oldKey});
+                }
+                console.log(oldKey, newKey);
+                props.mcDispatch({type: MCActions.SET_KEYBIND, keyIndex: newKey, scaleDegree: editingNote})
+
+                setEditingNote(null);
+                document.removeEventListener("keydown", onKeyPress);
+            }
+        }
+        document.addEventListener("keydown", onKeyPress);
+        return () => document.removeEventListener("keydown", onKeyPress)
+    }, [editingNote]);
+
+    console.log(props.keyMapping, reversedMapping)
 
     // If the user is advancing forward or backwards keys, we need to rotate the frequency bar buttons around
     let scaleOffset = null;
@@ -102,37 +123,34 @@ function FrequencyBarComponent(props: {
         let keyboardKey;
         let isActive;
         // If it has a mapping, get the MIDI note for it
-        if (keyboardKeyNum === undefined) {
-            keyboardKey = "‎"; //invisible character so the numbers in the frequency bar stay in line
-            isActive = false;
+        if (keyboardKeyNum === undefined || props.keyMapping[preScaleDegree] === null) {
+            keyboardKey = "None";
         } else {
-            keyboardKey = props.keyboardShortcuts[(keyboardKeyNum - props.keyOffset + (octaveAdditive * props.scaleConfig.scale.notes.length)) % props.keyboardShortcuts.length].key.toUpperCase();
-            isActive = true;
+            let keyIndex;
+            try {
+                keyIndex = modulo(keyboardKeyNum - props.keyOffset + (octaveAdditive * props.scaleConfig.scale.notes.length), props.scaleConfig.scale.notes.length);
+                keyboardKey = props.keyboardShortcuts[keyIndex % props.keyboardShortcuts.length].key.toUpperCase();
+            } catch (e) {
+                console.log("couldn't access", keyIndex)
+            }
         }
 
         freqBarArr.push
         (
             // <Tooltip describeChild title={"asdf"} key={i}
             //          placement="top">
-                    <FrequencyBarButton 
-                        frequency={props.midiReceiver.ScaleDegreeToFrequency(scaleDegree, props.octaveOffset + octaveAdditive)} 
-                        keyMapping={keyboardKey} 
-                        key={scaleDegree} 
-                        active={isActive} 
-                        index={preScaleDegree} 
-                        length={props.scaleConfig.scale.notes.length - 1}
-                        divWidth={width}
-                    />
+                    <FrequencyBarButton frequency={props.midiReceiver.ScaleDegreeToFrequency(scaleDegree, props.octaveOffset + octaveAdditive)} keyMapping={keyboardKey}
+                                        key={scaleDegree} active={keyboardKeyNum !== undefined} isEditing={editingNote === scaleDegree} scaleDegree={scaleDegree} onClick={setEditingNote}/>
             // </Tooltip>
         )
     }
 
-    return <div ref={divRef} className="w-full flex items-center justify-center mt-[6%]">
-        <div  className={"flex flex-row justify-center flex-wrap"}>
+    return <div className="w-full flex justify-center mt-2 items-center">
+        <div className={"flex flex-row justify-center flex-wrap border-neutral-500 border-2 rounded-xl overflow-hidden"}>
             {freqBarArr}
         </div>
         <Tooltip describeChild title="Click a frequency box and then press the key on your keyboard you want it to correspond to">
-            <button className="btn min-w-[1.75rem] w-7 aspect-square bg-white text-black rounded-full hover:bg-gray-100 mx-2">?</button>
+            <button className="btn w-7 aspect-square bg-white text-black rounded-3xl hover:bg-gray-100 mx-2">?</button>
         </Tooltip>
     </div>;
 }
