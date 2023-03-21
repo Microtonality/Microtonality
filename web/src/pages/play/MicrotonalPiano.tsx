@@ -47,7 +47,7 @@ export default function MicrotonalPiano(props: MicrotonalPianoProps) {
                                     playMidiNote={() => {}} midiReceiver={props.midiReceiver} keyOffset={keyOffset}
                                     setKeyMapping={props.setKeyMapping} octaveOffset={octave}/>
         </div>
-        <div className="flex flex-row justify-center mx-[5%] h-[70%] mt-[2%]">
+        <div className="flex flex-row justify-center mx-[5%] h-[70%] my-[2%]">
             <div className="flex w-1/8 mr-[1%]">
                 <Knobs knobLabel="GAIN" value={props.microtonalConfig.synthConfig.gain} onChange={(value) => handleMasterGainChange(value)} className="border-gold border-[3px]"/>
             </div>

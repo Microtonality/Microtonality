@@ -22,12 +22,14 @@ function FrequencyBarButton(props: FrequencyBarButton) {
         aria-describedby={"simple-popover"}
         className={"btn w-10 max-w-10 items-center justify-center md:p-0.5 p-0 font-agrandir text-black  border-b-2 border-r-2 border-black md:text-sm text-xs " +
             `${props.active ? 'bg-gold' : "bg-neutral-200 hover:bg-neutral-300"} ` + 
-            `${props.index === 0 ? 'rounded-l-md' : ''} ` + 
-            `${props.index === props.length ? 'rounded-r-md' : ''} ` +
-            `${props.index === wrapIndex ? 'rounded-r-md' : ''} ` +
-            `${props.index === wrapIndex + 1 ? 'rounded-l-md' : ''} ` +
-            `${props.index === wrapIndex * 2 + 1? 'rounded-r-md' : ''} ` +
-            `${props.index === wrapIndex * 2 + 2 ? 'rounded-l-md' : ''} `
+            `${ props.index === 0 || 
+                props.index === wrapIndex + 1 || 
+                props.index === wrapIndex * 2 + 2 
+                ? 'rounded-l-md' : ''} ` + 
+            `${ props.index === props.length || 
+                props.index === wrapIndex || 
+                props.index === wrapIndex * 2 + 1 
+                ? 'rounded-r-md' : ''} `
         }
         onClick={(e) => updateAssignedKey(e)}>
         {Math.round(props.frequency)}
