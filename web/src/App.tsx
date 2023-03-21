@@ -10,7 +10,7 @@ import {Contact} from "./pages/Contact";
 
 export default function App() {
   return (
-    <HashRouter basename={process.env.PUBLIC_PATH}>
+    <HashRouter>
       <Routes>
         <Route path='/' element={<Layout />}>
           <Route index element={<Learn />}/>
