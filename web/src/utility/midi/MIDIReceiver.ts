@@ -1,5 +1,5 @@
 import {AdditiveSynthesizer} from "../audio/AdditiveSynthesizer"
-import {DEFAULT_SCALE_CONFIG, ScaleConfig} from "../MicrotonalConfig";
+import {DEFAULT_MICROTONAL_CONFIG, DEFAULT_SCALE_CONFIG, DEFAULT_SYNTH_CONFIG, ScaleConfig} from "../MicrotonalConfig";
 import {RatioNote} from "../microtonal/notes";
 import {scaleDegreeToNote} from "../microtonal/Scale";
 
@@ -9,17 +9,15 @@ export default class MidiReceiver {
     public midiOutput: WebMidi.MIDIOutput[] = [];
     
     public synth: AdditiveSynthesizer
-    public config: ScaleConfig
-    public keyMapping: Record<number, number>
+    public config: ScaleConfig = DEFAULT_SCALE_CONFIG
+    public keyMapping: Record<number, number> = DEFAULT_MICROTONAL_CONFIG.keyMapping
 
     private static NOTE_ON_MESSAGE: number = 144;
     private static NOTE_OFF_MESSAGE: number = 128;
     private static PITCH_BEND_MESSAGE: number = 224;
 
-    constructor(synth: AdditiveSynthesizer, config: ScaleConfig, keyMapping: Record<number, number>) {
+    constructor(synth: AdditiveSynthesizer) {
         this.synth = synth;
-        this.config = config;
-        this.keyMapping = keyMapping;
         this.connectToInstrument()
     }
 
