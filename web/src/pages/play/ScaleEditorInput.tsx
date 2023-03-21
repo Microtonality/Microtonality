@@ -170,19 +170,19 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
             ((props.noteIndex === 0) ?
                 /* If 1/1 note, greyed image */
                 <svg width="25" height="25" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg" className="ml-1">
-                    <line y1="-1" x2="20.2341" y2="-1" transform="matrix(0.715193 -0.698927 0.715193 0.698927 2.02332 16.1421)" stroke="#212121" stroke-width="2"/>
-                    <line y1="-1" x2="20.2341" y2="-1" transform="matrix(0.715193 -0.698927 0.715193 0.698927 2.02332 16.1421)" stroke="#212121" stroke-width="2"/>
-                    <line y1="-1" x2="20.2341" y2="-1" transform="matrix(0.715193 0.698927 -0.715193 0.698927 1 2)" stroke="#212121" stroke-width="2"/>
-                    <line y1="-1" x2="20.2341" y2="-1" transform="matrix(0.715193 0.698927 -0.715193 0.698927 1 2)" stroke="#212121" stroke-width="2"/>
+                    <line y1="-1" x2="20.2341" y2="-1" transform="matrix(0.715193 -0.698927 0.715193 0.698927 2.02332 16.1421)" stroke="#212121" strokeWidth="2"/>
+                    <line y1="-1" x2="20.2341" y2="-1" transform="matrix(0.715193 -0.698927 0.715193 0.698927 2.02332 16.1421)" stroke="#212121" strokeWidth="2"/>
+                    <line y1="-1" x2="20.2341" y2="-1" transform="matrix(0.715193 0.698927 -0.715193 0.698927 1 2)" stroke="#212121" strokeWidth="2"/>
+                    <line y1="-1" x2="20.2341" y2="-1" transform="matrix(0.715193 0.698927 -0.715193 0.698927 1 2)" stroke="#212121" strokeWidth="2"/>
                 </svg>
             :
                 /* Otherwise, white image */
                 // <img src={close} onClick={() => handleDeleteNote()} className="w-[8%] h-[8%] min-w-[1.5rem] cursor-pointer" alt={''}/>
                 <svg onClick={() => handleDeleteNote()} width="25" height="25" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg" className="cursor-pointer ml-1">
-                    <line y1="-1" x2="20.2341" y2="-1" transform="matrix(0.715193 -0.698927 0.715193 0.698927 2.02332 16.1421)" stroke="white" stroke-width="2"/>
-                    <line y1="-1" x2="20.2341" y2="-1" transform="matrix(0.715193 -0.698927 0.715193 0.698927 2.02332 16.1421)" stroke="white" stroke-width="2"/>
-                    <line y1="-1" x2="20.2341" y2="-1" transform="matrix(0.715193 0.698927 -0.715193 0.698927 1 2)" stroke="white" stroke-width="2"/>
-                    <line y1="-1" x2="20.2341" y2="-1" transform="matrix(0.715193 0.698927 -0.715193 0.698927 1 2)" stroke="white" stroke-width="2"/>
+                    <line y1="-1" x2="20.2341" y2="-1" transform="matrix(0.715193 -0.698927 0.715193 0.698927 2.02332 16.1421)" stroke="white" strokeWidth="2"/>
+                    <line y1="-1" x2="20.2341" y2="-1" transform="matrix(0.715193 -0.698927 0.715193 0.698927 2.02332 16.1421)" stroke="white" strokeWidth="2"/>
+                    <line y1="-1" x2="20.2341" y2="-1" transform="matrix(0.715193 0.698927 -0.715193 0.698927 1 2)" stroke="white" strokeWidth="2"/>
+                    <line y1="-1" x2="20.2341" y2="-1" transform="matrix(0.715193 0.698927 -0.715193 0.698927 1 2)" stroke="white" strokeWidth="2"/>
                 </svg>
             )}
 

@@ -1,6 +1,6 @@
 import {Tooltip} from "@mui/material";
 import * as React from "react";
-import {useEffect, useRef} from "react";
+import {useEffect, useRef, useState} from "react";
 import {KeyShortcut} from "../../utility/microtonal/PianoKeyMapping";
 import {ScaleConfig} from "../../utility/MicrotonalConfig";
 import MidiReceiver from "../../utility/midi/MIDIReceiver";
@@ -10,15 +10,25 @@ interface FrequencyBarButton {
     keyMapping?: string,
     active?: boolean,
     index: number,
-    length: number
+    length: number,
+    divWidth: number
 }
 
 function FrequencyBarButton(props: FrequencyBarButton) {
     const updateAssignedKey = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {  };
+    const wrapIndex = Math.floor(props.divWidth/40)-1
+
     return <button
         aria-describedby={"simple-popover"}
-        className={"btn w-10 flex flex-1 items-center justify-center md:p-0.5 p-0 font-agrandir text-black  border-b-2 border-r-2 border-black md:text-sm text-xs " +
-            `${props.active ? 'bg-gold' : "bg-neutral-200 hover:bg-neutral-300"} ` + `${props.index === 0 ? 'rounded-l-md' : ''}` + `${props.index === props.length ? 'rounded-r-md' : ''}` }
+        className={"btn w-10 max-w-10 items-center justify-center md:p-0.5 p-0 font-agrandir text-black  border-b-2 border-r-2 border-black md:text-sm text-xs " +
+            `${props.active ? 'bg-gold' : "bg-neutral-200 hover:bg-neutral-300"} ` + 
+            `${props.index === 0 ? 'rounded-l-md' : ''} ` + 
+            `${props.index === props.length ? 'rounded-r-md' : ''} ` +
+            `${props.index === wrapIndex ? 'rounded-r-md' : ''} ` +
+            `${props.index === wrapIndex + 1 ? 'rounded-l-md' : ''} ` +
+            `${props.index === wrapIndex * 2 + 1? 'rounded-r-md' : ''} ` +
+            `${props.index === wrapIndex * 2 + 2 ? 'rounded-l-md' : ''} `
+        }
         onClick={(e) => updateAssignedKey(e)}>
         {Math.round(props.frequency)}
         <br/>
@@ -44,6 +54,29 @@ function FrequencyBarComponent(props: {
     midiReceiver: MidiReceiver,
     keyOffset: number,  // How many keys up should be displaying from the root key? Used for keyboard moving
 }) {
+
+    //Stores width of frequency bar div for wrap styling
+    const divRef = useRef<HTMLDivElement>(null);
+    const [width, setWidth] = useState<number | null>(null);
+
+    let debounceTimeout: ReturnType<typeof setTimeout>;
+    
+    function handleResize() {
+        const div = divRef.current;
+        clearTimeout(debounceTimeout);
+    
+        debounceTimeout = setTimeout(() => {
+          setWidth(div.offsetWidth-44);
+        }, 1);
+    }
+    
+    //Updates width of freq bar on resize
+    useEffect(() => {
+        if (width === null) handleResize();
+        window.addEventListener("resize", handleResize);
+    
+        return () => window.removeEventListener("resize", handleResize);
+    }, [width]);
 
     let freqBarArr = [];
     let reversedMapping = reverseMapping(props.keyMapping);
@@ -88,17 +121,18 @@ function FrequencyBarComponent(props: {
                         active={isActive} 
                         index={preScaleDegree} 
                         length={props.scaleConfig.scale.notes.length - 1}
+                        divWidth={width}
                     />
             // </Tooltip>
         )
     }
 
-    return <div className="flex items-center justify-center mt-[2%]">
-        <div className={"flex flex-row justify-center flex-wrap"}>
+    return <div ref={divRef} className="w-full flex items-center justify-center mt-[6%]">
+        <div  className={"flex flex-row justify-center flex-wrap"}>
             {freqBarArr}
         </div>
         <Tooltip describeChild title="Click a frequency box and then press the key on your keyboard you want it to correspond to">
-            <button className="btn 2xl:h-8 2xl:w-8 xl:h-8 xl:w-8 lg:h-7 lg-w-7 md:h-7 md:w-7 sm:h-6 sm:w-6 xs:h-6 xs:w-6 bg-white text-black rounded-3xl hover:bg-gray-100 ml-2">?</button>
+            <button className="btn min-w-[1.75rem] w-7 aspect-square bg-white text-black rounded-full hover:bg-gray-100 mx-2">?</button>
         </Tooltip>
     </div>;
 }
