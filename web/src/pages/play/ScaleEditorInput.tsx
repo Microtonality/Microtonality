@@ -1,10 +1,6 @@
 // Some code adapted for our use case from https://github.com/facebook/react/issues/18404#issuecomment-605294038
 
 import * as React from "react";
-import hamburger from "../../img/icons/hamburger.png"
-import disabledHamburger from "../../img/icons/hamburger-disabled.png"
-import close from "../../img/icons/close.png"
-import disabledClose from "../../img/icons/close-disabled.png";
 import { MicrotonalConfig } from "../../utility/MicrotonalConfig";
 import { Scale } from "../../utility/microtonal/Scale";
 import {useEffect, useRef, useState} from "react";
@@ -128,7 +124,7 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
     }, [selection]);
 
     return (
-        <div className="inline-flex items-center my-[2.5%]">
+        <div className="inline-flex items-center mx-[1%] my-[2.5%] w-[95%]">
 
             {(props.noteIndex === -1) ? 
                 /* If Octave note, no image */
@@ -136,16 +132,25 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
             :
             ((props.noteIndex === 0) ? 
                 /* If 1/1 note, greyed image */
-                <img src={disabledHamburger} className="w-[6%] min-w-[1.5rem]" alt={''}/>
+                <svg width="25" height="25" viewBox="0 0 12 11" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-1">
+                    <line y1="0.5" x2="12" y2="0.5" stroke="#212121"/>
+                    <line y1="10.5" x2="12" y2="10.5" stroke="#212121"/>
+                    <line y1="5.5" x2="12" y2="5.5" stroke="#212121"/>
+                </svg>
+
             :
                 /* Otherwise, white image */
-                <img src={hamburger} className="w-[6%] min-w-[1.5rem]" alt={''}/>
+                <svg width="25" height="25" viewBox="0 0 12 11" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-1">
+                    <line y1="0.5" x2="12" y2="0.5" stroke="white"/>
+                    <line y1="10.5" x2="12" y2="10.5" stroke="white"/>
+                    <line y1="5.5" x2="12" y2="5.5" stroke="white"/>
+                </svg>
             )}
 
             <label htmlFor={props.noteIndex.toString()} className="inline-flex flex-wrap items-center cursor-pointer text-gray-800 w-[50%] h-10 text-center ml-[1%] min-w-[6rem]">
                 <input id={props.noteIndex.toString()} checked={isRatio} type="checkbox" className="hidden peer" readOnly={true}/>
-                <div className="2xl:text-lg md:text-sm sm:text-xs w-[50%] h-full bg-gold peer-checked:bg-white rounded-l-md border-r-[1px] border-black pt-[4%] min-w-[3rem]">CENTS</div>
-                <div className="2xl:text-lg md:text-sm sm:text-xs w-[50%] h-full bg-white peer-checked:bg-gold rounded-r-md border-l-[1px] border-black pt-[4%] min-w-[3rem]">RATIO</div>
+                <div className="w-[50%] h-full bg-gold peer-checked:bg-white rounded-l-md border-r-[1px] border-black pt-[4%] min-w-[3rem]">CENTS</div>
+                <div className="w-[50%] h-full bg-white peer-checked:bg-gold rounded-r-md border-l-[1px] border-black pt-[4%] min-w-[3rem]">RATIO</div>
             </label>
 
             <div className="flex w-full h-10 ml-[1%] max-w-[50%]">
@@ -164,10 +169,21 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
             :
             ((props.noteIndex === 0) ?
                 /* If 1/1 note, greyed image */
-                <img src={disabledClose} className="w-[8%] h-[8%] min-w-[1.5rem]" alt={''}/>
+                <svg width="25" height="25" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg" className="ml-1">
+                    <line y1="-1" x2="20.2341" y2="-1" transform="matrix(0.715193 -0.698927 0.715193 0.698927 2.02332 16.1421)" stroke="#212121" stroke-width="2"/>
+                    <line y1="-1" x2="20.2341" y2="-1" transform="matrix(0.715193 -0.698927 0.715193 0.698927 2.02332 16.1421)" stroke="#212121" stroke-width="2"/>
+                    <line y1="-1" x2="20.2341" y2="-1" transform="matrix(0.715193 0.698927 -0.715193 0.698927 1 2)" stroke="#212121" stroke-width="2"/>
+                    <line y1="-1" x2="20.2341" y2="-1" transform="matrix(0.715193 0.698927 -0.715193 0.698927 1 2)" stroke="#212121" stroke-width="2"/>
+                </svg>
             :
                 /* Otherwise, white image */
-                <img src={close} onClick={() => handleDeleteNote()} className="w-[8%] h-[8%] min-w-[1.5rem] cursor-pointer" alt={''}/>
+                // <img src={close} onClick={() => handleDeleteNote()} className="w-[8%] h-[8%] min-w-[1.5rem] cursor-pointer" alt={''}/>
+                <svg onClick={() => handleDeleteNote()} width="25" height="25" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg" className="cursor-pointer ml-1">
+                    <line y1="-1" x2="20.2341" y2="-1" transform="matrix(0.715193 -0.698927 0.715193 0.698927 2.02332 16.1421)" stroke="white" stroke-width="2"/>
+                    <line y1="-1" x2="20.2341" y2="-1" transform="matrix(0.715193 -0.698927 0.715193 0.698927 2.02332 16.1421)" stroke="white" stroke-width="2"/>
+                    <line y1="-1" x2="20.2341" y2="-1" transform="matrix(0.715193 0.698927 -0.715193 0.698927 1 2)" stroke="white" stroke-width="2"/>
+                    <line y1="-1" x2="20.2341" y2="-1" transform="matrix(0.715193 0.698927 -0.715193 0.698927 1 2)" stroke="white" stroke-width="2"/>
+                </svg>
             )}
 
         </div>

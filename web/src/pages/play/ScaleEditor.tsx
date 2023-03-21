@@ -171,7 +171,7 @@ export default function ScaleEditor(props: ScaleEditorProps) {
                     Octave Note
             </div>
             <div 
-                className={`inline-flex items-center`}>
+                className={`inline-flex items-center w-full`}>
                 <ScaleEditorInput noteIndex={-1} scale={props.microtonalConfig.scaleConfig.scale} microtonalConfig={props.microtonalConfig} mcDispatch={props.mcDispatch} />
             </div>
 
