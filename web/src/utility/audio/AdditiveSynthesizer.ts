@@ -11,8 +11,6 @@ export class AdditiveSynthesizer {
     oscillatorStacks: { [key: number]: OscillatorStack } = {}
 
     constructor() {
-        this.dynamicsCompressor.attack.value = 1
-        this.dynamicsCompressor.release.value = 1
 
         this.dynamicsCompressor.connect(this.masterGain)
         this.masterGain.connect(this.audioContext.destination)
@@ -20,7 +18,6 @@ export class AdditiveSynthesizer {
 
     updateSettings() {
         this.masterGain.gain.value = this.config.gain
-        this.dynamicsCompressor.attack.value = this.config.attack
         this.clearOscillators()
     }
 
@@ -44,7 +41,7 @@ export class AdditiveSynthesizer {
                 this.dynamicsCompressor
                 )
 
-        this.oscillatorStacks[frequency].beginPlay()
+        this.oscillatorStacks[frequency].beginPlay(this.audioContext, this.config)
     }
 
     onStopFrequency(frequency: number) {
