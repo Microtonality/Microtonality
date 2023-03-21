@@ -8,15 +8,17 @@ import MidiReceiver from "../../utility/midi/MIDIReceiver";
 interface FrequencyBarButton {
     frequency: number,
     keyMapping?: string,
-    active?: boolean
+    active?: boolean,
+    index: number,
+    length: number
 }
 
 function FrequencyBarButton(props: FrequencyBarButton) {
     const updateAssignedKey = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {  };
     return <button
         aria-describedby={"simple-popover"}
-        className={"btn flex flex-1 items-center justify-center md:p-0.5 p-0 font-agrandir text-black bg-gold border-b-2 border-r-2 border-black" +
-            `${props.active ? 'uppercase' : "hover:bg-gray-200"} md:text-sm text-xs`}
+        className={"btn w-10 flex flex-1 items-center justify-center md:p-0.5 p-0 font-agrandir text-black  border-b-2 border-r-2 border-black md:text-sm text-xs " +
+            `${props.active ? 'bg-gold' : "bg-neutral-200 hover:bg-neutral-300"} ` + `${props.index === 0 ? 'rounded-l-md' : ''}` + `${props.index === props.length ? 'rounded-r-md' : ''}` }
         onClick={(e) => updateAssignedKey(e)}>
         {Math.round(props.frequency)}
         <br/>
@@ -65,23 +67,33 @@ function FrequencyBarComponent(props: {
         // Map the scale degree to the midi keyboard mapping
         let keyboardKeyNum = reversedMapping[scaleDegree];
         let keyboardKey;
+        let isActive;
         // If it has a mapping, get the MIDI note for it
         if (keyboardKeyNum === undefined) {
-            keyboardKey = "None";
+            keyboardKey = "‎"; //invisible character so the numbers in the frequency bar stay in line
+            isActive = false;
         } else {
             keyboardKey = props.keyboardShortcuts[(keyboardKeyNum - props.keyOffset + (octaveAdditive * props.scaleConfig.scale.notes.length)) % props.keyboardShortcuts.length].key.toUpperCase();
+            isActive = true;
         }
 
         freqBarArr.push
         (
             // <Tooltip describeChild title={"asdf"} key={i}
             //          placement="top">
-                    <FrequencyBarButton frequency={props.midiReceiver.ScaleDegreeToFrequency(scaleDegree, props.octaveOffset + octaveAdditive)} keyMapping={keyboardKey} key={scaleDegree}/>
+                    <FrequencyBarButton 
+                        frequency={props.midiReceiver.ScaleDegreeToFrequency(scaleDegree, props.octaveOffset + octaveAdditive)} 
+                        keyMapping={keyboardKey} 
+                        key={scaleDegree} 
+                        active={isActive} 
+                        index={preScaleDegree} 
+                        length={props.scaleConfig.scale.notes.length - 1}
+                    />
             // </Tooltip>
         )
     }
 
-    return <div className="flex justify-center mt-[2%]">
+    return <div className="flex items-center justify-center mt-[2%]">
         <div className={"flex flex-row justify-center flex-wrap"}>
             {freqBarArr}
         </div>
