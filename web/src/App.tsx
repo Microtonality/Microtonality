@@ -1,5 +1,5 @@
 import './index.css';
-import {BrowserRouter, Route} from "react-router-dom";
+import {HashRouter, Route} from "react-router-dom";
 import {Outlet, Routes} from "react-router";
 import NavLink from "./ui/NavLink";
 import * as React from 'react';
@@ -10,7 +10,7 @@ import {Contact} from "./pages/Contact";
 
 export default function App() {
   return (
-    <BrowserRouter basename={process.env.PUBLIC_PATH}>
+    <HashRouter basename={process.env.PUBLIC_PATH}>
       <Routes>
         <Route path='/' element={<Layout />}>
           <Route index element={<Learn />}/>
@@ -19,7 +19,7 @@ export default function App() {
           <Route path="contact" element={<Contact />}/>
         </Route>
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
