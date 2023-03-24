@@ -50,7 +50,6 @@ export default function Play() {
 
             <div className={"flex flex-col w-full ml-1"}>
 
-                {/* TODO remove and put buttons where they're supposed to go*/}
                 <div className="absolute flex flex-row ml-3 mt-3">
                     <Button className="mr-1" onClick={() => handleUndo()} disabled={microtonalConfigHistory.previous.length === 0} text={"UNDO"}/>
                     <Button className="" onClick={() => handleRedo()} disabled={microtonalConfigHistory.next.length === 0} text={"REDO"}/>
