@@ -44,6 +44,15 @@ const modulo = (value: number, divisor: number) => {
     return value % divisor;
 }
 
+const scaleDegreeToKeyIndex = (reversedMapping: Record<number, number> , scaleDegree: number, keyOffset: number, scaleLength: number, keysPerOctave: number) => {
+    let keyboardKeyNum = reversedMapping[scaleDegree];
+    if (keyboardKeyNum === undefined) {
+        return null;
+    }
+    return modulo(keyboardKeyNum - keyOffset, scaleLength) % keysPerOctave;
+}
+
+
 function FrequencyBarComponent(props: {
     keyMapping: Record<number, number>,
     scaleConfig: ScaleConfig,
@@ -83,11 +92,12 @@ function FrequencyBarComponent(props: {
                 }
                 // We now have keyIndex and editingNote (scale degree), unset the current note with this degree and then
                 // set the new key to that note
-                let oldKey = reversedMapping[editingNote];
-                let newKey = modulo(keyIndex + props.keyOffset, props.keyboardShortcuts.length)
-                if (oldKey !== undefined) {
-                    oldKey = modulo(reversedMapping[editingNote] + props.keyOffset, props.keyboardShortcuts.length);
-                    props.mcDispatch({type: MCActions.UNSET_KEYBIND, keyIndex: oldKey});
+                let oldKey = scaleDegreeToKeyIndex(reversedMapping, editingNote, props.keyOffset, props.scaleConfig.scale.notes.length, props.scaleConfig.keysPerOctave);
+                let newKey = modulo(keyIndex + props.keyOffset, props.scaleConfig.keysPerOctave);
+                if (oldKey !== null) {
+                    let correctedOldKey = modulo(oldKey + props.keyOffset, props.scaleConfig.keysPerOctave);
+                    console.log(`Unsetting scaleDegree ${editingNote} bound to ${oldKey} ${props.keyboardShortcuts[oldKey].key} which is key mapping ${correctedOldKey}`)
+                    props.mcDispatch({type: MCActions.UNSET_KEYBIND, keyIndex: correctedOldKey});
                 }
                 console.log(oldKey, newKey);
                 props.mcDispatch({type: MCActions.SET_KEYBIND, keyIndex: newKey, scaleDegree: editingNote})
@@ -121,17 +131,11 @@ function FrequencyBarComponent(props: {
         // Map the scale degree to the midi keyboard mapping
         let keyboardKeyNum = reversedMapping[scaleDegree];
         let keyboardKey;
-        let keyIndex;
-        // If it has a mapping, get the MIDI note for it
-        if (keyboardKeyNum === undefined) {
+        let keyIndex = scaleDegreeToKeyIndex(reversedMapping, scaleDegree, props.keyOffset, props.scaleConfig.scale.notes.length, props.scaleConfig.keysPerOctave);
+        if (keyIndex === null) {
             keyboardKey = "None";
         } else {
-            try {
-                keyIndex = modulo(keyboardKeyNum - props.keyOffset + (octaveAdditive * props.scaleConfig.scale.notes.length), props.scaleConfig.scale.notes.length);
-                keyboardKey = props.keyboardShortcuts[keyIndex % props.keyboardShortcuts.length].key.toUpperCase();
-            } catch (e) {
-                console.log("couldn't access", keyIndex)
-            }
+            keyboardKey = props.keyboardShortcuts[keyIndex].key.toUpperCase();
         }
 
         console.log(`prescale ${preScaleDegree} -> scaleDegree ${scaleDegree} mapped to key index ${keyIndex} ${keyboardKey}`)
