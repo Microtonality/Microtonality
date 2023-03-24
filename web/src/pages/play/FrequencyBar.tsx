@@ -49,7 +49,7 @@ const scaleDegreeToKeyIndex = (reversedMapping: Record<number, number> , scaleDe
     if (keyboardKeyNum === undefined) {
         return null;
     }
-    return modulo(keyboardKeyNum - keyOffset, scaleLength) % keysPerOctave;
+    return modulo(keyboardKeyNum - keyOffset, keysPerOctave);
 }
 
 

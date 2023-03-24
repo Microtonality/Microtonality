@@ -29,12 +29,17 @@ export default function MicrotonalPiano(props: MicrotonalPianoProps) {
         console.log("octave", octave);
     }, [octave])
 
-    let keyboardShortcuts = createPianoKeyboardShortcuts(props.microtonalConfig.scaleConfig.rootKey + keyOffset, props.microtonalConfig.scaleConfig.keysPerOctave);
+    const generateKeyboardShortcuts = () => {
+        return createPianoKeyboardShortcuts(props.microtonalConfig.scaleConfig.rootKey + keyOffset + octave * props.microtonalConfig.scaleConfig.keysPerOctave,
+            props.microtonalConfig.scaleConfig.keysPerOctave);
+    }
+
+    let [keyboardShortcuts, setKeyboardShortcuts] = useState(generateKeyboardShortcuts());
 
     useEffect(() => {
-            keyboardShortcuts = createPianoKeyboardShortcuts(props.microtonalConfig.scaleConfig.rootKey + keyOffset, props.microtonalConfig.scaleConfig.keysPerOctave);
+            setKeyboardShortcuts(generateKeyboardShortcuts());
         },
-        [props.microtonalConfig]
+        [props.microtonalConfig, keyOffset, octave]
     )
 
     const handleMasterGainChange = (value: number) => {
