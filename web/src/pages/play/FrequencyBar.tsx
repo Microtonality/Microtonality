@@ -12,19 +12,31 @@ interface FrequencyBarButton {
     active?: boolean,
     scaleDegree: number,
     isEditing: boolean,
-    onClick: (index: number) => void
+    onClick: (index: number) => void,
+    index: number,
+    length: number,
+    divWidth: number
 }
 
 function FrequencyBarButton(props: FrequencyBarButton) {
+    const wrapIndex = Math.floor(props.divWidth/40)-1
     return <button
         aria-describedby={"simple-popover"}
-        className={"flex flex-1 flex-col items-center text-center justify-center md:p-2 p-0.5 font-agrandir " +
-            "text-black bg-gold border-r-2 border-neutral-500 last:border-r-0 hover:bg-gray-200 " +
-            `${props.active ? 'bg-gold' : "bg-white"} md:text-sm text-xs`}
+        className={"btn w-10 max-w-10 items-center justify-center p-0 font-agrandir text-black  border-b-2 border-r-2 border-black text-sm " +
+            `${props.active ? 'bg-gold' : "bg-neutral-200 hover:bg-neutral-300"} ` + 
+            `${ props.index === 0 || 
+                props.index === wrapIndex + 1 || 
+                props.index === wrapIndex * 2 + 2 
+                ? 'rounded-l-md' : ''} ` + 
+            `${ props.index === props.length || 
+                props.index === wrapIndex || 
+                props.index === wrapIndex * 2 + 1 
+                ? 'rounded-r-md' : ''} `
+        }
         onClick={e => props.onClick(props.isEditing ? null : props.scaleDegree)}>
-        <span>{Math.round(props.frequency)}</span>
-        <span className={(props.active || props.isEditing ? "" : "opacity-0")}
-            >{props.isEditing ? "???" : props.keyMapping}</span>
+        {Math.round(props.frequency)}
+        <div className={(props.active || props.isEditing ? "" : "opacity-0")}
+            >{props.isEditing ? "???" : props.keyMapping}</div>
     </button>
 }
 
@@ -64,6 +76,29 @@ function FrequencyBarComponent(props: {
     mcDispatch: Function,
     keyOffset: number,  // How many keys up should be displaying from the root key? Used for keyboard moving
 }) {
+
+    //Stores width of frequency bar div for wrap styling
+    const divRef = useRef<HTMLDivElement>(null);
+    const [width, setWidth] = useState<number | null>(null);
+
+    let debounceTimeout: ReturnType<typeof setTimeout>;
+    
+    function handleResize() {
+        const div = divRef.current;
+        clearTimeout(debounceTimeout);
+    
+        debounceTimeout = setTimeout(() => {
+          setWidth(div.offsetWidth-44);
+        }, 1);
+    }
+    
+    //Updates width of freq bar on resize
+    useEffect(() => {
+        if (width === null) handleResize();
+        window.addEventListener("resize", handleResize);
+    
+        return () => window.removeEventListener("resize", handleResize);
+    }, [width]);
 
     const [editingNote, setEditingNote] = useState<number>(null);
 
@@ -145,17 +180,23 @@ function FrequencyBarComponent(props: {
             // <Tooltip describeChild title={"asdf"} key={i}
             //          placement="top">
                     <FrequencyBarButton frequency={props.midiReceiver.ScaleDegreeToFrequency(scaleDegree, props.octaveOffset + octaveAdditive)} keyMapping={keyboardKey}
-                                        key={scaleDegree} active={keyboardKeyNum !== undefined} isEditing={editingNote === scaleDegree} scaleDegree={scaleDegree} onClick={setEditingNote}/>
+                                        key={scaleDegree} active={keyboardKeyNum !== undefined} 
+                                        isEditing={editingNote === scaleDegree} 
+                                        scaleDegree={scaleDegree} 
+                                        onClick={setEditingNote}
+                                        index={preScaleDegree} 
+                                        length={props.scaleConfig.scale.notes.length - 1}
+                                        divWidth={width}/>
             // </Tooltip>
         )
     }
 
-    return <div className="w-full flex justify-center mt-2 items-center">
-        <div className={"flex flex-row justify-center flex-wrap border-neutral-500 border-2 rounded-xl overflow-hidden"}>
+    return <div ref={divRef} className="w-full flex justify-center mt-10 items-center">
+        <div className={"flex flex-row justify-center flex-wrap"}>
             {freqBarArr}
         </div>
         <Tooltip describeChild title="Click a frequency box and then press the key on your keyboard you want it to correspond to">
-            <button className="btn w-7 aspect-square bg-white text-black rounded-3xl hover:bg-gray-100 mx-2">?</button>
+            <button className="btn min-w-[1.75rem] w-7 aspect-square bg-white text-black rounded-full hover:bg-gray-100 mx-2">?</button>
         </Tooltip>
     </div>;
 }
