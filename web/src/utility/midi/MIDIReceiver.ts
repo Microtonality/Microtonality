@@ -127,6 +127,7 @@ export default class MidiReceiver {
         let multiplier = note.multiplier;
 
         // Finally, convert to a frequency.
-        return this.config.tuningFrequency * Math.pow(this.config.scale.octaveNote.multiplier, multiplier - 1) * Math.pow(this.config.scale.octaveNote.multiplier, octave);
+        return this.config.tuningFrequency * Math.pow(this.config.scale.octaveNote.multiplier, multiplier - 1)
+            * Math.pow(this.config.scale.octaveNote.multiplier, octave);
     }
 }

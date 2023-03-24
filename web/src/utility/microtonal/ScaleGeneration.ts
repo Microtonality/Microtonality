@@ -2,13 +2,13 @@ import {Scale, scaleFromCents, scaleFromRatios} from "./Scale";
 import {CentNote} from "./notes/CentNote";
 
 export function generateEqualTemperedScale(numberOfNotes: number): Scale {
-    let ratios = [];
+    let cents = [];
 
     for (let i = 0; i < numberOfNotes; i++) {
-        ratios.push(`${i + numberOfNotes}/${numberOfNotes}`);
+        cents.push(1200 / numberOfNotes * i);
     }
 
-    return scaleFromRatios(ratios, `${numberOfNotes}-note Equal Tempered Scale`);
+    return scaleFromCents(cents, `${numberOfNotes}-note Equal Tempered Scale`);
 }
 
 export function frequencyToCents(tuningFrequency: number, otherFrequency: number) {
