@@ -121,12 +121,11 @@ function FrequencyBarComponent(props: {
         // Map the scale degree to the midi keyboard mapping
         let keyboardKeyNum = reversedMapping[scaleDegree];
         let keyboardKey;
-        let isActive;
+        let keyIndex;
         // If it has a mapping, get the MIDI note for it
-        if (keyboardKeyNum === undefined || props.keyMapping[preScaleDegree] === null) {
+        if (keyboardKeyNum === undefined) {
             keyboardKey = "None";
         } else {
-            let keyIndex;
             try {
                 keyIndex = modulo(keyboardKeyNum - props.keyOffset + (octaveAdditive * props.scaleConfig.scale.notes.length), props.scaleConfig.scale.notes.length);
                 keyboardKey = props.keyboardShortcuts[keyIndex % props.keyboardShortcuts.length].key.toUpperCase();
@@ -134,6 +133,8 @@ function FrequencyBarComponent(props: {
                 console.log("couldn't access", keyIndex)
             }
         }
+
+        console.log(`prescale ${preScaleDegree} -> scaleDegree ${scaleDegree} mapped to key index ${keyIndex} ${keyboardKey}`)
 
         freqBarArr.push
         (
