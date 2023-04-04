@@ -21,10 +21,15 @@ export function Learn() {
         <br></br>
         <a href="https://doi.org/10.1007/978-3-031-07015-0_27" 
         className="font-medium text-blue-600 underline dark:text-blue-500 hover:no-underline">
-            Please click here to view the publication.
+            https://doi.org/10.1007/978-3-031-07015-0_27
         </a>
+        </article>
+        </BorderedContainer>
         <br></br>
         <br></br>
+        <BorderedContainer className={"flex justify-center px-8 py-8 text-left text-base"}>
+        <article className={"prose prose-white prose-invert"}>
+        
         The microtonal synthesizer available on the Download page was produced by Computer
         Science majors completing their Senior Design Projects at the University of Central Florida
         (listed below). The synthesizer (created using the JUCE framework) includes tone generators,
@@ -43,8 +48,12 @@ export function Learn() {
         Michael Ortiz
         <br></br>
         John Pham
+        </article>
+        </BorderedContainer>
         <br></br>
         <br></br>
+        <BorderedContainer className={"flex justify-center px-8 py-8 text-left text-base"}>
+        <article className={"prose prose-white prose-invert"}>
         The browser application on the Play page was produced by Computer Science majors
         completing their Senior Design Projects at the University of Central Florida (listed below).
         <br></br>
@@ -60,8 +69,12 @@ export function Learn() {
         Nathan Manierre
         <br></br>
         Austin Smith
+        </article>
+        </BorderedContainer>
         <br></br>
         <br></br>
+        <BorderedContainer className={"flex justify-center px-8 py-8 text-left text-base"}>
+        <article className={"prose prose-white prose-invert"}>
         This project also engages students in the School of Performing Arts at the University of Central
         Florida (listed below). Music students work on notation projects to convert microtonal notation
         into easily readable, comprehensible, and gesturally practicable notation for the purpose of
