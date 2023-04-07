@@ -1,6 +1,7 @@
 import * as React from "react";
 import Oscillator from "../../ui/Oscillator";
 import Knobs from "../../ui/Knobs";
+import InstrumentPresets from "../../ui/InstrumentPresets";
 import { MicrotonalConfig } from "../../utility/MicrotonalConfig";
 import {OscillatorSettings} from "../../utility/audio/OscillatorSettings";
 import {MCActions} from "./Reducers";
@@ -52,30 +53,42 @@ export default function SynthSettings(props: SynthProps) {
         return oscJSX;
     }
 
-    return  <div className="flex h-full w-full border-gold border-t-2 border-l-2 rounded-tl-xl bg-bglight justify-around">
+    return  <div className="flex h-full w-full border-gold border-t-2 border-l-2 rounded-tl-xl bg-bglight">
 
                 <div className="flex h-full">
 
-                    <div className="flex p-[2%]">
-                        <div className="flex w-[70%]">
+                    <div className="flex p-4">
+                        <div className="flex">
                             <div className="">
-                                <Knobs knobLabel="Attack" value={props.microtonalConfig.synthConfig.attack} onChange={(value) => handleAttackChange(value)} className="border-gold border-[3px]"/>
+                                <Knobs knobLabel="Attack" value={props.microtonalConfig.synthConfig.attack} onChange={(value) => handleAttackChange(value)} className="border-gold border-2"/>
                             </div>
-                            <div className="ml-[2%]">
-                                <Knobs knobLabel="Decay" value={props.microtonalConfig.synthConfig.decay} onChange={(value) => handleDecayChange(value)} className="border-gold border-[3px]"/>
+                            <div className="ml-2">
+                                <Knobs knobLabel="Decay" value={props.microtonalConfig.synthConfig.decay} onChange={(value) => handleDecayChange(value)} className="border-gold border-2"/>
                             </div>
-                            <div className="ml-[2%]"> 
-                                <Knobs knobLabel="Sustain" value={props.microtonalConfig.synthConfig.sustain} onChange={(value) => handleSustainChange(value)} className="border-gold border-[3px]"/>
+                            <div className="ml-2"> 
+                                <Knobs knobLabel="Sustain" value={props.microtonalConfig.synthConfig.sustain} onChange={(value) => handleSustainChange(value)} className="border-gold border-2"/>
                             </div>
-                            <div className="ml-[2%]">
-                                <Knobs knobLabel="Release" value={props.microtonalConfig.synthConfig.release} onChange={(value) => handleReleaseChange(value)} className="border-gold border-[3px]"/>
+                            <div className="ml-2">
+                                <Knobs knobLabel="Release" value={props.microtonalConfig.synthConfig.release} onChange={(value) => handleReleaseChange(value)} className="border-gold border-2"/>
                             </div>
                         </div>
                     </div>
 
-                    <div className="flex flex-row mx-[2%] mt-[2%] mb-[3%] p-[2%] bg-neutral-700 rounded-xl border-gold border-[3px] overflow-hidden">
+                    <div className="flex flex-row p-4 my-4 pt-6 bg-neutral-700 rounded-xl border-gold border-2 overflow-auto">
                         {mapOscillators()}
+
+                        <div className="flex flex-col ml-2">
+                            <div className="border-gold border-2 rounded-t-xl font-agrandir-wide text-white text-center">
+                                <div>Instrument </div>
+                                <div>Presets</div>
+                            </div>
+                            <div className="flex flex-col w-40 bg-neutral-700 rounded-b-xl border-gold border-2 border-t-[0] h-4/5 overflow-auto">
+                                <InstrumentPresets />
+                            </div>
+                        </div>
                     </div>
+
+                    
 
                 </div>
 

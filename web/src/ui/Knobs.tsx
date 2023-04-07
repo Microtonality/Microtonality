@@ -100,7 +100,7 @@ export default function Knob (props: KnobProps) {
   }
 
     return (
-      <div className={`flex flex-col min-h-[96%] w-full justify-around items-center bg-neutral-700 rounded-xl ${props.className}`}>
+      <div className={`flex flex-col min-h-full w-full justify-around items-center bg-neutral-700 rounded-xl ${props.className}`}>
 
         <div className="flex w-[7rem] justify-center">
           <a className="2xl:text-xl xl:text-lg md:text-sm sm:text-xs font-agrandir-wide uppercase px-5 py-3 rounded block leading-normal text-center text-white">{props.knobLabel}</a>
@@ -115,7 +115,7 @@ export default function Knob (props: KnobProps) {
           </div>
         </div>
 
-        <input className={"text-center self-center w-3/4 rounded-md font-agrandir"} type="number" ref={valueInputRef} value={textBox} onChange={(e) => {setTextBoxRaw(e.target.value)}} onBlur={() => submitTextbox()} onKeyDown={(e) => handleKeyDown(e)} min={0} max={1} step={0.01} />
+        <input className={"text-center self-center w-3/4 rounded-md font-agrandir text-sm pt-0.5"} type="number" ref={valueInputRef} value={textBox} onChange={(e) => {setTextBoxRaw(e.target.value)}} onBlur={() => submitTextbox()} onKeyDown={(e) => handleKeyDown(e)} min={0} max={1} step={0.01} />
       </div>
     );
 }
