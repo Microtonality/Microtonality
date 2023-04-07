@@ -4,16 +4,19 @@
 
 @font-face {
   font-family: "Agrandir-Wide";
-  src: local("Agrandir"),
-  url("./fonts/Agrandir-WideLight.woff2") format("woff2"),
-  url("./fonts/Agrandir-WideLight.otf") format("truetype");
+    src: url('./fonts/agrandir-regular-webfont.woff2') format('woff2'),
+    url('./fonts/agrandir-regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
 }
 
 @font-face {
   font-family: "Agrandir-Reg";
-  src: local("Agrandir"),
-  url("./fonts/Agrandir-Regular.woff2") format("woff2"),
-  url("./fonts/Agrandir-Regular.otf") format("truetype");
+    src: url('./fonts/agrandir-widelight-webfont.woff2') format('woff2'),
+    url('./fonts/agrandir-widelight-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
 }
 
 @layer base {
