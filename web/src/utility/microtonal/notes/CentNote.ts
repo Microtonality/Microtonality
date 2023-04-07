@@ -5,7 +5,7 @@ import { ScaleNote } from ".";
 const twelfthRootOfTwo = Math.pow(2, 1/12);
 
 export function calcCentsMultiplier(cents: number): number {
-    return cents / 1200
+    return Math.pow(2, cents / 1200);
 }
 
 export class CentNote extends ScaleNote {
