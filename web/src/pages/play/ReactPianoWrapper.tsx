@@ -27,13 +27,26 @@ export default function ReactPianoWrapper(props: ReactPianoWrapperProps) {
         let octaveAdditive = Math.floor((note - props.rootKey) / props.scaleConfig.keysPerOctave) * props.scaleConfig.scale.notes.length;
         return mapping + octaveAdditive;
     }
-    
-    return <ReactPiano
+
+    // @ts-ignore
+    let whiteKey = TAILWIND_COLORS_NEUTRAL['400'];
+    // @ts-ignore
+    let blackKey = TAILWIND_COLORS_NEUTRAL['900'];
+    return <>
+        <style dangerouslySetInnerHTML={{__html: `
+          .ReactPiano__Keyboard > div.ReactPiano__Key--accidental:nth-child(n+${props.scaleConfig.keysPerOctave + 1}) {
+            background: ${blackKey};
+          }
+          .ReactPiano__Keyboard > div.ReactPiano__Key--natural:nth-child(n+${props.scaleConfig.keysPerOctave + 1}) {
+            background: ${whiteKey};
+          }
+        `}} />
+        <ReactPiano
         // activeNotes={synthesizer.activeNotes}
         className="mx-auto my-auto"
-        noteRange={{ first: props.rootKey + props.keyOffset, last: props.rootKey + props.scaleConfig.keysPerOctave - 1 + props.keyOffset}} // thoughts? TODO
+        noteRange={{ first: props.rootKey + props.keyOffset, last: props.rootKey + props.keyOffset + props.scaleConfig.keysPerOctave - 1 + 3 }} // thoughts? TODO
         playNote={(note: any) => {props.midiReceiver.noteOn(note, DEFAULT_VELOCITY)}}
         stopNote={(note: any) => {props.midiReceiver.noteOff(note)}}
         keyboardShortcuts={props.keyboardShortcuts}
-    />
+    /></>
 }

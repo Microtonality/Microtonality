@@ -4,6 +4,8 @@ const TerserPlugin = require("terser-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const Webpack = require("webpack");
+const resolveConfig = require("tailwindcss/resolveConfig");
+const tailwindConfig = require("./tailwind.config")
 
 module.exports = (env, options) => {
     const isDevelopment = options.mode !== 'production';
@@ -85,7 +87,8 @@ module.exports = (env, options) => {
                 filename: "[name].[contenthash].css"
             }),
             new Webpack.DefinePlugin ({
-                'process.env.PUBLIC_PATH': JSON.stringify(publicPath)
+                'process.env.PUBLIC_PATH': JSON.stringify(publicPath),
+                TAILWIND_COLORS_NEUTRAL: JSON.stringify(resolveConfig(tailwindConfig).theme.colors.neutral)
             }),
         ],
         optimization: {
