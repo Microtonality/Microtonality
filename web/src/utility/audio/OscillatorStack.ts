@@ -6,6 +6,7 @@ export default class OscillatorStack {
     oscillatorNodes: Array<OscillatorNode> = []
     gainNodes: Array<GainNode> = []
     endingPlay: boolean = false
+    stopped: boolean = false
 
     constructor(
             oscillatorSettings: Array<OscillatorSettings>,
@@ -39,7 +40,7 @@ export default class OscillatorStack {
                     audioContext.currentTime + (config.attack))
         }
 
-        await new Promise(f => setTimeout(f, config.attack * 1000))
+        await new Promise(f => setTimeout(f, config.attack * 1001))
 
         if (!this.endingPlay) {
             for (let i = 0; i < this.oscillatorNodes.length; i++) {
@@ -54,10 +55,13 @@ export default class OscillatorStack {
         this.endingPlay = true
 
         this.gainNodes.forEach(function (gain) {
-            gain.gain.linearRampToValueAtTime(0, audioContext.currentTime + (release))
+            gain.gain.linearRampToValueAtTime(gain.gain.value, audioContext.currentTime + 0.001)
+            gain.gain.linearRampToValueAtTime(0.0001, audioContext.currentTime + (release))
         })
 
         await new Promise(f => setTimeout(f, release * 1000))
+
+        this.stopped = true
 
         this.oscillatorNodes.forEach(function (oscillator) {
             oscillator.stop(1)
