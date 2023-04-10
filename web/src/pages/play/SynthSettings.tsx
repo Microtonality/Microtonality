@@ -74,17 +74,17 @@ export default function SynthSettings(props: SynthProps) {
                         </div>
                     </div>
 
-                    <div className="flex flex-row p-4 my-4 pt-6 bg-neutral-700 rounded-xl border-gold border-2 overflow-auto">
+                    <div className="flex flex-row p-4 my-4 pt-6 bg-neutral-700 rounded-xl border-gold border-2">
                         {mapOscillators()}
+                    </div>
 
-                        <div className="flex flex-col ml-2">
-                            <div className="border-gold border-2 rounded-t-xl font-agrandir-wide text-white text-center">
-                                <div>Instrument </div>
-                                <div>Presets</div>
-                            </div>
-                            <div className="flex flex-col w-40 bg-neutral-700 rounded-b-xl border-gold border-2 border-t-[0] h-4/5 overflow-auto">
-                                <InstrumentPresets />
-                            </div>
+                    <div className="flex flex-col mx-3 mt-4">
+                        <div className="border-gold border-2 rounded-t-xl font-agrandir-wide text-white text-center bg-neutral-700">
+                            <div>Instrument </div>
+                            <div>Presets</div>
+                        </div>
+                        <div className="flex bg-neutral-700 rounded-b-xl border-gold border-2 border-t-[0] h-[84%] overflow-auto">
+                            <InstrumentPresets />
                         </div>
                     </div>
 
