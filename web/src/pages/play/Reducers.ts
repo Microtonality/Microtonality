@@ -4,6 +4,7 @@ import { Scale } from "../../utility/microtonal/Scale";
 import { ScaleNote } from "../../utility/microtonal/notes";
 import { parsePitchValue } from "../../utility/microtonal/scala/ScalaParser";
 import {mapScaleToKeyboardShortcuts} from "../../utility/microtonal/PianoKeyMapping";
+import {PIANO_SYNTH, FLUTE_SYNTH, OBOE_SYNTH, CLARINET_SYNTH, BASSOON_SYNTH, TRUMPET_SYNTH, FRENCH_HORN_SYNTH, TROMBONE_SYNTH, TUBA_SYNTH, VIOLIN_SYNTH, CELLO_SYNTH} from "../../utility/audio/Instruments";
 
 export interface MicrotonalConfigHistory {
     previous: Array<MicrotonalConfig>,
@@ -16,6 +17,7 @@ enum MCActions {
     REDO_CONFIG,
     SET_CONFIG,
     SET_SCALE,
+    SET_PRESET,
     ADD_NOTE,
     EDIT_NOTE,
     SWAP_NOTES,
@@ -51,6 +53,7 @@ type Action =
     | {type: MCActions.SET_MASTER_GAIN, gain: number}
     | {type: MCActions.UNSET_KEYBIND, keyIndex: number}
     | {type: MCActions.SET_KEYBIND, keyIndex: number, scaleDegree: number}
+    | {type: MCActions.SET_PRESET, preset: string}
 
 const MicrotonalConfigReducer = (state: MicrotonalConfigHistory, action: Action): MicrotonalConfigHistory => {
     let newState = {...state};
@@ -145,6 +148,45 @@ const MicrotonalConfigReducer = (state: MicrotonalConfigHistory, action: Action)
     }
     if (action.type === MCActions.SET_KEYBIND) {
         configChange = {keyMapping: {[action.keyIndex]: action.scaleDegree}}
+    }
+    if (action.type === MCActions.SET_PRESET) {
+        switch(action.preset) {
+            case "Piano":
+                configChange = {synthConfig: PIANO_SYNTH}
+                break;
+            case "Flute":
+                configChange = {synthConfig: FLUTE_SYNTH}
+                break;
+            case "Oboe":
+                configChange = {synthConfig: OBOE_SYNTH}
+                break;
+            case "Clarinet":
+                configChange = {synthConfig: CLARINET_SYNTH}
+                break;
+            case "Bassoon":
+                configChange = {synthConfig: BASSOON_SYNTH}
+                break;
+            case "Trumpet":
+                configChange = {synthConfig: TRUMPET_SYNTH}
+                break;
+            case "French Horn":
+                configChange = {synthConfig: FRENCH_HORN_SYNTH}
+                break;
+            case "Trombone":
+                configChange = {synthConfig: TROMBONE_SYNTH}
+                break;
+            case "Tuba":
+                configChange = {synthConfig: TUBA_SYNTH}
+                break;
+            case "Violin":
+                configChange = {synthConfig: VIOLIN_SYNTH}
+                break;
+            case "Cello":
+                configChange = {synthConfig: CELLO_SYNTH}
+                break;
+            default:
+                
+        }
     }
 
     if (commitChange(config, configChange, true) !== null) {
