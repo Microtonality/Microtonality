@@ -31,7 +31,7 @@ export default function MicrotonalPiano(props: MicrotonalPianoProps) {
 
     const generateKeyboardShortcuts = () => {
         return createPianoKeyboardShortcuts(props.microtonalConfig.scaleConfig.rootKey + keyOffset + octave * props.microtonalConfig.scaleConfig.keysPerOctave,
-            props.microtonalConfig.scaleConfig.keysPerOctave);
+            props.microtonalConfig.scaleConfig.keysPerOctave + 3);
     }
 
     let [keyboardShortcuts, setKeyboardShortcuts] = useState(generateKeyboardShortcuts());
