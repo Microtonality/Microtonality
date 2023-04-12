@@ -23,7 +23,7 @@ interface MicrotonalPianoProps {
 
 export default function MicrotonalPiano(props: MicrotonalPianoProps) {
     const [octave, setOctave] = useState(0);
-    const [keyOffset, setKeyOffset] = useState(3);
+    const [keyOffset, setKeyOffset] = useState(0);
 
     useEffect(() => {
         console.log("octave", octave);
