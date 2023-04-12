@@ -7,12 +7,12 @@ export function Download() {
         <BorderedContainer className={"flex justify-center px-8 py-8 text-left text-base"}>
         <article className={"prose prose-white prose-invert"}>
         The most recent release of the desktop synthesizer and the source code for both the desktop 
-        and browser synthesizer projects can be found at the link below. 
+        and browser synthesizer projects can be found at the link below.
         <br></br>
         <br></br>
-        <a href="https://github.com/Microtonality/Microtonality" 
+        <a href="https://github.com/microtonality" 
         className="font-medium text-blue-600 underline dark:text-blue-500 hover:no-underline">
-            https://github.com/Microtonality/Microtonality</a>
+            https://github.com/microtonality</a>
         </article>
         </BorderedContainer>
         </div>
