@@ -41,7 +41,7 @@ export default function ReactPianoWrapper(props: ReactPianoWrapperProps) {
             background: ${activeKey};
           }
         `}} />
-        <div className="max-w-2xl w-full">
+        <div className="w-2/3">
             <ReactPiano
             // activeNotes={synthesizer.activeNotes} TODO: Hook up midi events
             noteRange={{ first: props.rootKey + props.keyOffset, last: props.rootKey + props.keyOffset + props.keyboardLength }}

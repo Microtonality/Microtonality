@@ -43,7 +43,7 @@ export default function Play() {
     return (
         <div className="mt-1 flex-1 flex h-full w-full overflow-hidden">
 
-            <div className="w-full max-w-xs h-full flex">
+            <div className="w-full 2xl:max-w-md max-w-xs h-full flex">
                 <ScaleSettings microtonalConfig={microtonalConfigHistory.current} mcDispatch={mcDispatch}/>
             </div>
 

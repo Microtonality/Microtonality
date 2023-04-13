@@ -55,9 +55,9 @@ export default function SynthSettings(props: SynthProps) {
 
     return  <div className="flex h-full w-full border-gold border-t-2 border-l-2 rounded-tl-xl bg-bglight">
 
-                <div className="flex h-full">
+                <div className="flex h-full p-4">
 
-                    <div className="flex p-4">
+                    <div className="flex mx-2 ml-0">
                         <div className="flex">
                             <div className="">
                                 <Knobs knobLabel="Attack" value={props.microtonalConfig.synthConfig.attack} onChange={(value) => handleAttackChange(value)} className="border-gold border-2"/>
@@ -74,16 +74,16 @@ export default function SynthSettings(props: SynthProps) {
                         </div>
                     </div>
 
-                    <div className="flex flex-row p-4 my-4 pt-6 bg-neutral-700 rounded-xl border-gold border-2">
+                    <div className="flex flex-row mx-2 p-4 pt-6 bg-neutral-700 rounded-xl border-gold border-2">
                         {mapOscillators()}
                     </div>
 
-                    <div className="flex flex-col mx-3 mt-4">
+                    <div className="flex flex-col mx-2 mr-0">
                         <div className="border-gold border-2 rounded-t-xl font-agrandir-wide text-white text-center bg-neutral-700">
                             <div>Instrument </div>
                             <div>Presets</div>
                         </div>
-                        <div className="flex bg-neutral-700 rounded-b-xl border-gold border-2 border-t-[0] h-[84%] overflow-auto">
+                        <div className="flex bg-neutral-700 rounded-b-xl border-gold border-2 border-t-0 h-full overflow-auto">
                             <InstrumentPresets mcDispatch={props.mcDispatch} microtonalConfig={props.microtonalConfig}/>
                         </div>
                     </div>

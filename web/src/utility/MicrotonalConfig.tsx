@@ -31,13 +31,13 @@ export interface ScaleConfig {
 }
 
 export const DEFAULT_SYNTH_CONFIG: SynthConfig = {
-    gain: 0.45,
+    gain: 0.30,
     pitchBend: 0,
 
-    attack: 1,
-    decay: 1,
-    sustain: 1,
-    release: 1,
+    attack: 0.2,
+    decay: 0.5,
+    sustain: 0.4,
+    release: 0.3,
 
     oscillators: [
         {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 1} as OscillatorSettings,
