@@ -8,6 +8,17 @@ export function calcCentsMultiplier(cents: number): number {
     return Math.pow(2, cents / 1200);
 }
 
+export function multiplierToCents(multiplier: number): string {
+    if (multiplier <= 0)
+        return '0.0';
+
+    let cents: string = (1200 * Math.log2(multiplier)).toString();
+    if (!cents.includes('.'))
+        cents += '.0'
+
+    return cents;
+}
+
 export class CentNote extends ScaleNote {
     public cents: number;
 
@@ -21,6 +32,9 @@ export class CentNote extends ScaleNote {
         else {
             num = cents.toString();
         }
+
+        if (!num.includes('.'))
+            num += '.0';
         
         let multiplier: number = calcCentsMultiplier(cents);
         super(num, multiplier, comments);
@@ -45,21 +59,14 @@ export class CentNote extends ScaleNote {
             averaged = new CentNote((note1.cents + note2.cents) / 2);
         }
         else if (note1 instanceof CentNote) {
-            tempNote = new CentNote(CentNote.multiplierToCents(note2.multiplier));
+            tempNote = new CentNote(multiplierToCents(note2.multiplier));
             averaged = new CentNote((note1.cents + tempNote.cents) / 2);
         }
         else if (note2 instanceof CentNote) {
-            tempNote = new CentNote(CentNote.multiplierToCents(note1.multiplier));
+            tempNote = new CentNote(multiplierToCents(note1.multiplier));
             averaged = new CentNote((tempNote.cents + note2.cents) / 2);
         }
 
         return averaged;
-    }
-
-    private static multiplierToCents(multiplier: number): string {
-        if (multiplier <= 0)
-            return '0.0';
-
-        return (1200 * Math.log2(multiplier)).toString();
     }
 }
