@@ -69,6 +69,27 @@ export default function Oscillator(props: OscillatorProps) {
 
         let newOsc = {...props.settings, localGain: gain} as OscillatorSettings;
         updateOscillator(newOsc);
+
+
+        // If the last element the user clicked on is the slider,
+        // the values of it will change with the J and K keys, which
+        // we need mapped to piano keys. React's Range does not allow
+        // for blur() or any onMouseUp events, so we will focus another
+        // element instead, here being the input field just below the range.
+        // This not only fixes the issue but also allows for small changes
+        // to be made by the user quickly in case they are unable to set
+        // the value they want from the slider, but can still get close to that value.
+
+        // Additionally, an input type of 'number' does not
+        // allow for setting the location of the cursor.
+        // As such, we must change it to a 'text' type for a bit.
+        // This is to ensure that the cursor is at the end of the
+        // input every time it is focused.
+        gainInputRef.current.focus();
+        gainInputRef.current.setAttribute('type', 'text');
+        gainInputRef.current.selectionStart = gain.toString().length;
+        gainInputRef.current.selectionEnd = gain.toString().length;
+        gainInputRef.current.setAttribute('type', 'number');
     }
 
     const clampGain = (gain: number): number => {

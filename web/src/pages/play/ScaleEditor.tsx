@@ -86,6 +86,9 @@ export default function ScaleEditor(props: ScaleEditorProps) {
         setDragOverIndex(null);
     }
     const handleSwapNotes = () => {
+        if (draggingIndex === dragOverIndex)
+            return;
+
         props.mcDispatch({type: MCActions.SWAP_NOTES, currentIndex: draggingIndex, newIndex: dragOverIndex});
     }
 

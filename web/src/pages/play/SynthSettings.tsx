@@ -84,7 +84,7 @@ export default function SynthSettings(props: SynthProps) {
                             <div>Presets</div>
                         </div>
                         <div className="flex bg-neutral-700 rounded-b-xl border-gold border-2 border-t-[0] h-[84%] overflow-auto">
-                            <InstrumentPresets />
+                            <InstrumentPresets mcDispatch={props.mcDispatch} microtonalConfig={props.microtonalConfig}/>
                         </div>
                     </div>
 

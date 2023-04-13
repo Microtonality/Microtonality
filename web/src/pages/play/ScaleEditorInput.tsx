@@ -5,6 +5,8 @@ import { MicrotonalConfig } from "../../utility/MicrotonalConfig";
 import { Scale } from "../../utility/microtonal/Scale";
 import {useEffect, useRef, useState} from "react";
 import {MCActions} from "./Reducers";
+import {calcRatioMultiplier} from "../../utility/microtonal/notes/RatioNote";
+import {multiplierToCents} from "../../utility/microtonal/notes/CentNote";
 
 interface ScaleEditorInputProps {
     noteIndex: number,
@@ -21,6 +23,10 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
     useEffect(() => {
         wrapSetNoteValue((props.noteIndex === -1) ? props.scale.octaveNote.num : props.scale.notes[props.noteIndex].num);
     }, [props.microtonalConfig]);
+
+    useEffect(() => {
+        setIsRatio(!noteValue.includes('.'));
+    }, [noteValue]);
 
     // This function prevents any characters besides numbers, '.', and '/'
     // from being entered into the input.
@@ -111,9 +117,42 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
         props.mcDispatch({type: MCActions.DELETE_NOTE, noteIndex: props.noteIndex});
     }
 
+    // Note: We can't normally convert from cents to a ratio
+    // without significant data loss and unreadable numbers
+    // because floats have a lot of extra hidden numbers.
+    // So we only allow converting from a ratio to a cent value.
+    // (except for the base note which is the 1/1 note)
+    const convertRatioToCents = () => {
+        if (!isRatio) {
+            console.log('error, current note is a cent value');
+            return;
+        }
+
+        let noteMultiplier = calcRatioMultiplier(noteValue);
+        if (noteMultiplier <= 1) {
+            setNoteValue(() => '0.0');
+            setIsRatio(false);
+            return;
+        }
+
+        let cents: string = multiplierToCents(noteMultiplier);
+        if (props.noteIndex === -1)
+            props.mcDispatch({type: MCActions.EDIT_OCTAVE_NOTE, noteValue: cents});
+        else
+            props.mcDispatch({type: MCActions.EDIT_NOTE, noteValue: cents, noteIndex: props.noteIndex});
+
+    }
+
+    // Only allowed for the base note (cent value of 0.0)
+    const baseNoteCentsToRatio = () => {
+        setNoteValue(() => '1/1');
+        setIsRatio(true);
+    }
+
     // Check top of file.
     // These help prevent the cursor from moving to the end of the input field
-    // when a user enters a character that isn't accepted (ex: a letter).
+    // when a user enters a character that isn't accepted (ex: a letter)
+    // while they are typing in the middle of the number.
     // It allows us to declare exactly where we want the cursor to be placed.
     const [selection, setSelection] = React.useState<[number | null, number | null] | null>(null);
     const noteInputField = useRef<HTMLInputElement>(null);
@@ -149,8 +188,35 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
 
             <label htmlFor={props.noteIndex.toString()} className="inline-flex flex-wrap items-center cursor-pointer text-gray-800 w-[50%] h-10 text-center ml-[1%] min-w-[6rem]">
                 <input id={props.noteIndex.toString()} checked={isRatio} type="checkbox" className="hidden peer" readOnly={true}/>
-                <div className="w-[50%] h-full bg-gold peer-checked:bg-white rounded-l-md border-r-[1px] border-black pt-[4%] min-w-[3rem]">CENTS</div>
-                <div className="w-[50%] h-full bg-white peer-checked:bg-gold rounded-r-md border-l-[1px] border-black pt-[4%] min-w-[3rem]">RATIO</div>
+
+                {/* If the number is a cent value, the user cannot click.
+                    If it's a ratio and the 1/1 note, use special conversion.
+                    If it's a ratio and not 1/1 note, convert it. */}
+                {!isRatio ?
+                    <div className="cursor-default w-[50%] h-full bg-gold peer-checked:bg-white rounded-l-md border-r-[1px] border-black pt-[4%] min-w-[3rem]">
+                        CENTS
+                    </div>
+                :
+                    <div onClick={() => convertRatioToCents()} className="cursor-pointer w-[50%] h-full bg-gold peer-checked:bg-white rounded-l-md border-r-[1px] border-black pt-[4%] min-w-[3rem]">
+                        CENTS
+                    </div>
+                }
+
+                {props.noteIndex !== 0 ?
+                    <div className="cursor-default w-[50%] h-full bg-white peer-checked:bg-gold rounded-r-md border-l-[1px] border-black pt-[4%] min-w-[3rem]">
+                        RATIO
+                    </div>
+                :
+                (!isRatio ?
+                    <div onClick={() => baseNoteCentsToRatio()} className="cursor-pointer w-[50%] h-full bg-white peer-checked:bg-gold rounded-r-md border-l-[1px] border-black pt-[4%] min-w-[3rem]">
+                        RATIO
+                    </div>
+                :
+                    <div className="cursor-default w-[50%] h-full bg-white peer-checked:bg-gold rounded-r-md border-l-[1px] border-black pt-[4%] min-w-[3rem]">
+                        RATIO
+                    </div>
+                )}
+
             </label>
 
             <div className="flex w-full h-10 ml-[1%] max-w-[50%]">
