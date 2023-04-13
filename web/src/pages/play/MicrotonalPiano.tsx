@@ -50,11 +50,14 @@ export default function MicrotonalPiano(props: MicrotonalPianoProps) {
                                     playMidiNote={() => {}} midiReceiver={props.midiReceiver} keyOffset={octaveOffset.keyOffset}
                                     setKeyMapping={props.setKeyMapping} octaveOffset={octaveOffset.octave} mcDispatch={props.mcDispatch}/>
         </div>
-        <div className="flex flex-row justify-center mx-[5%] h-[70%] mt-[2%] w-[80%]">
-            <div className="flex w-1/8 mr-[1%]">
+        <div className="flex flex-row justify-center w-auto mx-1 mt-1 flex-1 py-2">
+            <div className="flex w-32 mx-0.5">
                 <Knobs knobLabel="GAIN" value={props.microtonalConfig.synthConfig.gain} onChange={(value) => handleMasterGainChange(value)} className="border-gold border-[3px]"/>
             </div>
-            <OctaveButtons octaveUp={() => offsetDispatch({type: OctaveAction.INCREASE_OCTAVE})} octaveDown={() => offsetDispatch({type: OctaveAction.DECREASE_OCTAVE})}/>
+            <OctaveButtons octaveUp={() => offsetDispatch({type: OctaveAction.INCREASE_OCTAVE})}
+                           octaveDown={() => offsetDispatch({type: OctaveAction.DECREASE_OCTAVE})}
+                           className={"mx-0.5"}
+            />
             <ReactPianoWrapper keyboardShortcuts={keyboardShortcuts} keyMapping={props.keyMapping}
                                scaleConfig={props.microtonalConfig.scaleConfig} keyOffset={octaveOffset.keyOffset} midiReceiver={props.midiReceiver}
                                rootKey={props.microtonalConfig.scaleConfig.rootKey + octaveOffset.octave * props.microtonalConfig.scaleConfig.keysPerOctave}

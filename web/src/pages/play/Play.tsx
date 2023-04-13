@@ -3,7 +3,7 @@ import './piano.css';
 import {useState, useEffect, useReducer, useRef} from 'react';
 import SynthSettings from "./SynthSettings";
 import ScaleSettings from "./ScaleSettings";
-import FullPianoComponent from "./MicrotonalPiano"
+import MicrotonalPiano from "./MicrotonalPiano"
 import {createMicrotonalConfig, MicrotonalConfig} from "../../utility/MicrotonalConfig";
 import MidiReceiver from "../../utility/midi/MIDIReceiver";
 import {AdditiveSynthesizer} from "../../utility/audio/AdditiveSynthesizer";
@@ -43,7 +43,7 @@ export default function Play() {
     return (
         <div className="mt-1 flex-1 flex h-full w-full overflow-hidden">
 
-            <div className="w-full max-w-lg h-full flex">
+            <div className="w-full max-w-xs h-full flex">
                 <ScaleSettings microtonalConfig={microtonalConfigHistory.current} mcDispatch={mcDispatch}/>
             </div>
 
@@ -56,11 +56,11 @@ export default function Play() {
                 </div>
 
                 <div className="h-1/2 mb-1 md:flex-row">
-                    <FullPianoComponent microtonalConfig={microtonalConfigHistory.current}
-                                        mcDispatch={mcDispatch}
-                                        keyMapping={microtonalConfigHistory.current.keyMapping}
-                                        midiReceiver={midiReceiver}
-                                        setKeyMapping={() => {}}/>
+                    <MicrotonalPiano microtonalConfig={microtonalConfigHistory.current}
+                                     mcDispatch={mcDispatch}
+                                     keyMapping={microtonalConfigHistory.current.keyMapping}
+                                     midiReceiver={midiReceiver}
+                                     setKeyMapping={() => {}}/>
                 </div>
 
                 <div className="h-1/2 md:flex-row">

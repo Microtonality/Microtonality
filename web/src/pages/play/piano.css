@@ -7,7 +7,7 @@
 
 .ReactPiano__Key {
   /* Used for flexbox layout of the child .ReactPiano__NoteLabelContainer elements */
-  display: flex;
+  @apply flex;
 }
 
 /*
@@ -47,45 +47,18 @@
 
 .ReactPiano__Key--natural:last-child {
   /* Don't render extra margin on the last natural note */
-  margin-right: 0;
-  border-top-right-radius: 15px;
-  border-bottom-right-radius: 15px;
+  @apply rounded-r-xl mr-0;
 }
 
 .ReactPiano__Key--natural:first-child {
-  border-top-left-radius: 15px;
-  border-bottom-left-radius: 15px;
+  @apply rounded-l-xl;
 }
-/* 
-.ReactPiano__Key:nth-child(13) {
-  visibility:hidden;
-}
-
-.ReactPiano__Key:nth-child(14) {
-  visibility:hidden;
-}
-
-.ReactPiano__Key:nth-child(15) {
-  visibility:hidden;
-}
-
-.ReactPiano__Key:nth-child(16) {
-  visibility:hidden;
-}
-
-.ReactPiano__Key:nth-child(17) {
-  visibility:hidden;
-}
-
-.ReactPiano__Key:nth-child(18) {
-  visibility:hidden;
-} */
 
 /*
  * Styles of "active" or pressed-down keys
  */
 .ReactPiano__Key--active {
-  background: #3ac8da;
+  @apply bg-blue-400;
 }
 
 /* .ReactPiano__Key--active.ReactPiano__Key--accidental {

@@ -4,8 +4,9 @@ import PianoKeyButton from "../../ui/PianoKeyButton";
 export default function OctaveButtons(props: {
     octaveUp: Function,
     octaveDown: Function
+    className: string
 }) {
-    return <div className={"flex flex-col h-full mr-[1%]"}>
+    return <div className={`flex flex-col h-full ${props.className}`}>
         <span className={"text-white text-center"}>Octave</span>
         <PianoKeyButton faceUp className={"lg:w-24 w-16 h-1/2"} onClick={() => props.octaveUp()}>
             <span className={"text-center"}>V</span>

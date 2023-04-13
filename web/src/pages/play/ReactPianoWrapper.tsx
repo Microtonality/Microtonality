@@ -41,12 +41,14 @@ export default function ReactPianoWrapper(props: ReactPianoWrapperProps) {
             background: ${activeKey};
           }
         `}} />
-        <ReactPiano
-        // activeNotes={synthesizer.activeNotes} TODO: Hook up midi events
-        className="mx-auto my-auto"
-        noteRange={{ first: props.rootKey + props.keyOffset, last: props.rootKey + props.keyOffset + props.keyboardLength }}
-        playNote={(note: any) => {props.midiReceiver.noteOn(note, DEFAULT_VELOCITY)}}
-        stopNote={(note: any) => {props.midiReceiver.noteOff(note)}}
-        keyboardShortcuts={props.keyboardShortcuts}
-    /></>
+        <div className="max-w-2xl w-full">
+            <ReactPiano
+            // activeNotes={synthesizer.activeNotes} TODO: Hook up midi events
+            noteRange={{ first: props.rootKey + props.keyOffset, last: props.rootKey + props.keyOffset + props.keyboardLength }}
+            playNote={(note: any) => {props.midiReceiver.noteOn(note, DEFAULT_VELOCITY)}}
+            stopNote={(note: any) => {props.midiReceiver.noteOff(note)}}
+            keyboardShortcuts={props.keyboardShortcuts}
+        />
+        </div>
+    </>
 }
