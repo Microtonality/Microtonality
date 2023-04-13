@@ -35,6 +35,7 @@ export default class OscillatorStack {
     async beginPlay(audioContext: AudioContext, config: SynthConfig) {
         for (let i = 0; i < this.oscillatorNodes.length; i++) {
             this.oscillatorNodes[i].start(0)
+            this.gainNodes[i].gain.setValueAtTime(0, 0)
             this.gainNodes[i].gain.linearRampToValueAtTime(
                     config.oscillators[i].localGain,
                     audioContext.currentTime + (config.attack))
