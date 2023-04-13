@@ -106,7 +106,7 @@ export default function Knob (props: KnobProps) {
           <a className="2xl:text-xl xl:text-lg md:text-sm sm:text-xs font-agrandir-wide uppercase px-5 py-3 rounded block leading-normal text-center text-white">{props.knobLabel}</a>
         </div>
 
-        <div className={"aspect-square rounded-full p-2 bg-gradient-to-b from-neutral-500 to-neutral-900 flex w-3/4"} onMouseDown={(e) => handleMouseDown(e)}>
+        <div className={"aspect-square rounded-full p-[6%] bg-gradient-to-b from-neutral-500 to-neutral-900 flex w-3/4"} onMouseDown={(e) => handleMouseDown(e)}>
           <div className={"w-full h-full rounded-full p-0.5 bg-gradient-to-b from-stone-700 to-neutral-800 flex-1"} >
             <div style={{transform: `rotate(${valueToAngle(value)}deg)`}} className={"w-full h-full flex items-start justify-center"}>
               <div className={"w-2.5 h-2.5 rounded-full bg-black"}>
