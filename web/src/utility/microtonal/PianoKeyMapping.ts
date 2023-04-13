@@ -76,8 +76,8 @@ export const mapScaleToKeyboardShortcuts = (scale: Scale, keysPerOctave: number)
     return keyMapping;
 }
 
-export const createPianoKeyboardShortcuts = (rootKey: number, keysPerOctave: number): Array<KeyShortcut> => KeyboardShortcuts.create({
+export const createPianoKeyboardShortcuts = (rootKey: number, keyboardLength: number): Array<KeyShortcut> => KeyboardShortcuts.create({
     firstNote: rootKey,
-    lastNote: rootKey + keysPerOctave,
+    lastNote: rootKey + keyboardLength,
     keyboardConfig: KeyboardShortcuts.HOME_ROW
 });

@@ -12,26 +12,23 @@ interface ReactPianoWrapperProps {
     keyboardShortcuts: Array<KeyShortcut>,
     scaleConfig: ScaleConfig, 
     rootKey: number,
-    keyOffset: number
+    keyOffset: number,
+    keyboardLength: number
 }
 
 const DEFAULT_VELOCITY = 60;
 
+
+// @ts-ignore
+const whiteKey = TAILWIND_COLORS_NEUTRAL['400'];
+// @ts-ignore
+const blackKey = TAILWIND_COLORS_NEUTRAL['900'];
+// @ts-ignore
+const activeKey = TAILWIND_COLORS_BLUE['400'];
+
 // The rootkey here is given differently so we can display the keyboard in a different place than the configured root
 // note. Ex. A4 == 440 but keyboard starts a C3
 export default function ReactPianoWrapper(props: ReactPianoWrapperProps) {
-    // Configuring ReactPiano to handle the odd key configuring is just more trouble than it's worth
-    // We use the keymapping to convert from the incoming MIDI number given by it to the proper MIDI note
-    const translateNote = (note: number) => {
-        let mapping = props.keyMapping[(note - props.rootKey) % props.scaleConfig.keysPerOctave];
-        let octaveAdditive = Math.floor((note - props.rootKey) / props.scaleConfig.keysPerOctave) * props.scaleConfig.scale.notes.length;
-        return mapping + octaveAdditive;
-    }
-
-    // @ts-ignore
-    let whiteKey = TAILWIND_COLORS_NEUTRAL['400'];
-    // @ts-ignore
-    let blackKey = TAILWIND_COLORS_NEUTRAL['900'];
     return <>
         <style dangerouslySetInnerHTML={{__html: `
           .ReactPiano__Keyboard > div.ReactPiano__Key--accidental:nth-child(n+${props.scaleConfig.keysPerOctave + 1}) {
@@ -40,11 +37,14 @@ export default function ReactPianoWrapper(props: ReactPianoWrapperProps) {
           .ReactPiano__Keyboard > div.ReactPiano__Key--natural:nth-child(n+${props.scaleConfig.keysPerOctave + 1}) {
             background: ${whiteKey};
           }
+          .ReactPiano__Keyboard > div.ReactPiano__Key--active:nth-child(n+${props.scaleConfig.keysPerOctave + 1}) {
+            background: ${activeKey};
+          }
         `}} />
         <ReactPiano
-        // activeNotes={synthesizer.activeNotes}
+        // activeNotes={synthesizer.activeNotes} TODO: Hook up midi events
         className="mx-auto my-auto"
-        noteRange={{ first: props.rootKey + props.keyOffset, last: props.rootKey + props.keyOffset + props.scaleConfig.keysPerOctave - 1 + 3 }} // thoughts? TODO
+        noteRange={{ first: props.rootKey + props.keyOffset, last: props.rootKey + props.keyOffset + props.keyboardLength }}
         playNote={(note: any) => {props.midiReceiver.noteOn(note, DEFAULT_VELOCITY)}}
         stopNote={(note: any) => {props.midiReceiver.noteOff(note)}}
         keyboardShortcuts={props.keyboardShortcuts}

@@ -170,10 +170,18 @@ function FrequencyBarComponent(props: {
         if (keyIndex === null) {
             keyboardKey = "None";
         } else {
-            keyboardKey = props.keyboardShortcuts[keyIndex].key.toUpperCase();
+            try {
+                keyboardKey = props.keyboardShortcuts[keyIndex].key.toUpperCase();
+            } catch (e) {
+                // Happens when trying to display bindings for keys above the
+                // keyboard max. This can happen when you increase octave all the
+                // way up, and it clips off the top.
+                keyboardKey = "None";
+                keyboardKeyNum = undefined;
+            }
         }
 
-        console.log(`prescale ${preScaleDegree} -> scaleDegree ${scaleDegree} mapped to key index ${keyIndex} ${keyboardKey}`)
+        // console.log(`prescale ${preScaleDegree} -> scaleDegree ${scaleDegree} mapped to key index ${keyIndex} ${keyboardKey}`)
 
         freqBarArr.push
         (

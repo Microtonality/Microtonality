@@ -88,7 +88,8 @@ module.exports = (env, options) => {
             }),
             new Webpack.DefinePlugin ({
                 'process.env.PUBLIC_PATH': JSON.stringify(publicPath),
-                TAILWIND_COLORS_NEUTRAL: JSON.stringify(resolveConfig(tailwindConfig).theme.colors.neutral)
+                TAILWIND_COLORS_NEUTRAL: JSON.stringify(resolveConfig(tailwindConfig).theme.colors.neutral),
+                TAILWIND_COLORS_BLUE: JSON.stringify(resolveConfig(tailwindConfig).theme.colors.blue),
             }),
         ],
         optimization: {
