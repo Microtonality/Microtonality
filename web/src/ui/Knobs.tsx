@@ -10,6 +10,7 @@ interface KnobProps {
   maxAngle?: number;
   className: string;
   knobLabel: string;
+  small: boolean;
 }
 
 const defaultProps = {
@@ -19,7 +20,8 @@ const defaultProps = {
   minAngle: 30,
   maxAngle: 330,
   className: "w-96",
-  knobLabel: "Label"
+  knobLabel: "Label",
+  small: false
 }
 
 export default function Knob (props: KnobProps) {
@@ -106,10 +108,10 @@ export default function Knob (props: KnobProps) {
           <a className="2xl:text-xl xl:text-lg md:text-sm sm:text-xs font-agrandir-wide uppercase px-5 py-3 rounded block leading-normal text-center text-white">{props.knobLabel}</a>
         </div>
 
-        <div className={"aspect-square rounded-full p-[6%] bg-gradient-to-b from-neutral-500 to-neutral-900 flex w-3/4"} onMouseDown={(e) => handleMouseDown(e)}>
+        <div className={`aspect-square rounded-full ${props.small ? 'p-1' : 'p-2'} bg-gradient-to-b from-neutral-500 to-neutral-900 flex w-3/4`} onMouseDown={(e) => handleMouseDown(e)}>
           <div className={"w-full h-full rounded-full p-0.5 bg-gradient-to-b from-stone-700 to-neutral-800 flex-1"} >
             <div style={{transform: `rotate(${valueToAngle(value)}deg)`}} className={"w-full h-full flex items-start justify-center"}>
-              <div className={"w-2.5 h-2.5 rounded-full bg-black"}>
+              <div className={`${props.small ? 'w-2 h-2' : 'w-3.5 h-3.5'} rounded-full bg-black`}>
               </div>
             </div>
           </div>

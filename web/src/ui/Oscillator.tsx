@@ -176,6 +176,7 @@ export default function Oscillator(props: OscillatorProps) {
                     onChange={(value) => handleMultiplierSubmit(value)}
                     knobLabel=""
                     className=""
+                    small
                 />
             </div>
         </div>
