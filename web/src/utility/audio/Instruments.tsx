@@ -125,17 +125,17 @@ export const TRUMPET_SYNTH: SynthConfig = {
     gain: 0.45,
     pitchBend: 0,
 
-    attack: 0.44,
-    decay: 0.44,
-    sustain: 0.29,
-    release: 0.16,
+    attack: 0.10,
+    decay: 0.25,
+    sustain: 0.50,
+    release: 0.27,
 
     oscillators: [
         {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 1, waveType: "sine", localGain: 0.67} as OscillatorSettings,
         {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 2, waveType: "sine", localGain: 0.82} as OscillatorSettings,
-        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 3, waveType: "sine", localGain: 0.5} as OscillatorSettings,
-        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 4, waveType: "sine", localGain: 0.27} as OscillatorSettings,
-        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 5, waveType: "sine", localGain: 0.37} as OscillatorSettings,
+        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 3, waveType: "sine", localGain: 0.69} as OscillatorSettings,
+        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 4, waveType: "sine", localGain: 0.5} as OscillatorSettings,
+        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 5, waveType: "sine", localGain: 0.27} as OscillatorSettings,
         {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 6, waveType: "sine", localGain: 0.12} as OscillatorSettings,
         {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 7, waveType: "sawtooth", localGain: 0.09} as OscillatorSettings,
         ]
