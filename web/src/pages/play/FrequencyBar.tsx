@@ -82,21 +82,21 @@ function FrequencyBarComponent(props: {
     const [width, setWidth] = useState<number | null>(null);
 
     let debounceTimeout: ReturnType<typeof setTimeout>;
-    
+
     function handleResize() {
         const div = divRef.current;
         clearTimeout(debounceTimeout);
-    
+
         debounceTimeout = setTimeout(() => {
           setWidth(div.offsetWidth-44);
         }, 1);
     }
-    
+
     //Updates width of freq bar on resize
     useEffect(() => {
         if (width === null) handleResize();
         window.addEventListener("resize", handleResize);
-    
+
         return () => window.removeEventListener("resize", handleResize);
     }, [width]);
 
@@ -145,7 +145,7 @@ function FrequencyBarComponent(props: {
         return () => document.removeEventListener("keydown", onKeyPress)
     }, [editingNote]);
 
-    console.log(props.keyMapping, reversedMapping)
+    // console.log(props.keyMapping, reversedMapping)
 
     // If the user is advancing forward or backwards keys, we need to rotate the frequency bar buttons around
     let scaleOffset = null;
@@ -188,11 +188,11 @@ function FrequencyBarComponent(props: {
             // <Tooltip describeChild title={"asdf"} key={i}
             //          placement="top">
                     <FrequencyBarButton frequency={props.midiReceiver.ScaleDegreeToFrequency(scaleDegree, props.octaveOffset + octaveAdditive)} keyMapping={keyboardKey}
-                                        key={scaleDegree} active={keyboardKeyNum !== undefined} 
-                                        isEditing={editingNote === scaleDegree} 
-                                        scaleDegree={scaleDegree} 
+                                        key={scaleDegree} active={keyboardKeyNum !== undefined}
+                                        isEditing={editingNote === scaleDegree}
+                                        scaleDegree={scaleDegree}
                                         onClick={setEditingNote}
-                                        index={preScaleDegree} 
+                                        index={preScaleDegree}
                                         length={props.scaleConfig.scale.notes.length - 1}
                                         divWidth={width}/>
             // </Tooltip>

@@ -84,6 +84,8 @@ export default function Knob (props: KnobProps) {
     }
 
     setValue(val);
+    props.onChange(val);  // This is no good, the textbox should be in its component
+    // better to have two components with simple state updating rather than one kinda complicated one
   }
 
   const clampValue = (val: number): number => {
@@ -93,7 +95,7 @@ export default function Knob (props: KnobProps) {
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       valueInputRef.current.blur();
-      submitTextbox();
+      // submitTextbox(); // Unnecessary since blurring already calls submit textbox
     }
   }
 
