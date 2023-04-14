@@ -25,7 +25,7 @@ export default function ScaleSettings(props: ScaleSettingsProps) {
                     <div
                         className={
                             "xl:text-lg text-xs font-agrandir-wide uppercase px-2 py-2 rounded block leading-normal hover:underline " +
-                            (openTab === 1 ? "text-gold underline" : "text-white")}
+                            (openTab === 1 ? "text-gold underline" : "text-white cursor-pointer")}
                         onClick={e => {
                             e.preventDefault();
                             setOpenTab(1)
@@ -40,7 +40,7 @@ export default function ScaleSettings(props: ScaleSettingsProps) {
                     <div
                         className={
                             "xl:text-lg text-xs font-agrandir-wide uppercase px-2 py-2 rounded block leading-normal hover:underline " +
-                            (openTab === 2 ? "text-gold underline" : "text-white")}
+                            (openTab === 2 ? "text-gold underline" : "text-white cursor-pointer ")}
                         onClick={e => {
                             e.preventDefault();
                             setOpenTab(2)
