@@ -11,13 +11,13 @@ export const PIANO_SYNTH: SynthConfig = {
     release: 0.4,
 
     oscillators: [
-        {waveType: "square", ...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 1} as OscillatorSettings,
-        {waveType: "sine", ...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 2} as OscillatorSettings,
-        {waveType: "sawtooth", ...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 3} as OscillatorSettings,
-        {waveType: "sine", ...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 4} as OscillatorSettings,
-        {waveType: "square", ...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 5} as OscillatorSettings,
-        {waveType: "sine", ...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 6} as OscillatorSettings,
-        {waveType: "sawtooth", ...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 7} as OscillatorSettings,
+        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 1, waveType: "sine", localGain: 0.67} as OscillatorSettings,
+        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 2, waveType: "sine", localGain: 0.32} as OscillatorSettings,
+        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 3, waveType: "sawtooth", localGain: 0.18} as OscillatorSettings,
+        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 4, waveType: "sine", localGain: 0.08} as OscillatorSettings,
+        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 5, waveType: "square", localGain: 0.04} as OscillatorSettings,
+        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 6, waveType: "sine", localGain: 0.02} as OscillatorSettings,
+        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 7, waveType: "sawtooth", localGain: 0.01} as OscillatorSettings,
         ]
 }
 
@@ -65,19 +65,19 @@ export const CLARINET_SYNTH: SynthConfig = {
     gain: 0.45,
     pitchBend: 0,
 
-    attack: 1,
-    decay: 1,
-    sustain: 1,
-    release: 1,
+    attack: 0.08,
+    decay: 0.1,
+    sustain: 0.4,
+    release: 0.3,
 
     oscillators: [
-        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 1} as OscillatorSettings,
-        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 2} as OscillatorSettings,
-        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 3} as OscillatorSettings,
-        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 4} as OscillatorSettings,
-        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 5} as OscillatorSettings,
-        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 6} as OscillatorSettings,
-        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 7} as OscillatorSettings,
+        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 1, waveType: "sine", localGain: 0.5} as OscillatorSettings,
+        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 2, waveType: "triangle", localGain: 0.13} as OscillatorSettings,
+        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 3, waveType: "sine", localGain: 0.5} as OscillatorSettings,
+        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 4, waveType: "triangle", localGain: 0.15} as OscillatorSettings,
+        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 5, waveType: "sine", localGain: 0.5} as OscillatorSettings,
+        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 6, waveType: "triangle", localGain: 0.17} as OscillatorSettings,
+        {...DEFAULT_OSCILLATOR_SETTINGS, pitchRatio: 7, waveType: "sine", localGain: 0.5} as OscillatorSettings,
         ]
 }
 
