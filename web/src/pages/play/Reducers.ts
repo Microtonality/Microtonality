@@ -4,7 +4,9 @@ import { Scale } from "../../utility/microtonal/Scale";
 import { ScaleNote } from "../../utility/microtonal/notes";
 import { parsePitchValue } from "../../utility/microtonal/scala/ScalaParser";
 import {mapScaleToKeyboardShortcuts} from "../../utility/microtonal/PianoKeyMapping";
-import {PIANO_SYNTH, FLUTE_SYNTH, OBOE_SYNTH, CLARINET_SYNTH, BASSOON_SYNTH, TRUMPET_SYNTH, FRENCH_HORN_SYNTH, TROMBONE_SYNTH, TUBA_SYNTH, VIOLIN_SYNTH, CELLO_SYNTH} from "../../utility/audio/Instruments";
+import {BASIC_SYNTH, PIANO_SYNTH, FLUTE_SYNTH, OBOE_SYNTH, CLARINET_SYNTH,
+    BASSOON_SYNTH, TRUMPET_SYNTH, FRENCH_HORN_SYNTH, TROMBONE_SYNTH, TUBA_SYNTH,
+    VIOLIN_SYNTH, CELLO_SYNTH} from "../../utility/audio/Instruments";
 
 export interface MicrotonalConfigHistory {
     previous: Array<MicrotonalConfig>,
@@ -151,6 +153,9 @@ const MicrotonalConfigReducer = (state: MicrotonalConfigHistory, action: Action)
     }
     if (action.type === MCActions.SET_PRESET) {
         switch(action.preset) {
+            case "Basic":
+                configChange = {synthConfig: BASIC_SYNTH}
+                break;
             case "Piano":
                 configChange = {synthConfig: PIANO_SYNTH}
                 break;
