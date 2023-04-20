@@ -2,23 +2,9 @@
 
 import { ScaleNote } from ".";
 
-const twelfthRootOfTwo = Math.pow(2, 1/12);
-
-export function calcCentsMultiplier(cents: number): number {
-    return Math.pow(2, cents / 1200);
-}
-
-export function multiplierToCents(multiplier: number): string {
-    if (multiplier <= 0)
-        return '0.0';
-
-    let cents: string = (1200 * Math.log2(multiplier)).toString();
-    if (!cents.includes('.'))
-        cents += '.0'
-
-    return cents;
-}
-
+// The CentNote represents all note values with a decimal place.
+// For more information on how the calculations here differ
+// from ratios, see section 4.5.2 in the design document.
 export class CentNote extends ScaleNote {
     public cents: number;
 
@@ -69,4 +55,19 @@ export class CentNote extends ScaleNote {
 
         return averaged;
     }
+}
+
+export function calcCentsMultiplier(cents: number): number {
+    return Math.pow(2, cents / 1200);
+}
+
+export function multiplierToCents(multiplier: number): string {
+    if (multiplier <= 0)
+        return '0.0';
+
+    let cents: string = (1200 * Math.log2(multiplier)).toString();
+    if (!cents.includes('.'))
+        cents += '.0'
+
+    return cents;
 }

@@ -1,5 +1,11 @@
 import { RatioNote, CentNote } from ".";
 
+
+// The ScaleNote class is the parent for all the note classes.
+// This includes CentNote, IntRatioNote, and RatioNote.
+// For consistency with Scala files, all notes containing
+// a decimal place are cent notes, and notes without a decimal
+// or containing a '/' are ratio notes.
 export class ScaleNote {
     public num: string;
     public multiplier: number;

@@ -2,19 +2,7 @@
 
 import { ScaleNote } from ".";
 
-export function calcRatioMultiplier(ratio: string): number {
-    let ratioRegex: RegExp = new RegExp(/(\d+)\/(\d+)/);
-    let parsedRatio: string[] = ratioRegex.exec(ratio);
-
-    let numerator: number = parseInt(parsedRatio[1]);
-    let denominator: number = parseInt(parsedRatio[2]);
-
-    if (denominator === 0)
-        throw new InvalidRatioException(`The denominator is zero in the pitch value ${ratio}.`);
-
-    return numerator / denominator;
-}
-
+// The RatioNote class contains all the notes with a '/'.
 export class RatioNote extends ScaleNote {
     public ratio: string;
 
@@ -51,16 +39,18 @@ export class RatioNote extends ScaleNote {
         }
         addedNumerator = numerator1 + numerator2;
 
-        // divide by 2
+        // 'divide' by 2
         addedDenominator *= 2;
 
         return new RatioNote(`${addedNumerator}/${addedDenominator}`);
     }
 
+    // least common multiple
     private static lcm(a: number, b: number): number {
         return Math.abs((a * b) / RatioNote.gcd(a, b));
     }
 
+    // greatest common denominator
     private static gcd(a: number, b: number): number {   
         a = Math.abs(a);
         b = Math.abs(b);
@@ -71,6 +61,19 @@ export class RatioNote extends ScaleNote {
         }
         return a;
     }
+}
+
+export function calcRatioMultiplier(ratio: string): number {
+    let ratioRegex: RegExp = new RegExp(/(\d+)\/(\d+)/);
+    let parsedRatio: string[] = ratioRegex.exec(ratio);
+
+    let numerator: number = parseInt(parsedRatio[1]);
+    let denominator: number = parseInt(parsedRatio[2]);
+
+    if (denominator === 0)
+        throw new InvalidRatioException(`The denominator is zero in the pitch value ${ratio}.`);
+
+    return numerator / denominator;
 }
 
 export class InvalidRatioException extends Error {
