@@ -15,6 +15,10 @@ interface ScaleEditorInputProps {
     mcDispatch: Function
 }
 
+// The ScaleEditorInput contains all the elements for a single note
+// inside the scale editor. In the return statement for this function
+// there are a lot of extra checks to decide on how to display the note's elements.
+// It could be useful to split them up into separate files instead, it'd be a bit cleaner.
 export default function ScaleEditorInput(props: ScaleEditorInputProps) {
 
     const [noteValue, setNoteValue] = useState((props.noteIndex === -1) ? props.scale.octaveNote.num : props.scale.notes[props.noteIndex].num);
@@ -28,15 +32,15 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
         setIsRatio(!noteValue.includes('.'));
     }, [noteValue]);
 
-    // This function prevents any characters besides numbers, '.', and '/'
-    // from being entered into the input.
-    // This is needed because a html input of type "number" will not allow for '/',
-    // which are required to write ratios.
-    // setSelection is used to make sure the cursor isn't moved around whenever
-    // a character is prevented from being placed.
+    // This function prevents any characters besides
+    // numbers, '.', and '/' from being entered into the input.
+    // This is needed because a html input of type 'number'
+    // will not allow for '/', which are required to write ratios.
+    // The setSelection method is used to make sure the text field's cursor
+    // isn't moved around whenever a character is prevented from being placed.
     const wrapSetNoteValue = (event: React.ChangeEvent<HTMLInputElement> | string) => {
 
-        // This should only be triggered by useEffect()
+        // This should only be triggered by useEffect().
         if (typeof event === 'string') {
             if (event.includes('.'))
                 setIsRatio(() => false);
@@ -47,9 +51,10 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
             return;
         }
 
+
         let updatedInput: string = event.target.value;
 
-        // If the user deleted a character, always accept it
+        // If the user deleted a character, always accept it.
         if (updatedInput.length < noteValue.length) {
             // TODO test if this is deleted that a cent value can be entered without a 0 after the decimal place
             if (updatedInput[updatedInput.length - 1] === '.')
@@ -59,7 +64,7 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
             return;
         }
 
-        // Find the new character
+        // Find the new character.
         let newChar: string = '';
         let i: number;
         for (i = 0; i < updatedInput.length; i++) {
@@ -82,7 +87,7 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
                 setIsRatio(() => false);
         }
         // Don't accept any character besides a number.
-        // Note: parseInt('0') return false, so the extra check is necessary
+        // Note: parseInt('0') return false, so the extra check is necessary.
         else if (!parseInt(newChar) && newChar !== '0'){
             setSelection(() => [event.target.selectionStart - 1, event.target.selectionEnd - 1]);
             return;
@@ -105,6 +110,7 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
             props.mcDispatch({type: MCActions.EDIT_NOTE, noteValue: noteValue, noteIndex: props.noteIndex});
     };
 
+    // Handle 'Enter' key event from text field.
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
             noteInputField.current.blur();
@@ -117,14 +123,17 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
         props.mcDispatch({type: MCActions.DELETE_NOTE, noteIndex: props.noteIndex});
     }
 
-    // Note: We can't normally convert from cents to a ratio
-    // without significant data loss and unreadable numbers
-    // because floats have a lot of extra hidden numbers.
-    // So we only allow converting from a ratio to a cent value.
-    // (except for the base note which is the 1/1 note)
+
+    // We can't normally convert from cents to a ratio
+    // without significant data loss and unreadable numbers because floats.
+    // So, we only allow converting from a ratio to a cent value.
+    // If the user needs to go back to their ratio after converting, they can use the undo button.
+
+    // The one exception to this rule is the base note, which will
+    // always either be a ratio of '1/1' or a cents value of '0.00'.
+    // Alternating between these two values doesn't affect the scale generation, it is mainly visual.
     const convertRatioToCents = () => {
         if (!isRatio) {
-            console.log('error, current note is a cent value');
             return;
         }
 
@@ -140,20 +149,18 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
             props.mcDispatch({type: MCActions.EDIT_OCTAVE_NOTE, noteValue: cents});
         else
             props.mcDispatch({type: MCActions.EDIT_NOTE, noteValue: cents, noteIndex: props.noteIndex});
-
     }
 
-    // Only allowed for the base note (cent value of 0.0)
+    // Only allowed for the base note.
     const baseNoteCentsToRatio = () => {
         setNoteValue(() => '1/1');
         setIsRatio(true);
     }
 
     // Check top of file.
-    // These help prevent the cursor from moving to the end of the input field
-    // when a user enters a character that isn't accepted (ex: a letter)
-    // while they are typing in the middle of the number.
-    // It allows us to declare exactly where we want the cursor to be placed.
+    // These help prevent the cursor from moving to the end of
+    // the input field when a user enters a character that isn't
+    // accepted (ex: a letter) while they are typing in the middle of the number.
     const [selection, setSelection] = React.useState<[number | null, number | null] | null>(null);
     const noteInputField = useRef<HTMLInputElement>(null);
     React.useLayoutEffect(() => {
@@ -166,11 +173,11 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
         <div className="inline-flex items-center mx-[1%] my-[2.5%] w-[95%]">
 
             {(props.noteIndex === -1) ? 
-                /* If Octave note, no image */
+                /* If Octave note, no hamburger */
                 <img className="w-[6%] min-w-[1.5rem]" alt={''}/>
             :
             ((props.noteIndex === 0) ? 
-                /* If 1/1 note, greyed image */
+                /* If 1/1 note, greyed hamburger */
                 <svg width="25" height="25" viewBox="0 0 12 11" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-1">
                     <line y1="0.5" x2="12" y2="0.5" stroke="#212121"/>
                     <line y1="10.5" x2="12" y2="10.5" stroke="#212121"/>
@@ -178,7 +185,7 @@ export default function ScaleEditorInput(props: ScaleEditorInputProps) {
                 </svg>
 
             :
-                /* Otherwise, white image */
+                /* Otherwise, white hamburger */
                 <svg width="25" height="25" viewBox="0 0 12 11" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-1">
                     <line y1="0.5" x2="12" y2="0.5" stroke="white"/>
                     <line y1="10.5" x2="12" y2="10.5" stroke="white"/>

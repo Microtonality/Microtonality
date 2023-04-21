@@ -1,19 +1,29 @@
 import {DEFAULT_SCALE, Scale} from '../Scale'
 import { ScaleNote, RatioNote, CentNote, IntRatioNote } from '../notes'
 
-// TODO Test base cases like a scale with only an octave note
+enum ParserPhase {
+    TITLE = 0,
+    DESCRIPTION = 1,
+    KEYS_PER_OCTAVE = 2,
+    PITCH_VALUES = 3,
+    DONE = 4
+}
 
+// The ScalaParser reads Scala files and creates a Scale object.
+// For more information on the structure of Scala files,
+// refer to https://huygens-fokker.org/scala/scl_format.html.
 export function parseScalaFile(file: string): Scale {
 
     let title: string = '';
     let description: string = '';
-    // Note: keysPerOctave does not include the initial '1/1' note,
-    // but does include the octave value.
+
+    // Note: keysPerOctave does not include the
+    // initial '1/1' note, but does include the octave note.
     let keysPerOctave: number = 0;
     let notes: ScaleNote[] = [];
     let octaveNote: ScaleNote = null;
 
-    // Read scala file
+    // Read Scala file, split by line.
     let phase: ParserPhase = ParserPhase.TITLE;
     for (let line of file.split(/[\r\n]+/)) {
 
@@ -38,6 +48,7 @@ export function parseScalaFile(file: string): Scale {
             phase = ParserPhase.DESCRIPTION;
         }
 
+        // Now we can skip the rest of the comments.
         if (line.startsWith('!'))
             continue;
 
@@ -59,7 +70,7 @@ export function parseScalaFile(file: string): Scale {
                 continue;
 
             case ParserPhase.PITCH_VALUES:
-                // Check for the octave note
+                // Check for the octave note.
                 if (notes.length === keysPerOctave - 1) {
                     octaveNote = parsePitchValue(line);
                     phase = ParserPhase.DONE
@@ -76,11 +87,19 @@ export function parseScalaFile(file: string): Scale {
     if (octaveNote === null)
         throw new InsufficientPitchValuesException(`The Scala file needs ${keysPerOctave} pitch values but only has ${notes.length}`);
 
-    // Add the 1/1 note to the beginning
+    // Add the 1/1 note to the beginning.
     notes.unshift(new RatioNote('1/1'));
     return {...DEFAULT_SCALE, notes, title, description, octaveNote};
 }
 
+// Based on the pitch line from the Scala file, figure
+// out which kind of note it is and where exactly the value lies.
+// Then separate the value from the comments and create a new ScaleNote object.
+// Unfortunately we cannot use regex here, as there
+// are too many edge cases that would yield inconsistent results.
+// The user is technically allowed to put any characters they want
+// after the pitch value, so a regex could very well catch numbers
+// in the comments as well as the value itself.
 export function parsePitchValue(line: string): ScaleNote {
 
     let value: string = '';
@@ -111,8 +130,7 @@ export function parsePitchValue(line: string): ScaleNote {
             }
 
             // Check if the next character exists or is not a number.
-            // Alert the user they may have incorrectly inputted their pitch value? TODO
-            // This is for cases '1/' or '1.' where the user may 
+            // This is for cases '1/' or '1.' where the user may
             // have forgotten the number after the '/' or '.' 
             if (((i+1) >= line.length) || (isNaN(parseInt(line.charAt(i+1))))) {
                 noteType = IntRatioNote;
@@ -147,12 +165,4 @@ export class InsufficientPitchValuesException extends Error {
     constructor(msg: string) {
         super(msg);
     }
-}
-
-enum ParserPhase {
-    TITLE = 0,
-    DESCRIPTION = 1,
-    KEYS_PER_OCTAVE = 2,
-    PITCH_VALUES = 3,
-    DONE = 4
 }

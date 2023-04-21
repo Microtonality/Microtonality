@@ -3,6 +3,7 @@ import { ScaleNote } from "../notes";
 
 export const GENERATED_TITLE: string = 'MicrotonalScale_';
 
+// Create a Scala file (.scl) from the given scale.
 export function generateScalaFile(scale: Scale): File {
 
     let file: string[] = [];
@@ -13,14 +14,14 @@ export function generateScalaFile(scale: Scale): File {
 
     file.push(scale.description + '\n');
 
-    // Remove 1/1 note before printing, 
-    // this isn't present in Scala files.
+    // Remove 1/1 note before printing
+    // as this isn't present in Scala files.
     scale.notes.shift();
 
     file.push('  ' + scale.notes.length + '\n');
     file.push('!\n');
 
-    let note: ScaleNote = null;
+    let note: ScaleNote;
     for (note of scale.notes) 
         file.push('  ' + note.exportScala() + '\n');
 
@@ -30,8 +31,10 @@ export function generateScalaFile(scale: Scale): File {
 
 export function getTitle(scale: Scale): string {
 
+    // If the current title doesn't exist, create one.
     if (scale.title === '')
         scale.title = generateTitle();
+    // Otherwise, validate.
     else {
         scale.title = scale.title.replace(/ /g, '_');
         validateTitle(scale.title);
@@ -43,6 +46,7 @@ export function getTitle(scale: Scale): string {
     return scale.title;
 }
 
+// Make sure each generated file title is different.
 export function generateTitle(): string {
 
     const date: Date = new Date();
@@ -56,6 +60,7 @@ export function generateTitle(): string {
     return GENERATED_TITLE + fileID + '.scl';
 }
 
+// Check for illegal characters and filenames.
 export function validateTitle(title: string): void {
 
     let letterOrNumber: RegExp = new RegExp(/[A-z0-9]/)

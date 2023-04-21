@@ -16,8 +16,11 @@ interface ScaleEditorProps {
     mcDispatch: Function
 }
 
+// The ScaleEditor contains file upload and download for Scala files (.scl),
+// a TuningFrequencyEditor, and all the notes in the current scale including the octave note.
 export default function ScaleEditor(props: ScaleEditorProps) {
 
+    // Take in a .scl file, create a scale from it, and set the current scale.
     const handleScalaFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
 
         let file: File = event.target.files[0];
@@ -40,7 +43,9 @@ export default function ScaleEditor(props: ScaleEditorProps) {
         }
         reader.readAsText(file);
     }
-    
+
+    // Generate a .scl file from the current scale
+    // and download it to the user's computer.
     const handleScalaFileGeneration = () => {
         let file: File = generateScalaFile(props.microtonalConfig.scaleConfig.scale);
 
@@ -54,22 +59,17 @@ export default function ScaleEditor(props: ScaleEditorProps) {
         element.remove();
     }
     
-    // Insert a generated note at the end of the scale
+    // Insert a new note at the end of the scale.
     const handleAddNote = () => {
     
-        //TODO addNote settings? maybe stretch goal
-        // to generate equal tempered notes or increment based on a set cent or ratio value. (or just set to a value?)
-        // if all ratios, change other ratios' denominators as well?
-
-        // For now we just average the last two notes,
-        // the final note in the scale and the octave note.
+        // Average the last note in the scale and the octave note.
         let notes: ScaleNote[] = props.microtonalConfig.scaleConfig.scale.notes;
         let note: ScaleNote = ScaleNote.average(notes[notes.length - 1], props.microtonalConfig.scaleConfig.scale.octaveNote);
-        
+
         props.mcDispatch({type: MCActions.ADD_NOTE, note: note});
     }
 
-    // Swap Notes
+    // Note Swapping
     const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
     const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
     const handleDragStart = (index: number) => {
@@ -92,37 +92,37 @@ export default function ScaleEditor(props: ScaleEditorProps) {
         props.mcDispatch({type: MCActions.SWAP_NOTES, currentIndex: draggingIndex, newIndex: dragOverIndex});
     }
 
+    // Return an array of JSXElements representing
+    // each note in the scale (and the octave note).
     const mapNotes = (): ReactJSXElement[] => {
 
         let notesJSX: ReactJSXElement[] = [];
         let notes: ScaleNote[] = props.microtonalConfig.scaleConfig.scale.notes;
 
-        // We want the 1/1 note to non-interactable.
-        // Every other note can be moved/edited/deleted.
-        for (let i = 0; i < notes.length; i++) {
+        // The 1/1 note should not be interactive, except
+        // when converting from a ratio to cents and vice versa.
+        notesJSX.push(
+            <div
+                key={0}
+                className={`inline-flex items-center`}>
+                <ScaleEditorInput noteIndex={0} scale={props.microtonalConfig.scaleConfig.scale} microtonalConfig={props.microtonalConfig} mcDispatch={props.mcDispatch} />
+            </div>
+        );
 
-            if (i === 0) {
-                notesJSX.push(
-                    <div 
-                        key={i}
-                        className={`inline-flex items-center`}>
-                        <ScaleEditorInput noteIndex={i} scale={props.microtonalConfig.scaleConfig.scale} microtonalConfig={props.microtonalConfig} mcDispatch={props.mcDispatch} />
-                    </div>
-                );
-            }
-            else {
-                notesJSX.push(
-                    <div 
-                        draggable
-                        key={i}
-                        onDragStart={() => handleDragStart(i)}
-                        onDragOver={() => handleDragOver(i)}
-                        onDragEnd={handleDragEnd}
-                        className={`inline-flex items-center ${dragOverIndex === i ? 'drag-over' : ''}`}>
-                        <ScaleEditorInput noteIndex={i} scale={props.microtonalConfig.scaleConfig.scale} microtonalConfig={props.microtonalConfig} mcDispatch={props.mcDispatch} />
-                    </div>
-                );
-            }
+        // Every other note can be moved/edited/deleted
+        // (except for the octave note, see ScaleEditorInput.jsx).
+        for (let i = 1; i < notes.length; i++) {
+            notesJSX.push(
+                <div
+                    draggable
+                    key={i}
+                    onDragStart={() => handleDragStart(i)}
+                    onDragOver={() => handleDragOver(i)}
+                    onDragEnd={handleDragEnd}
+                    className={`inline-flex items-center ${dragOverIndex === i ? 'drag-over' : ''}`}>
+                    <ScaleEditorInput noteIndex={i} scale={props.microtonalConfig.scaleConfig.scale} microtonalConfig={props.microtonalConfig} mcDispatch={props.mcDispatch} />
+                </div>
+            );
         }
 
         return notesJSX;
