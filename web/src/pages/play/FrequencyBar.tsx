@@ -20,7 +20,7 @@ interface FrequencyBarButton {
 
 function FrequencyBarButton(props: FrequencyBarButton) {
     const wrapIndex = Math.floor(props.divWidth/40)-1
-    return <button
+    return <Tooltip describeChild placement="top" title={props.frequency}><button
         aria-describedby={"simple-popover"}
         className={"btn w-10 max-w-10 items-center justify-center p-0 font-agrandir text-black  border-b-2 border-r-2 border-black text-sm " +
             `${props.active ? 'bg-gold' : "bg-neutral-200 hover:bg-neutral-300"} ` + 
@@ -38,6 +38,7 @@ function FrequencyBarButton(props: FrequencyBarButton) {
         <div className={(props.active || props.isEditing ? "" : "opacity-0")}
             >{props.isEditing ? "???" : props.keyMapping}</div>
     </button>
+    </Tooltip>
 }
 
 const reverseMapping = (mapping: Record<number, number>) => {
@@ -203,7 +204,7 @@ function FrequencyBarComponent(props: {
         <div className={"flex flex-row justify-center flex-wrap"}>
             {freqBarArr}
         </div>
-        <Tooltip describeChild title="Click a frequency box and then press the key on your keyboard you want it to correspond to">
+        <Tooltip describeChild title="Click a box on the frequency bar, then press the desired key on your keyboard in order to bind it to the desired frequency.">
             <button className="btn min-w-[1.75rem] w-7 aspect-square bg-white text-black rounded-full hover:bg-gray-100 mx-2">?</button>
         </Tooltip>
     </div>;
