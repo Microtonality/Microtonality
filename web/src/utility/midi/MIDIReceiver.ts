@@ -22,6 +22,10 @@ export default class MidiReceiver {
     }
 
     public connectToInstrument() {
+        if (!navigator.requestMIDIAccess) {
+            return;
+        }
+        
         navigator.requestMIDIAccess().then(
             (midi) => {
                 this.initDevices(midi)
