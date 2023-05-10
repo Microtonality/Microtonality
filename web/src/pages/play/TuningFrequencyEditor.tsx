@@ -1,39 +1,30 @@
-// Some code adapted for our use case from https://github.com/facebook/react/issues/18404#issuecomment-605294038
-
 import * as React from "react";
-import {MicrotonalConfig} from "../../utility/MicrotonalConfig";
 import {useEffect, useRef, useState} from "react";
 import {MCActions} from "./Reducers";
 
 interface TuningFrequencyEditorProps {
-    microtonalConfig: MicrotonalConfig,
+    tuningFrequency: number,
     mcDispatch: Function
 }
 
 export default function TuningFrequencyEditor(props: TuningFrequencyEditorProps) {
 
-    let [tuningFrequency, setTuningFrequency] = useState<number>(props.microtonalConfig.scaleConfig.tuningFrequency);
-    let [tuningFreqInput, setTuningFreqInput] = useState<string>(props.microtonalConfig.scaleConfig.tuningFrequency.toString())
+    let [tuningFreqInput, setTuningFreqInput] = useState<string>(props.tuningFrequency.toString())
     const tuningFrequencyInputField = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
-        setTuningFrequency(props.microtonalConfig.scaleConfig.tuningFrequency);
-    }, [props.microtonalConfig]);
-
-    useEffect(() => {
-        setTuningFreqInput(tuningFrequency.toString());
-    }, [tuningFrequency]);
+        setTuningFreqInput(props.tuningFrequency.toString());
+    }, [props.tuningFrequency]);
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
             tuningFrequencyInputField.current.blur();
-            submitTuningFreqInput();
         }
     }
 
     const submitTuningFreqInput = () => {
         let frequency: number = clampTuningFrequency(parseFloat(tuningFreqInput));
-        if (isNaN(frequency) || frequency === tuningFrequency) {
+        if (frequency === props.tuningFrequency) {
             setTuningFreqInput(frequency.toString());
             return;
         }
@@ -43,7 +34,7 @@ export default function TuningFrequencyEditor(props: TuningFrequencyEditorProps)
 
     const clampTuningFrequency = (freq: number): number => {
         if (isNaN(freq))
-            return tuningFrequency;
+            return props.tuningFrequency;
 
         return Math.max(0, freq);
     }

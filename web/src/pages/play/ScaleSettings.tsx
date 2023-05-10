@@ -1,9 +1,6 @@
-import {Button, FormControl, Grid, MenuItem, Select, Slider, TextField} from "@mui/material";
-import SynthSettings from "./SynthSettings";
 import * as React from "react";
-import {ChangeEventHandler, KeyboardEventHandler} from "react";
 import {MicrotonalConfig, ScaleConfig} from "../../utility/MicrotonalConfig";
-import ScaleEditor from "./ScaleEditor";
+import ScaleEditor from "./ScaleEditor/ScaleEditor";
 import BasicSettings from "./BasicSettings";
 
 interface ScaleSettingsProps {
@@ -61,7 +58,7 @@ export default function ScaleSettings(props: ScaleSettingsProps) {
                         </div>
 
                         <div className={(openTab === 2 ? "block" : "hidden") + ""} id="link2">
-                            <ScaleEditor microtonalConfig={props.microtonalConfig} mcDispatch={props.mcDispatch}/>
+                            <ScaleEditor scale={props.microtonalConfig.scaleConfig.scale} tuningFrequency={props.microtonalConfig.scaleConfig.tuningFrequency} mcDispatch={props.mcDispatch}/>
                         </div>
                     </div>
                 </div>

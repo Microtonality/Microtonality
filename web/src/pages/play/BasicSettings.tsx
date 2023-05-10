@@ -112,7 +112,7 @@ export default function BasicSettings(props: BasicSettingsProps) {
                 )}
             </div>
 
-            <TuningFrequencyEditor microtonalConfig={props.microtonalConfig} mcDispatch={props.mcDispatch}/>
+            <TuningFrequencyEditor tuningFrequency={props.microtonalConfig.scaleConfig.tuningFrequency} mcDispatch={props.mcDispatch}/>
         </div>
     )
 
