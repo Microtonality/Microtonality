@@ -42,6 +42,12 @@ export default function OctaveNoteInput(props: OctaveNoteInputProps) {
 
         let updatedInput: string = event.target.value;
 
+        if (updatedInput.length === noteValue.length - 1) {
+            setNoteValue(() => updatedInput);
+            setPrevRatioValue('');
+            return;
+        }
+
         let newChar: string = '';
         let i: number;
         for (i = 0; i < updatedInput.length; i++) {

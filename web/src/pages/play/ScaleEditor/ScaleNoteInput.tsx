@@ -67,6 +67,13 @@ export default function ScaleNoteInput(props: ScaleNoteInputProps) {
 
         let updatedInput: string = event.target.value;
 
+        // If the user deletes a character, accept the change.
+        if (updatedInput.length === noteValue.length - 1) {
+            setNoteValue(() => updatedInput);
+            setPrevRatioValue('');
+            return;
+        }
+
         // Find the new character.
         let newChar: string = '';
         let i: number;
@@ -255,8 +262,8 @@ export default function ScaleNoteInput(props: ScaleNoteInputProps) {
             </svg>
 
             {/*TODO check if we need htmlFor*/}
-            <label htmlFor={props.noteIndex.toString()} className="inline-flex flex-wrap items-center cursor-pointer text-gray-800 w-[50%] h-10 text-center ml-[1%] min-w-[6rem]">
-                <input type="checkbox" checked={isRatio} id={props.noteIndex.toString()} className="hidden peer" readOnly={true}/>
+            <label className="inline-flex flex-wrap items-center cursor-pointer text-gray-800 w-[50%] h-10 text-center ml-[1%] min-w-[6rem]">
+                <input type="checkbox" checked={isRatio} className="hidden peer" readOnly={true}/>
                 {createConverterBox()}
             </label>
 
