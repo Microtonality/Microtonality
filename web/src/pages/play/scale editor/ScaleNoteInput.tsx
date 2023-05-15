@@ -26,7 +26,8 @@ interface ScaleNoteInputProps {
 // The note's input field is limited to only numbers
 // and a single '/' or '.', indicating which type of value.
 //
-// For a version of this code without comments, see OctaveNoteInput.tsx
+// For a version of this code without comments (and some
+// slight variation in behavior), see OctaveNoteInput.tsx
 export default function ScaleNoteInput(props: ScaleNoteInputProps) {
 
     const [noteValue, setNoteValue] = useState<string>(props.note.num);

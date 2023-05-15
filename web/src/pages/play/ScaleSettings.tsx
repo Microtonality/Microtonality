@@ -1,7 +1,9 @@
 import * as React from "react";
-import {MicrotonalConfig, ScaleConfig} from "../../utility/MicrotonalConfig";
-import ScaleEditor from "./ScaleEditor/ScaleEditor";
+import {MicrotonalConfig} from "../../utility/MicrotonalConfig";
+import ScaleEditor from "./scale editor/ScaleEditor";
 import BasicSettings from "./BasicSettings";
+import {useState} from "react";
+import ErrorPopUp, {HIDE_ERROR} from "../../ui/ErrorPopUp";
 
 interface ScaleSettingsProps {
     className?: string,
@@ -10,9 +12,13 @@ interface ScaleSettingsProps {
 }
 
 export default function ScaleSettings(props: ScaleSettingsProps) {
-    const [openTab, setOpenTab] = React.useState(1);
+    const [openTab, setOpenTab] = useState(1);
+    const [errorMsg, displayErrorMsg] = useState<string>(HIDE_ERROR);
 
     return <div className="h-full w-full border-gold border-t-2 border-r-2 rounded-tr-xl bg-bglight">
+
+        <ErrorPopUp errorMsg={errorMsg}/>
+
         <div className="w-full flex flex-col h-full">
             <ul
                 className="flex justify-around mb-0 list-none flex-wrap p-3 flex-row border-b-2 border-gold"
@@ -54,11 +60,16 @@ export default function ScaleSettings(props: ScaleSettingsProps) {
                 <div className="px-4 py-5 flex-auto h-full">
                     <div className="tab-content tab-space">
                         <div className={openTab === 1 ? "block" : "hidden"} id="link1">
-                            <BasicSettings microtonalConfig={props.microtonalConfig} mcDispatch={props.mcDispatch}/>
+                            <BasicSettings microtonalConfig={props.microtonalConfig}
+                                           mcDispatch={props.mcDispatch}
+                                           displayErrorMsg={displayErrorMsg}/>
                         </div>
 
                         <div className={(openTab === 2 ? "block" : "hidden") + ""} id="link2">
-                            <ScaleEditor scale={props.microtonalConfig.scaleConfig.scale} tuningFrequency={props.microtonalConfig.scaleConfig.tuningFrequency} mcDispatch={props.mcDispatch}/>
+                            <ScaleEditor scale={props.microtonalConfig.scaleConfig.scale}
+                                         tuningFrequency={props.microtonalConfig.scaleConfig.tuningFrequency}
+                                         mcDispatch={props.mcDispatch}
+                                         displayErrorMsg={displayErrorMsg}/>
                         </div>
                     </div>
                 </div>

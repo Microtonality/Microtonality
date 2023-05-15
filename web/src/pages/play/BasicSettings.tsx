@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useState } from "react";
-import {MicrotonalConfig, ScaleConfig} from "../../utility/MicrotonalConfig";
+import {MicrotonalConfig} from "../../utility/MicrotonalConfig";
 import TuningFrequencyEditor from "./TuningFrequencyEditor";
 import {MCActions} from "./Reducers";
 import {generateEqualTemperedScale} from "../../utility/microtonal/ScaleGeneration";
@@ -9,6 +9,7 @@ import Button from "../../ui/Button";
 interface BasicSettingsProps {
     microtonalConfig: MicrotonalConfig;
     mcDispatch: Function;
+    displayErrorMsg: Function;
 }
 
 export default function BasicSettings(props: BasicSettingsProps) {
@@ -40,7 +41,7 @@ export default function BasicSettings(props: BasicSettingsProps) {
         let fileAsText: string = "";
 
         reader.onload = () => {
-            readerResult = reader.result
+            readerResult = reader.result;
             if (readerResult instanceof ArrayBuffer)
                 fileAsText = new TextDecoder().decode(readerResult);
             else
@@ -48,10 +49,15 @@ export default function BasicSettings(props: BasicSettingsProps) {
 
             let config = JSON.parse(fileAsText);
             let configTitle: string = file.name.substring(0, file.name.length - 8); // Remove '.mConfig'
-            props.mcDispatch({type: MCActions.SET_CONFIG, config: {...config, title: configTitle}});
+
+            try {
+                props.mcDispatch({type: MCActions.SET_CONFIG, config: {...config, title: configTitle}});
+            } catch (e) {
+                props.displayErrorMsg(MCONFIG_UPLOAD_ERROR);
+            }
         }
         reader.onerror = () => {
-            console.error("BasicSettings.handleConfigUpload(): Could not read file");
+            props.displayErrorMsg(MCONFIG_UPLOAD_ERROR);
         }
         reader.readAsText(file);
     }
@@ -65,7 +71,6 @@ export default function BasicSettings(props: BasicSettingsProps) {
         element.href = URL.createObjectURL(file);
         element.download = file.name;
 
-        document.body.appendChild(element); // Required for this to work in FireFox? TODO
         element.click();
         element.remove();
     }
@@ -115,5 +120,6 @@ export default function BasicSettings(props: BasicSettingsProps) {
             <TuningFrequencyEditor tuningFrequency={props.microtonalConfig.scaleConfig.tuningFrequency} mcDispatch={props.mcDispatch}/>
         </div>
     )
-
 }
+
+const MCONFIG_UPLOAD_ERROR: string = "Your microtonal config could not be uploaded. Please try again.";

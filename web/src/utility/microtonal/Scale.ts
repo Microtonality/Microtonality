@@ -13,7 +13,7 @@ export interface Scale {
 }
 
 export const DEFAULT_SCALE: Scale = {
-    notes: [],
+    notes: [new RatioNote('1/1')],
     title: '',
     description: '',
     octaveNote: new RatioNote('2/1')

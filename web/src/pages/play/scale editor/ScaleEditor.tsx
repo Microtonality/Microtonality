@@ -13,9 +13,10 @@ import OctaveNoteInput from "./OctaveNoteInput";
 import ScaleNoteInput from "./ScaleNoteInput";
 
 interface ScaleEditorProps {
-    scale: Scale,
-    tuningFrequency: number,
-    mcDispatch: Function
+    scale: Scale;
+    tuningFrequency: number;
+    mcDispatch: Function;
+    displayErrorMsg: Function;
 }
 
 // The ScaleEditor contains file upload and download for Scala files (.scl),
@@ -37,12 +38,19 @@ export default function ScaleEditor(props: ScaleEditorProps) {
             else
                 fileAsText = readerResult;
 
-            let scale: Scale = parseScalaFile(fileAsText);
-            props.mcDispatch({type: MCActions.SET_SCALE, scale: scale});
+            let scale: Scale = null;
+            try {
+                scale = parseScalaFile(fileAsText);
+            } catch (e) {
+                props.displayErrorMsg(e.message);
+                return;
+            }
+
+            if (scale !== null)
+                props.mcDispatch({type: MCActions.SET_SCALE, scale: scale});
         }
         reader.onerror = () => {
-            console.error("ScaleEditor.handleScalaFileUpload(): Could not read file");
-            // TODO show error message?
+            props.displayErrorMsg(SCALA_FILE_UPLOAD_ERROR);
         }
         reader.readAsText(file);
     }
@@ -50,14 +58,20 @@ export default function ScaleEditor(props: ScaleEditorProps) {
     // Generate a .scl file from the current scale
     // and download it to the user's computer.
     const handleScalaFileGeneration = () => {
-        let file: File = generateScalaFile(props.scale);
+
+        let file: File = null;
+        try {
+            file = generateScalaFile(props.scale);
+        } catch(e) {
+            props.displayErrorMsg(e.message);
+            return;
+        }
 
         // Create download link, simulate click
         const element = document.createElement("a");
         element.href = URL.createObjectURL(file);
         element.download = file.name;
 
-        document.body.appendChild(element); // Required for this to work in FireFox? TODO
         element.click();
         element.remove();
     }
@@ -108,7 +122,7 @@ export default function ScaleEditor(props: ScaleEditorProps) {
             </div>
         );
 
-        // Scale's notes
+        // Scale notes
         let notes: ScaleNote[] = props.scale.notes;
         for (let i = 1; i < notes.length; i++) {
             notesJSX.push(
@@ -124,7 +138,7 @@ export default function ScaleEditor(props: ScaleEditorProps) {
             );
         }
 
-        // Scale's octave note
+        // Scale octave note
         notesJSX.push(
             <div key={notes.length}>
                 <OctaveNoteInput note={props.scale.octaveNote} mcDispatch={props.mcDispatch} />
@@ -176,3 +190,5 @@ export default function ScaleEditor(props: ScaleEditorProps) {
         </div>
     )
 }
+
+const SCALA_FILE_UPLOAD_ERROR: string = "Your scala file could not be uploaded. Please try again.";

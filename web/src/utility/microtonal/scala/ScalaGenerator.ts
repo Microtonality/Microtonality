@@ -1,7 +1,7 @@
 import { Scale } from "../Scale";
 import { ScaleNote } from "../notes";
 
-export const GENERATED_TITLE: string = 'MicrotonalScale_';
+export const GENERATED_TITLE: string = 'CustomScale_';
 
 // Create a Scala file (.scl) from the given scale.
 export function generateScalaFile(scale: Scale): File {
@@ -14,16 +14,17 @@ export function generateScalaFile(scale: Scale): File {
 
     file.push(scale.description + '\n');
 
+    file.push('  ' + scale.notes.length + '\n');
+    file.push('!\n');
+
     // Remove 1/1 note before printing
     // as this isn't present in Scala files.
     scale.notes.shift();
 
-    file.push('  ' + scale.notes.length + '\n');
-    file.push('!\n');
-
     let note: ScaleNote;
     for (note of scale.notes) 
         file.push('  ' + note.exportScala() + '\n');
+    file.push('  ' + scale.octaveNote.exportScala() + '\n');
 
     file.push('\n');
     return new File(file, title, {type: "text"});
@@ -31,19 +32,16 @@ export function generateScalaFile(scale: Scale): File {
 
 export function getTitle(scale: Scale): string {
 
-    // If the current title doesn't exist, create one.
-    if (scale.title === '')
+    // If the current title doesn't exist, generate one.
+    if (scale.title === '') {
         scale.title = generateTitle();
-    // Otherwise, validate.
-    else {
-        scale.title = scale.title.replace(/ /g, '_');
-        validateTitle(scale.title);
-
-        if (!scale.title.endsWith('.scl'))
-            return scale.title + '.scl';
+        return scale.title;
     }
 
-    return scale.title;
+    scale.title = scale.title.replace(' ', '_');
+    validateTitle(scale.title);
+
+    return (scale.title.endsWith('.scl') ? scale.title : scale.title + '.scl');
 }
 
 // Make sure each generated file title is different.
@@ -61,11 +59,13 @@ export function generateTitle(): string {
 }
 
 // Check for illegal characters and filenames.
-export function validateTitle(title: string): void {
+// The only characters allowed are numbers, letters, dashes, and underscores.
+export function validateTitle(title: string): boolean {
 
     let letterOrNumber: RegExp = new RegExp(/[A-z0-9]/)
     let validCharacters: string[] = ['-', '_'];
 
+    // Remove '.scl'
     if (title.endsWith('.scl'))
         title = title.substring(0, title.length - 4);
 
@@ -77,22 +77,40 @@ export function validateTitle(title: string): void {
             for (validChar of validCharacters) {
                 if (title[i] === validChar)
                     break;
-                
-                if (validChar === validCharacters[validCharacters.length - 1])
-                    throw new InvalidFilenameException(`The title \'${title}\' contains an invalid character, \'${title[i]}\'. You may only use letters, numbers, underscores, and dashes.`);
+
+                // Check if we're at the end of the valid character list.
+                // if (validChar === validCharacters[validCharacters.length - 1]) // TODO: uncomment once scale settings are done
+                    // throw new Error(INVALID_CHAR_IN_TITLE_ERROR(title, title[i])); // TODO: uncomment once scale settings are done
             }
         }
     }
 
     // Check if the title is a reserved filename.
     // Source: https://en.wikipedia.org/wiki/Filename#Reserved_characters_and_words 
-    let reservedFilenamesRegex: RegExp = new RegExp(/^CON|PRN|AUX|NUL|LST|COM[0-9]|LPT[0-9]$/);
-    if (reservedFilenamesRegex.test(title))
-        throw new InvalidFilenameException(`The title \'${title}\' is a reserved filename. Please change it to something else.`);
+    // let reservedFilenamesRegex: RegExp = new RegExp(/^(CON|PRN|AUX|NUL|LST|COM[0-9]|LPT[0-9])/); // TODO: uncomment once scale settings are done
+    // if (reservedFilenamesRegex.test(title)) // TODO: uncomment once scale settings are done
+    //     throw new Error(RESERVED_FILENAME_ERROR(title)); // TODO: uncomment once scale settings are done
+
+    return true;
 }
 
-export class InvalidFilenameException extends Error {
-    constructor(msg: string) {
-        super(msg);
-    }
-}
+
+// Error Messages
+export const INVALID_CHAR_IN_TITLE_ERROR = (title: string, invalidChar: string): string => {
+    return (
+        `The scale's title '${title}' contains an invalid character, '${invalidChar}'. 
+         Only letters, numbers, underscores, and dashes are allowed.
+         
+         Please change the title and try again.
+        `
+    );
+};
+
+export const RESERVED_FILENAME_ERROR = (title: string): string => {
+    return (
+        `The scale's title '${title}' is a reserved filename. 
+        
+         Please change the title and try again.
+        `
+    );
+};
