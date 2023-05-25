@@ -59,7 +59,7 @@ export default function BaseNoteConverter(props: BaseNoteConverterProps) {
     }
 
     return (
-        <div className={'note-converter-box-container'}>
+        <div className={'note-converter-container'}>
             {createRatioBox()}
             {createCentBox()}
         </div>
