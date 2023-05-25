@@ -1,6 +1,6 @@
 // Some code adapted for our use case from https://github.com/snopeusz/scl_reader
 
-import {CentNote, ScaleNote} from ".";
+import {ScaleNote} from ".";
 import {multiplierToCents} from "./CentNote";
 
 // The RatioNote class contains all the notes with a '/'.
@@ -28,11 +28,10 @@ export class RatioNote extends ScaleNote {
         return numerator / denominator;
     }
 
-    static convertToCents(ratio: RatioNote): CentNote {
+    static convertToCents(ratio: RatioNote): string {
         let oldMultiplier: number = RatioNote.ratioToMultiplier(ratio.num);
         let cents: string = multiplierToCents(oldMultiplier);
-
-        return new CentNote(cents, ratio.comments, ratio.num);
+        return cents;
     }
 
     static averageNotes(ratio1: RatioNote, ratio2: RatioNote): RatioNote {

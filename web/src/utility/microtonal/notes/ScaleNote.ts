@@ -44,10 +44,10 @@ export class ScaleNote {
     // Convert a ratio value to a cent value always.
     // Only convert a cent value to a ratio value if
     // the cent value had been previously converted from a ratio.
-    static convertNote(note: ScaleNote): ScaleNote {
-        if (note instanceof CentNote)
-            return CentNote.convertToRatio(note);
-        else if (note instanceof RatioNote)
+    static convertNote(note: ScaleNote): string {
+        if (note instanceof RatioNote)
             return RatioNote.convertToCents(note);
+        else if (note instanceof CentNote)
+            return CentNote.convertToRatio(note);
     }
 }

@@ -1,6 +1,6 @@
 // Some code adapted for our use case from https://github.com/snopeusz/scl_reader
 
-import {RatioNote, ScaleNote} from ".";
+import {ScaleNote} from ".";
 
 // The CentNote represents all note values with a decimal place.
 // For more information on how the calculations here differ
@@ -37,11 +37,11 @@ export class CentNote extends ScaleNote {
         return Math.pow(2, cents / 1200);
     }
 
-    static convertToRatio(cents: CentNote): RatioNote {
+    static convertToRatio(cents: CentNote): string {
         if (cents.prevRatio === '')
-            return new RatioNote('1/1', cents.comments);
+            return '1/1';
 
-        return new RatioNote(cents.prevRatio, cents.comments);
+        return cents.prevRatio;
     }
 
     static averageNotes(note1: ScaleNote, note2: ScaleNote): CentNote {

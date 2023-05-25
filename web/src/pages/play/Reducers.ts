@@ -1,7 +1,7 @@
 import {MicrotonalConfig} from "../../utility/MicrotonalConfig";
 import {OscillatorSettings} from "../../utility/audio/OscillatorSettings";
 import {Scale} from "../../utility/microtonal/Scale";
-import {ScaleNote} from "../../utility/microtonal/notes";
+import {CentNote, RatioNote, ScaleNote} from "../../utility/microtonal/notes";
 import {parsePitchValue} from "../../utility/microtonal/scala/ScalaParser";
 import {mapScaleToKeyboardShortcuts} from "../../utility/microtonal/PianoKeyMapping";
 import {BASIC_SYNTH, PIANO_SYNTH, FLUTE_SYNTH, OBOE_SYNTH, CLARINET_SYNTH,
@@ -109,7 +109,12 @@ const MicrotonalConfigReducer = (state: MicrotonalConfigHistory, action: Action)
             }
             else if (action.type === MCActions.CONVERT_NOTE) {
                 let oldNote: ScaleNote = notes.at(action.noteIndex);
-                newNote = ScaleNote.convertNote(oldNote);
+                let newValue: string = ScaleNote.convertNote(oldNote);
+
+                if (oldNote instanceof RatioNote)
+                    newNote = new CentNote(newValue, oldNote.comments, oldNote.num);
+                else
+                    newNote = new RatioNote(newValue, oldNote.comments);
             }
 
             notes.splice(action.noteIndex, 1, newNote);
@@ -132,7 +137,12 @@ const MicrotonalConfigReducer = (state: MicrotonalConfigHistory, action: Action)
                 break;
 
             case MCActions.CONVERT_OCTAVE_NOTE:
-                newOctaveNote = ScaleNote.convertNote(oldOctaveNote);
+                let newValue: string = ScaleNote.convertNote(oldOctaveNote);
+
+                if (oldOctaveNote instanceof RatioNote)
+                    newOctaveNote = new CentNote(newValue, oldOctaveNote.comments, oldOctaveNote.num);
+                else
+                    newOctaveNote = new RatioNote(newValue, oldOctaveNote.comments);
                 break;
         }
 
