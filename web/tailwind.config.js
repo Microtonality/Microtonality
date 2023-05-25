@@ -17,6 +17,7 @@ module.exports = {
         bgdark: '#212121',
         bglight: '#313131',
         gold: '#FAE1A2',
+        rederror: '#C91A1A',
         piano: {
           "edge": "#FCFCFC",
           "surface": "#F0F0F0"

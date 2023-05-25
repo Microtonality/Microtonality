@@ -38,7 +38,7 @@ export function getTitle(scale: Scale): string {
         return scale.title;
     }
 
-    scale.title = scale.title.replace(' ', '_');
+    scale.title = scale.title.replace(/ /g, '_');
     validateTitle(scale.title);
 
     return (scale.title.endsWith('.scl') ? scale.title : scale.title + '.scl');

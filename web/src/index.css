@@ -3,36 +3,178 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: "Agrandir-Wide";
-    src: url('./fonts/agrandir-widelight-webfont.woff2') format('woff2'),
-    url('./fonts/agrandir-widelight-webfont.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
+    font-family: "Agrandir-Wide";
+        src: url('./fonts/agrandir-widelight-webfont.woff2') format('woff2'),
+        url('./fonts/agrandir-widelight-webfont.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
 }
 
 @font-face {
-  font-family: "Agrandir-Reg";
-    src: url('./fonts/agrandir-regular-webfont.woff2') format('woff2'),
-    url('./fonts/agrandir-regular-webfont.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
+    font-family: "Agrandir-Reg";
+        src: url('./fonts/agrandir-regular-webfont.woff2') format('woff2'),
+        url('./fonts/agrandir-regular-webfont.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
 }
 
 @layer base {
-  input[type='number']::-webkit-outer-spin-button,
-  input[type='number']::-webkit-inner-spin-button,
-  input[type='number'] {
-    -webkit-appearance: none;
-    margin: 0;
-    -moz-appearance: textfield !important;
-  }
+    input[type='number']::-webkit-outer-spin-button,
+    input[type='number']::-webkit-inner-spin-button,
+    input[type='number'] {
+        -webkit-appearance: none;
+        margin: 0;
+        -moz-appearance: textfield !important;
+    }
+    input[type=range][orient=vertical] {
+        writing-mode: bt-lr; /* IE */
+        -webkit-appearance: slider-vertical; /* Chromium */
+        width: 8px;
+        height: 175px;
+        padding: 0 5px;
+    }
 }
 
-input[type=range][orient=vertical]
-{
-    writing-mode: bt-lr; /* IE */
-    -webkit-appearance: slider-vertical; /* Chromium */
-    width: 8px;
-    height: 175px;
-    padding: 0 5px;
+@layer components {
+
+    /*Settings Panel*/
+
+    /*Settings Tabs (BASIC and SCALE)*/
+    .settings-tab {
+        @apply w-full px-4 pt-1;
+        @apply select-none;
+
+        @apply border-t-2;
+        @apply focus:outline-none;
+
+        @apply text-center font-agrandir-wide;
+        @apply 2xl:text-xl xl:text-lg md:text-sm sm:text-xs;
+    }
+    .settings-tab-active {
+        @apply settings-tab;
+
+        @apply relative mt-2;
+        @apply border-gold;
+        @apply text-gold;
+    }
+    .settings-tab-inactive {
+        @apply settings-tab;
+
+        @apply cursor-pointer;
+        @apply border-b-2 border-b-gold focus:border-gold hover:border-gold;
+        @apply text-white focus:text-gold hover:text-gold;
+    }
+    .settings-tab-l {
+        @apply -mr-px;
+        @apply border-r-2 rounded-tr-xl;
+    }
+    .settings-tab-r {
+        @apply -ml-px;
+        @apply border-l-2 rounded-tl-xl;
+    }
+
+    /*Gold curve in between settings tabs that helps with folder-like appearance.*/
+    .settings-tab-hook-parent {
+        @apply absolute bottom-0;
+        @apply border-none;
+        @apply bg-bglight dark:bg-bgdark;
+    }
+    .settings-tab-hook-parent-l {
+        @apply settings-tab-hook-parent;
+        @apply left-full;
+    }
+    .settings-tab-hook-parent-r {
+        @apply settings-tab-hook-parent;
+        @apply right-full;
+    }
+    .settings-tab-hook {
+        @apply w-3 h-3;
+        @apply border-b-2 border-gold;
+    }
+    .settings-tab-hook-l {
+        @apply settings-tab-hook;
+        @apply border-l-2 rounded-bl-full;
+    }
+    .settings-tab-hook-r {
+        @apply settings-tab-hook;
+        @apply border-r-2 rounded-br-full;
+    }
+
+    /*Inputs*/
+    .settings-panel-input {
+        @apply w-full pl-1 py-1;
+        @apply disabled:pointer-events-none;
+
+        /*Background*/
+        @apply bg-white disabled:bg-neutral-500;
+        @apply dark:bg-bglight dark:disabled:bg-bglight;
+
+        /*Border*/
+        @apply border-2 rounded-md outline-0;
+        @apply border-black;
+        @apply dark:focus:border-gold dark:hover:border-gold;
+
+        /*Text*/
+        @apply font-agrandir;
+        @apply text-black disabled:text-neutral-800;
+        @apply dark:text-gold dark:disabled:text-neutral-400;
+
+        @apply selection:bg-black selection:text-gold;
+        @apply dark:selection:bg-gold dark:selection:text-black
+    }
+
+    /*Buttons*/
+    .settings-panel-button {
+        @apply p-1;
+        @apply select-none disabled:pointer-events-none;
+
+        /*Background*/
+        @apply bg-neutral-200 focus:bg-bgdark hover:bg-bgdark disabled:bg-neutral-800;
+        @apply dark:bg-neutral-400;
+
+        /*Border*/
+        @apply border-2 rounded-md outline-0;
+        @apply border-black focus:border-gold hover:border-gold;
+
+        /*Text*/
+        @apply font-agrandir;
+        @apply text-neutral-700 focus:text-gold hover:text-gold disabled:text-black;
+        @apply 2xl:text-xl xl:text-lg md:text-sm sm:text-xs;
+    }
+
+    /*Note Converter*/
+    .note-converter-container {
+        @apply inline-flex;
+        @apply border-2 border-black rounded-md;
+    }
+
+    .note-converter-box {
+        @apply px-1 py-1.5;
+        @apply text-sm select-none;
+        @apply border-black;
+    }
+    .note-converter-box-active {
+        @apply note-converter-box;
+
+        @apply cursor-default;
+        @apply bg-gold dark:bg-bgdark;
+        @apply text-black dark:text-gold;
+    }
+    .note-converter-box-inactive {
+        @apply note-converter-box;
+
+        @apply cursor-pointer;
+        @apply bg-white dark:bg-bglight;
+        @apply text-black dark:text-neutral-400;
+    }
+    .note-converter-box-inactive-disabled {
+        @apply note-converter-box-inactive;
+        @apply cursor-default;
+    }
+    .note-converter-box-l {
+        @apply border-r rounded-l;
+    }
+    .note-converter-box-r {
+        @apply border-l rounded-r;
+    }
 }

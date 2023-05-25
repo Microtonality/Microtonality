@@ -1,5 +1,4 @@
-import {Scale} from "./microtonal/Scale";
-import {generateEqualTemperedScale} from "./microtonal/ScaleGeneration";
+import {EQUAL_TEMPERED_SCALES, Scale} from "./microtonal/Scale";
 import {OscillatorSettings, DEFAULT_OSCILLATOR_SETTINGS} from "./audio/OscillatorSettings";
 import {createPianoKeyboardShortcuts, mapScaleToKeyboardShortcuts} from "./microtonal/PianoKeyMapping";
 
@@ -54,7 +53,7 @@ export const DEFAULT_SCALE_CONFIG: ScaleConfig = {
     keysPerOctave: 12,
     tuningFrequency: 261.6255653005986,
     rootKey: 72,
-    scale: generateEqualTemperedScale(12)
+    scale: EQUAL_TEMPERED_SCALES.at(0)
 }
 
 export const DEFAULT_MICROTONAL_CONFIG: MicrotonalConfig = {

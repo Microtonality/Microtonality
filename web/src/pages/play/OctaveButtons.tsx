@@ -10,7 +10,7 @@ export default function OctaveButtons(props: {
         <span className={"text-white text-center font-agrandir"}>Octave</span>
         <PianoKeyButton faceUp className={"lg:w-24 w-16 h-1/2"} onClick={() => props.octaveUp()}>
             <svg width="33" height="33" viewBox="0 0 33 33" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <g clip-path="url(#clip0_316_24360)">
+                <g clipPath="url(#clip0_316_24360)">
                     <path d="M16.5954 11.4768L24.6515 19.5329H8.53931L16.5954 11.4768Z" fill="#414141"/>
                 </g>
                 <defs>

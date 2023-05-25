@@ -1,6 +1,7 @@
 import * as React from "react";
 import {useEffect, useRef, useState} from "react";
-import {MCActions} from "./Reducers";
+import {MCActions} from "../Reducers";
+import SettingsFieldTitle from "./SettingsFieldTitle";
 
 interface TuningFrequencyEditorProps {
     tuningFrequency: number,
@@ -40,14 +41,17 @@ export default function TuningFrequencyEditor(props: TuningFrequencyEditorProps)
     }
 
     return (
-        <div>
-            <div className="2xl:text-xl xl:text-lg lg:text-md md:text-sm sm:text-xs xs:text-xs font-agrandir-wide text-white mt-[5%] mx-[7%]">
-                BASE
-                FREQUENCY
-            </div>
-            <div className="flex w-[85%] h-10 mt-[2%] mx-[7%]">
-                <input type="number" ref={tuningFrequencyInputField} value={tuningFreqInput} onChange={(e) => setTuningFreqInput(e.target.value)} onKeyDown={(e) => handleKeyDown(e)} onBlur={() => submitTuningFreqInput()} step="0.0001" className="w-full rounded-md font-agrandir pl-[2%]" />
-            </div>
+        <div className={'flex flex-col mb-4'}>
+            <SettingsFieldTitle text={'BASE FREQUENCY'} />
+            <input
+                className={'settings-panel-input text-lg'}
+                type={'number'}
+                value={tuningFreqInput}
+                ref={tuningFrequencyInputField}
+                onBlur={() => submitTuningFreqInput()}
+                onKeyDown={(e) => handleKeyDown(e)}
+                onChange={(e) => setTuningFreqInput(e.target.value)}
+            />
         </div>
     );
 }

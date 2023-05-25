@@ -1,4 +1,4 @@
-import { RatioNote, calcRatioMultiplier, InvalidRatioException } from '../RatioNote';
+import {RatioNote, DENOMINATOR_IS_ZERO_ERROR} from '../RatioNote';
 
 let numerator: number;
 let denominator: number;
@@ -14,7 +14,7 @@ beforeAll(() => {
     comment = 'comment';
 })
 
-test('RatioNote object has correct values', () => {
+test('RatioNote object has correct values.', () => {
     // Act
     let ratioNote: RatioNote = new RatioNote(ratio, comment);
 
@@ -22,17 +22,20 @@ test('RatioNote object has correct values', () => {
     expect(ratioNote.multiplier).toEqual(expectedMultiplier);
     expect(ratioNote.ratio).toEqual(ratio);
     expect(ratioNote.comments).toEqual(comment);
-})
+});
 
-test('calcRatioMultiplier parses and returns correct value', () => {
+test('Ratio.ratioToMultiplier(string) parses and returns correct value.', () => {
     // Act
-    let multiplier = calcRatioMultiplier(ratio);
+    let multiplier = RatioNote.ratioToMultiplier(ratio);
 
     // Assert
     expect(multiplier).toEqual(expectedMultiplier);
 })
 
-test('Ratio.calcRatioMultiplier(string) throws Error when denominator is 0', () => {
+test('Ratio.ratioToMultiplier(string) throws Error when denominator is 0', () => {
+    // Arrange
+    let badRatio: string = '1/0'
+
     // Act and Assert
-    expect(() => calcRatioMultiplier('1/0')).toThrowError(InvalidRatioException);
+    expect(() => RatioNote.ratioToMultiplier(badRatio)).toThrowError(DENOMINATOR_IS_ZERO_ERROR(badRatio));
 })

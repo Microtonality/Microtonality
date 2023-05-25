@@ -1,5 +1,5 @@
 import {DEFAULT_SCALE, Scale} from '../Scale'
-import { ScaleNote, RatioNote, CentNote, IntRatioNote } from '../notes'
+import {ScaleNote, RatioNote, CentNote} from '../notes'
 
 enum ParserPhase {
     TITLE = 0,
@@ -78,13 +78,13 @@ export function parseScalaFile(file: string): Scale {
 
             case ParserPhase.PITCH_VALUES:
                 if (line === '')
-                    throw new Error(NOT_ENOUGH_PITCH_VALUES_ERROR(keysPerOctave, notes.length));
+                    throw new Error(NOT_ENOUGH_PITCH_VALUES_ERROR(keysPerOctave, notes.length - 1)); // - 1 for base note
 
                 let note: ScaleNote = parsePitchValue(line, lineNum);
                 if (note === null)
                     throw new Error(INCORRECT_PITCH_VALUE_ERROR(line, lineNum));
 
-                if (notes.length === keysPerOctave - 1) {
+                if (notes.length === keysPerOctave) {
                     octaveNote = note;
                     phase = ParserPhase.DONE;
                 }
@@ -108,7 +108,7 @@ export function parseScalaFile(file: string): Scale {
 // Unfortunately we cannot use regex here, as there
 // are too many edge cases that would yield inconsistent results.
 // The user is allowed to put any characters they want
-// after the pitch value, so a regex could very well catch numbers
+// after the pitch value, so a regex could easily catch numbers
 // in the comments as well as the value itself.
 
 // Note: lineNum is optional because parsePitchValue() is called from other files.
@@ -116,7 +116,7 @@ export function parsePitchValue(line: string, lineNum?: number): ScaleNote {
 
     let value: string = '';
     let comments: string = '';
-    let noteType: (typeof CentNote | typeof RatioNote | typeof IntRatioNote) = null;
+    let noteType: (typeof CentNote | typeof RatioNote) = null;
 
     let seenChar: boolean = false;
     let i: number;
@@ -137,7 +137,7 @@ export function parsePitchValue(line: string, lineNum?: number): ScaleNote {
             else if (char === '/')
                 noteType = RatioNote;
             else {
-                noteType = IntRatioNote;
+                noteType = RatioNote;
                 break;
             }
 
@@ -145,8 +145,13 @@ export function parsePitchValue(line: string, lineNum?: number): ScaleNote {
 
             // Check if the next character exists or is not a number.
             // This is for cases '1/' or '1.'
-            if (((i+1) >= line.length) || (isNaN(parseInt(line.charAt(i+1))))) {
-                throw new Error(INCORRECT_PITCH_VALUE_ERROR(line, lineNum));
+            if ((i+1) === line.length || isNaN(parseInt(line.charAt(i+1)))) {
+                if (noteType === CentNote) {
+                    value += '0';
+                }
+                else {
+                    value += '1';
+                }
             }
         }
 
@@ -155,7 +160,7 @@ export function parsePitchValue(line: string, lineNum?: number): ScaleNote {
 
     // For single digit integer ratios with no comments.
     if (noteType === null && !isNaN(parseInt(line)))
-        noteType = IntRatioNote;
+        noteType = RatioNote;
 
     comments = line.substring(i).trim();
 

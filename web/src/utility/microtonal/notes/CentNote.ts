@@ -1,6 +1,6 @@
 // Some code adapted for our use case from https://github.com/snopeusz/scl_reader
 
-import { ScaleNote } from ".";
+import {RatioNote, ScaleNote} from ".";
 
 // The CentNote represents all note values with a decimal place.
 // For more information on how the calculations here differ
@@ -8,7 +8,11 @@ import { ScaleNote } from ".";
 export class CentNote extends ScaleNote {
     public cents: number;
 
-    constructor(cents: number | string, comments: string = '') {
+    // Placeholder in case this cent value
+    // was calculated from a ratio.
+    public prevRatio: string;
+
+    constructor(cents: number | string, comments: string = '', prevRatio: string = '') {
 
         let num: string;
         if (typeof cents === 'string') {
@@ -22,21 +26,25 @@ export class CentNote extends ScaleNote {
         if (!num.includes('.'))
             num += '.0';
         
-        let multiplier: number = calcCentsMultiplier(cents);
+        let multiplier: number = CentNote.centsToMultiplier(cents);
         super(num, multiplier, comments);
 
         this.cents = cents;
+        this.prevRatio = prevRatio;
     }
 
-    exportScala(): string {
-        let centsString = this.cents.toString();
-        if (!centsString.includes('.'))
-            centsString += '.0';
-
-        return centsString + ' ' + this.comments;
+    static centsToMultiplier(cents: number): number {
+        return Math.pow(2, cents / 1200);
     }
 
-    static override average(note1: ScaleNote, note2: ScaleNote): CentNote {
+    static convertToRatio(cents: CentNote): RatioNote {
+        if (cents.prevRatio === '')
+            return new RatioNote('1/1', cents.comments);
+
+        return new RatioNote(cents.prevRatio, cents.comments);
+    }
+
+    static averageNotes(note1: ScaleNote, note2: ScaleNote): CentNote {
 
         let averaged: CentNote;
         let tempNote: CentNote;
@@ -57,12 +65,8 @@ export class CentNote extends ScaleNote {
     }
 }
 
-export function calcCentsMultiplier(cents: number): number {
-    return Math.pow(2, cents / 1200);
-}
-
 export function multiplierToCents(multiplier: number): string {
-    if (multiplier <= 0)
+    if (multiplier <= 1)
         return '0.0';
 
     let cents: string = (1200 * Math.log2(multiplier)).toString();

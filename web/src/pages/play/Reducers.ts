@@ -1,8 +1,8 @@
-import {createMicrotonalConfig, MicrotonalConfig, ScaleConfig, SynthConfig} from "../../utility/MicrotonalConfig";
+import {MicrotonalConfig} from "../../utility/MicrotonalConfig";
 import {OscillatorSettings} from "../../utility/audio/OscillatorSettings";
-import { Scale } from "../../utility/microtonal/Scale";
-import { ScaleNote } from "../../utility/microtonal/notes";
-import { parsePitchValue } from "../../utility/microtonal/scala/ScalaParser";
+import {Scale} from "../../utility/microtonal/Scale";
+import {ScaleNote} from "../../utility/microtonal/notes";
+import {parsePitchValue} from "../../utility/microtonal/scala/ScalaParser";
 import {mapScaleToKeyboardShortcuts} from "../../utility/microtonal/PianoKeyMapping";
 import {BASIC_SYNTH, PIANO_SYNTH, FLUTE_SYNTH, OBOE_SYNTH, CLARINET_SYNTH,
     BASSOON_SYNTH, TRUMPET_SYNTH, FRENCH_HORN_SYNTH, TROMBONE_SYNTH, TUBA_SYNTH,
@@ -22,9 +22,10 @@ enum MCActions {
     SET_PRESET,
     ADD_NOTE,
     EDIT_NOTE,
-    SWAP_NOTES,
+    CONVERT_NOTE,
     DELETE_NOTE,
     EDIT_OCTAVE_NOTE,
+    CONVERT_OCTAVE_NOTE,
     SET_TUNING_FREQUENCY,
     SET_OSCILLATOR,
     SET_ATTACK,
@@ -43,9 +44,10 @@ type Action =
     | {type: MCActions.SET_SCALE, scale: Scale}
     | {type: MCActions.ADD_NOTE, note: ScaleNote}
     | {type: MCActions.EDIT_NOTE, noteValue: string, noteIndex: number}
-    | {type: MCActions.SWAP_NOTES, currentIndex: number, newIndex: number}
+    | {type: MCActions.CONVERT_NOTE, noteIndex: number}
     | {type: MCActions.DELETE_NOTE, noteIndex: number}
     | {type: MCActions.EDIT_OCTAVE_NOTE, noteValue: string}
+    | {type: MCActions.CONVERT_OCTAVE_NOTE}
     | {type: MCActions.SET_TUNING_FREQUENCY, tuningFrequency: number}
     | {type: MCActions.SET_OSCILLATOR, osc: OscillatorSettings, oscIndex: number}
     | {type: MCActions.SET_ATTACK, attack: number}
@@ -59,7 +61,7 @@ type Action =
 
 const MicrotonalConfigReducer = (state: MicrotonalConfigHistory, action: Action): MicrotonalConfigHistory => {
     let newState = {...state};
-    console.log({...action, theAction: MCActions[action.type]});
+    console.log({...action, actionString: MCActions[action.type]});
     if (action.type === MCActions.UNDO_CONFIG) {
         if (newState.previous.length !== 0) {
             newState.next.unshift(newState.current);
@@ -86,28 +88,31 @@ const MicrotonalConfigReducer = (state: MicrotonalConfigHistory, action: Action)
         configChange.keyMapping = mapScaleToKeyboardShortcuts(configChange.scaleConfig.scale, newState.current.scaleConfig.keysPerOctave);
     }
     if (action.type === MCActions.ADD_NOTE ||
+        action.type === MCActions.DELETE_NOTE ||
         action.type === MCActions.EDIT_NOTE ||
-        action.type === MCActions.SWAP_NOTES ||
-        action.type === MCActions.DELETE_NOTE) {
+        action.type === MCActions.CONVERT_NOTE) {
 
         let notes: ScaleNote[] = [...config.scaleConfig.scale.notes];
 
         if (action.type === MCActions.ADD_NOTE) {
             notes.push(action.note);
         }
-        else if (action.type === MCActions.EDIT_NOTE) {
-            let note: ScaleNote = parsePitchValue(`${action.noteValue} ${notes[action.noteIndex].comments}`);
-            notes.splice(action.noteIndex, 1, note);
-        }
-        else if (action.type === MCActions.SWAP_NOTES) {
-            let note: ScaleNote = notes[action.currentIndex];
-            let swapWith: ScaleNote = notes[action.newIndex];
-
-            notes.splice(action.newIndex, 1, note);
-            notes.splice(action.currentIndex, 1, swapWith);
-        }
         else if (action.type === MCActions.DELETE_NOTE) {
             notes.splice(action.noteIndex, 1);
+        }
+        else if (action.type === MCActions.EDIT_NOTE ||
+                 action.type === MCActions.CONVERT_NOTE) {
+
+            let newNote: ScaleNote;
+            if (action.type === MCActions.EDIT_NOTE) {
+                newNote = parsePitchValue(`${action.noteValue} ${notes[action.noteIndex].comments}`);
+            }
+            else if (action.type === MCActions.CONVERT_NOTE) {
+                let oldNote: ScaleNote = notes.at(action.noteIndex);
+                newNote = ScaleNote.convertNote(oldNote);
+            }
+
+            notes.splice(action.noteIndex, 1, newNote);
         }
 
         configChange = {scaleConfig: {scale: {notes: notes}}};
@@ -116,9 +121,22 @@ const MicrotonalConfigReducer = (state: MicrotonalConfigHistory, action: Action)
             configChange.keyMapping = mapScaleToKeyboardShortcuts(configChange.scaleConfig.scale, newState.current.scaleConfig.keysPerOctave);
         }
     }
-    if (action.type === MCActions.EDIT_OCTAVE_NOTE) {
-        let octaveNote: ScaleNote = parsePitchValue(`${action.noteValue} ${config.scaleConfig.scale.octaveNote.comments}`);
-        configChange = {scaleConfig: {scale: {octaveNote: octaveNote}}};
+    if (action.type === MCActions.EDIT_OCTAVE_NOTE ||
+        action.type === MCActions.CONVERT_OCTAVE_NOTE) {
+
+        let oldOctaveNote: ScaleNote = config.scaleConfig.scale.octaveNote;
+        let newOctaveNote: ScaleNote;
+        switch (action.type) {
+            case MCActions.EDIT_OCTAVE_NOTE:
+                newOctaveNote = parsePitchValue(`${action.noteValue} ${oldOctaveNote.comments}`);
+                break;
+
+            case MCActions.CONVERT_OCTAVE_NOTE:
+                newOctaveNote = ScaleNote.convertNote(oldOctaveNote);
+                break;
+        }
+
+        configChange = {scaleConfig: {scale: {octaveNote: newOctaveNote}}};
     }
     if (action.type === MCActions.SET_TUNING_FREQUENCY) {
         configChange = {scaleConfig: {tuningFrequency: action.tuningFrequency}};

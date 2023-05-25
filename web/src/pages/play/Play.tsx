@@ -1,21 +1,22 @@
 import * as React from 'react';
 import './piano.css';
-import {useState, useEffect, useReducer, useRef} from 'react';
+import {useState, useEffect, useReducer} from 'react';
 import SynthSettings from "./SynthSettings";
-import ScaleSettings from "./ScaleSettings";
+import SettingsPanel from "./settings panel/SettingsPanel";
 import MicrotonalPiano from "./MicrotonalPiano"
-import {createMicrotonalConfig, MicrotonalConfig} from "../../utility/MicrotonalConfig";
+import {createMicrotonalConfig} from "../../utility/MicrotonalConfig";
 import MidiReceiver from "../../utility/midi/MIDIReceiver";
 import {AdditiveSynthesizer} from "../../utility/audio/AdditiveSynthesizer";
 import {MCActions, MicrotonalConfigHistory, MicrotonalConfigReducer} from "./Reducers";
 import Button from "../../ui/Button";
-import {useRefFn} from "../../utility/useRefFn";
+import ErrorPopup, {HIDE_ERROR} from "../../ui/ErrorPopup";
 
 
 const additiveSynth = new AdditiveSynthesizer()
 const midiReceiver = new MidiReceiver(additiveSynth)
 
 export default function Play() {
+    const [errorMsg, displayErrorMsg] = useState<string>(HIDE_ERROR);
     const [microtonalConfigHistory, mcDispatch] = useReducer(
         MicrotonalConfigReducer,
         {
@@ -41,12 +42,17 @@ export default function Play() {
     }
 
     return (
-        <div className="mt-1 flex-1 flex h-full w-full overflow-hidden">
+        <div className={'flex flex-1 w-full h-full mt-1 overflow-auto'}>
 
-            <div className="w-full 2xl:max-w-md max-w-xs h-full flex">
-                <ScaleSettings microtonalConfig={microtonalConfigHistory.current} mcDispatch={mcDispatch}/>
+            <ErrorPopup errorMsg={errorMsg} displayErrorMsg={displayErrorMsg}/>
+
+            <div className={'flex flex-col max-w-xs 2xl:max-w-md'}>
+                <SettingsPanel
+                    microtonalConfig={microtonalConfigHistory.current}
+                    mcDispatch={mcDispatch}
+                    displayErrorMsg={displayErrorMsg}
+                />
             </div>
-
 
             <div className={"flex flex-col w-full ml-1"}>
 

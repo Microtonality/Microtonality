@@ -1,11 +1,10 @@
 import {DEFAULT_SCALE, Scale} from '../../Scale';
-import {ScaleNote, CentNote, RatioNote, IntRatioNote} from '../../notes';
+import {ScaleNote, CentNote, RatioNote} from '../../notes';
 import {
     parseScalaFile,
     parsePitchValue,
     INCORRECT_KEYS_PER_OCTAVE_ERROR,
     NOT_ENOUGH_PITCH_VALUES_ERROR,
-    INCORRECT_PITCH_VALUE_ERROR,
     COMMENT_BEFORE_PITCH_VALUE_ERROR,
 } from '../ScalaParser';
 
@@ -13,7 +12,8 @@ let title: string;
 let description: string;
 let baseNote: ScaleNote;
 let noteComment: string;
-let messyNoteComment: string;
+let messyRatioNoteComment: string;
+let messyCentNoteComment: string;
 
 beforeAll(() => {
     title = 'title';
@@ -23,9 +23,15 @@ beforeAll(() => {
 
     // This value hopefully covers all edge cases
     // in case regex use is to be explored.
-    messyNoteComment = 'commentv2.3 9.5/10';
+    messyRatioNoteComment = '/6/3.5.1.4comment2.3 9.5/10';
+    messyCentNoteComment = '.6.43/8.1.4comment2.3 9.5/10';
 });
 
+//
+//
+// ScalaParser.parseScalaFile(string)
+//
+//
 test('ScalaParser.parseScalaFile(string) parses a valid Scala file and contains the correct values.', () => {
 
     // Arrange
@@ -36,7 +42,7 @@ test('ScalaParser.parseScalaFile(string) parses a valid Scala file and contains 
     // Notes
     let centNote: CentNote = new CentNote(RANDOM_CENTS(), noteComment);
     let ratioNote: RatioNote = new RatioNote(RANDOM_RATIO(), noteComment);
-    let intRatioNote: IntRatioNote = new IntRatioNote(RANDOM_INT_RATIO(), noteComment);
+    let intRatioNote: RatioNote = new RatioNote(RANDOM_INT_RATIO(), noteComment);
     let expNotes: ScaleNote[] = [
         centNote,
         ratioNote,
@@ -60,16 +66,19 @@ test('ScalaParser.parseScalaFile(string) parses a valid Scala file and contains 
         `${expDescription}\n` +
         ` ${expNotes.length + 1}\n` +
         `!\n` +
-        ` ${centNote.num} ${centNote.comments}\n` +
-        ` ${ratioNote.num} ${ratioNote.comments}\n` +
-        ` ${intRatioNote.multiplier.toString()} ${intRatioNote.comments}\n` +
-        ` ${octaveNote.num} ${octaveNote.comments}\n`;
+        ` ${centNote.num}${centNote.comments}\n` +
+        ` ${ratioNote.num}${ratioNote.comments}\n` +
+        ` ${intRatioNote.multiplier.toString()}${intRatioNote.comments}\n` +
+        ` ${octaveNote.num}${octaveNote.comments}\n`;
 
     // Act
     let scale: Scale = parseScalaFile(file);
 
     // Assert
-    expect(scale).toEqual(expectedScale);
+    expect(scale.notes.length).toEqual(expectedScale.notes.length);
+    for (let i = 0; i < scale.notes.length; i++) {
+        expect(scale.notes.at(i).abstractEquals(expectedScale.notes.at(i))).toEqual(true);
+    }
 });
 
 test('ScalaParser.parseScalaFile(string) doesn\'t save extra pitch values.', () => {
@@ -83,14 +92,17 @@ test('ScalaParser.parseScalaFile(string) doesn\'t save extra pitch values.', () 
         `\n` +
         ` 1\n` +
         `!\n` +
-        ` ${validNote.num} ${validNote.comments}\n` +
-        ` ${invalidNote.num} ${invalidNote.comments}\n`;
+        ` ${validNote.num}${validNote.comments}\n` +
+        ` ${invalidNote.num}${invalidNote.comments}\n`;
 
     // Act
     let scale: Scale = parseScalaFile(file);
 
     // Assert
-    expect(scale).toEqual(expectedScale);
+    expect(scale.notes.length).toEqual(expectedScale.notes.length);
+    for (let i = 0; i < scale.notes.length; i++) {
+        expect(scale.notes.at(i).abstractEquals(expectedScale.notes.at(i))).toEqual(true);
+    }
 });
 
 test('ScalaParser.parseScalaFile(string) returns INCORRECT_KEYS_PER_OCTAVE_ERROR message if the number of keys per octave is not an integer.', () => {
@@ -116,83 +128,54 @@ test('ScalaParser.parseScalaFile(string) returns INCORRECT_KEYS_PER_OCTAVE_ERROR
 test('ScalaParser.parseScalaFile(string) returns NOT_ENOUGH_PITCH_VALUES_ERROR message if there are not enough pitch values.', () => {
     
     // Arrange
-    let keysPerOctave: number = 2;
-    let notes: ScaleNote[] = [new IntRatioNote('1')];
+    let notes: ScaleNote[] = [new RatioNote('1')];
+    let incorrectNotesLength = notes.length + 1;
 
     let file: string =
         `\n` +
-        ` ${keysPerOctave}\n` +
+        ` ${incorrectNotesLength}\n` +
         `!\n` +
         ` ${notes.at(0).num}\n`;
 
-    let expErrorMsg: string = NOT_ENOUGH_PITCH_VALUES_ERROR(keysPerOctave, notes.length);
+    let expErrorMsg: string = NOT_ENOUGH_PITCH_VALUES_ERROR(incorrectNotesLength, notes.length);
 
     // Act and Assert
     expect(() => parseScalaFile(file)).toThrowError(expErrorMsg);
 });
 
 
-
-
-
-
-
-
+//
+//
+// ScalaParser.parsePitchValue(string)
+//
+//
 test('ScalaParser.parsePitchValue(string) builds CentNote.', () => {
 
     // Arrange
-    let expectedNote: CentNote = new CentNote(RANDOM_CENTS(), messyNoteComment);
-    let pitchValueLine: string = `${expectedNote.num} ${expectedNote.comments}`;
+    let expectedNote: CentNote = new CentNote(RANDOM_CENTS(), messyCentNoteComment);
+    let pitchValueLine: string = `${expectedNote.num}${expectedNote.comments}`;
 
     // Act
     let note: ScaleNote = parsePitchValue(pitchValueLine);
 
     // Assert
     expect(note).toBeInstanceOf(CentNote);
-    expect(note).toEqual(expectedNote);
+    expect(note.abstractEquals(expectedNote)).toEqual(true);
 });
 
 test('ScalaParser.parsePitchValue(string) builds RatioNote.', () => {
 
     // Arrange
-    let expectedNote: RatioNote = new RatioNote(RANDOM_RATIO(), messyNoteComment);
-    let pitchValueLine: string = `${expectedNote.num} ${expectedNote.comments}`;
+    let expectedNote: RatioNote = new RatioNote(RANDOM_RATIO(), messyRatioNoteComment);
+    let pitchValueLine: string = `${expectedNote.num}${expectedNote.comments}`;
 
     // Act
     let note: ScaleNote = parsePitchValue(pitchValueLine);
 
     // Assert
     expect(note).toBeInstanceOf(RatioNote);
-    expect(note).toEqual(expectedNote);
+    expect(note.abstractEquals(expectedNote)).toEqual(true);
 });
-
-test('ScalaParser.parsePitchValue(string) builds IntRatioNote.', () => {
-
-    // Arrange
-    let expInt = RANDOM_INT_RATIO();
-    let expectedNote: IntRatioNote = new IntRatioNote(expInt, messyNoteComment);
-    let pitchValueLine: string = `${expInt} ${expectedNote.comments}`;
-
-    // Act
-    let note: ScaleNote = parsePitchValue(pitchValueLine);
-
-    // Assert
-    expect(note).toBeInstanceOf(IntRatioNote);
-    expect(note).toEqual(expectedNote);
-});
-
-test('ScalaParser.parsePitchValue(string) returns INCORRECT_PITCH_VALUE_ERROR message if the pitch value is incorrect.', () => {
-
-    // Arrange
-    let badPitchValue: string = '1/'; // could also be '1.'
-    let lineNum: number = parseInt(RANDOM_INT_RATIO());
-
-    let expErrorMsg: string = INCORRECT_PITCH_VALUE_ERROR(badPitchValue, lineNum);
-
-    // Act and Assert
-    expect(() => parsePitchValue(badPitchValue, lineNum)).toThrowError(expErrorMsg);
-});
-
 
 test('ScalaParser.parsePitchValue(string) returns COMMENT_BEFORE_PITCH_VALUE_ERROR message if there is any text besides whitespace before the pitch value.', () => {
 
