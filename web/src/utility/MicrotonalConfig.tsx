@@ -1,6 +1,7 @@
-import {EQUAL_TEMPERED_SCALES, Scale} from "./microtonal/Scale";
+import {Scale} from "./microtonal/Scale";
 import {OscillatorSettings, DEFAULT_OSCILLATOR_SETTINGS} from "./audio/OscillatorSettings";
 import {createPianoKeyboardShortcuts, mapScaleToKeyboardShortcuts} from "./microtonal/PianoKeyMapping";
+import {EQUAL_TEMPERED_SCALES} from "./microtonal/ScaleGeneration";
 
 export interface MicrotonalConfig {
     title?: string; // currently the title can only be changed by changing the file name itself

@@ -1,9 +1,10 @@
 import * as React from "react";
 import {ChangeEvent, MutableRefObject, useEffect, useRef, useState} from "react";
 import {MCActions} from "../../Reducers";
-import {Scale, EQUAL_TEMPERED_SCALES, matchesEqualTemperedScale} from "../../../../utility/microtonal/Scale";
+import {Scale} from "../../../../utility/microtonal/Scale";
 import Popup from "../../../../ui/Popup";
 import SettingsFieldTitle from "../SettingsFieldTitle";
+import {EQUAL_TEMPERED_SCALES, matchesEqualTemperedScale} from "../../../../utility/microtonal/ScaleGeneration";
 
 interface EqualTemperedScaleSliderProps {
     scale: Scale;

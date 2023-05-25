@@ -7,6 +7,7 @@ import {ScaleNote} from "../../../../../utility/microtonal/notes";
 import {MCActions} from "../../../Reducers";
 import {Scale} from "../../../../../utility/microtonal/Scale";
 import DraggableNoteList from "./note list/DraggableNoteList";
+import {averageNotes} from "../../../../../utility/microtonal/notes/ScaleNoteUtility";
 
 interface ScaleEditorProps {
     scale: Scale;
@@ -20,7 +21,7 @@ export default function ScaleEditor(props: ScaleEditorProps) {
     const handleAddNote = () => {
         // Average the last note in the scale and the octave note.
         let notes: ScaleNote[] = props.scale.notes;
-        let note: ScaleNote = ScaleNote.averageNotes(notes[notes.length - 1], props.scale.octaveNote);
+        let note: ScaleNote = averageNotes(notes[notes.length - 1], props.scale.octaveNote);
 
         props.mcDispatch({type: MCActions.ADD_NOTE, note: note});
     }

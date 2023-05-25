@@ -11,14 +11,9 @@ interface SettingsPanelProps {
     displayErrorMsg: (msg: string) => void;
 }
 
-export enum SettingsTabs {
-    BASIC,
-    SCALE
-}
-
 export default function SettingsPanel(props: SettingsPanelProps) {
 
-    const [currentTab, setCurrentTab] = useState(SettingsTabs.SCALE);
+    const [currentTab, setCurrentTab] = useState<number>(0);
 
     return (
         <div className={'flex flex-col w-full h-full border-t-2 border-r-2 border-gold rounded-tr-xl bg-bglight dark:bg-bgdark'}>

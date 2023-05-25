@@ -1,6 +1,4 @@
-// Some code adapted for our use case from https://github.com/snopeusz/scl_reader
-
-import {ScaleNote} from ".";
+import {ScaleNote} from "./ScaleNote";
 
 // The CentNote represents all note values with a decimal place.
 // For more information on how the calculations here differ
@@ -26,9 +24,7 @@ export class CentNote extends ScaleNote {
         if (!num.includes('.'))
             num += '.0';
         
-        let multiplier: number = CentNote.centsToMultiplier(cents);
-        super(num, multiplier, comments);
-
+        super(num, CentNote.centsToMultiplier(cents), comments);
         this.cents = cents;
         this.prevRatio = prevRatio;
     }
@@ -36,42 +32,4 @@ export class CentNote extends ScaleNote {
     static centsToMultiplier(cents: number): number {
         return Math.pow(2, cents / 1200);
     }
-
-    static convertToRatio(cents: CentNote): string {
-        if (cents.prevRatio === '')
-            return '1/1';
-
-        return cents.prevRatio;
-    }
-
-    static averageNotes(note1: ScaleNote, note2: ScaleNote): CentNote {
-
-        let averaged: CentNote;
-        let tempNote: CentNote;
-
-        if (note1 instanceof CentNote && note2 instanceof CentNote) {
-            averaged = new CentNote((note1.cents + note2.cents) / 2);
-        }
-        else if (note1 instanceof CentNote) {
-            tempNote = new CentNote(multiplierToCents(note2.multiplier));
-            averaged = new CentNote((note1.cents + tempNote.cents) / 2);
-        }
-        else if (note2 instanceof CentNote) {
-            tempNote = new CentNote(multiplierToCents(note1.multiplier));
-            averaged = new CentNote((tempNote.cents + note2.cents) / 2);
-        }
-
-        return averaged;
-    }
-}
-
-export function multiplierToCents(multiplier: number): string {
-    if (multiplier <= 1)
-        return '0.0';
-
-    let cents: string = (1200 * Math.log2(multiplier)).toString();
-    if (!cents.includes('.'))
-        cents += '.0'
-
-    return cents;
 }

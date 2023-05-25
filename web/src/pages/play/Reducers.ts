@@ -1,12 +1,13 @@
 import {MicrotonalConfig} from "../../utility/MicrotonalConfig";
 import {OscillatorSettings} from "../../utility/audio/OscillatorSettings";
 import {Scale} from "../../utility/microtonal/Scale";
-import {CentNote, RatioNote, ScaleNote} from "../../utility/microtonal/notes";
+import {ScaleNote} from "../../utility/microtonal/notes";
 import {parsePitchValue} from "../../utility/microtonal/scala/ScalaParser";
 import {mapScaleToKeyboardShortcuts} from "../../utility/microtonal/PianoKeyMapping";
 import {BASIC_SYNTH, PIANO_SYNTH, FLUTE_SYNTH, OBOE_SYNTH, CLARINET_SYNTH,
     BASSOON_SYNTH, TRUMPET_SYNTH, FRENCH_HORN_SYNTH, TROMBONE_SYNTH, TUBA_SYNTH,
     VIOLIN_SYNTH, CELLO_SYNTH} from "../../utility/audio/Instruments";
+import {convertNote} from "../../utility/microtonal/notes/ScaleNoteUtility";
 
 export interface MicrotonalConfigHistory {
     previous: Array<MicrotonalConfig>,
@@ -109,12 +110,7 @@ const MicrotonalConfigReducer = (state: MicrotonalConfigHistory, action: Action)
             }
             else if (action.type === MCActions.CONVERT_NOTE) {
                 let oldNote: ScaleNote = notes.at(action.noteIndex);
-                let newValue: string = ScaleNote.convertNote(oldNote);
-
-                if (oldNote instanceof RatioNote)
-                    newNote = new CentNote(newValue, oldNote.comments, oldNote.num);
-                else
-                    newNote = new RatioNote(newValue, oldNote.comments);
+                newNote = convertNote(oldNote);
             }
 
             notes.splice(action.noteIndex, 1, newNote);
@@ -137,12 +133,7 @@ const MicrotonalConfigReducer = (state: MicrotonalConfigHistory, action: Action)
                 break;
 
             case MCActions.CONVERT_OCTAVE_NOTE:
-                let newValue: string = ScaleNote.convertNote(oldOctaveNote);
-
-                if (oldOctaveNote instanceof RatioNote)
-                    newOctaveNote = new CentNote(newValue, oldOctaveNote.comments, oldOctaveNote.num);
-                else
-                    newOctaveNote = new RatioNote(newValue, oldOctaveNote.comments);
+                newOctaveNote = convertNote(oldOctaveNote);
                 break;
         }
 
