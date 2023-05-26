@@ -11,21 +11,20 @@ interface EqualTemperedScaleSliderProps {
     mcDispatch: Function;
 }
 
-export const etSliderMin = 12;
-export const etSliderMax = 32;
-
 export default function EqualTemperedScaleSlider(props: EqualTemperedScaleSliderProps) {
 
     const [value, setValue] = useState<number>(12);
     const [displayValuePopup, setDisplayValuePopup] = useState<boolean>(false);
     const [popupPosition, setPopupPosition] = useState<string>('0px');
     const sliderInputRef: MutableRefObject<HTMLInputElement> = useRef(null);
+    let min = 12;
+    let max = 32;
 
     useEffect(() => {
         if (matchesEqualTemperedScale(props.scale)) {
             let val: number = props.scale.notes.length
             setValue(val);
-            setPopupPosition(getNextPopupPosition(val - etSliderMin));
+            setPopupPosition(getNextPopupPosition(val - min));
         }
     }, [props.scale]);
 
@@ -33,7 +32,7 @@ export default function EqualTemperedScaleSlider(props: EqualTemperedScaleSlider
         let val: number = Number(event.target.value);
 
         setValue(val);
-        setPopupPosition(getNextPopupPosition(val - etSliderMin));
+        setPopupPosition(getNextPopupPosition(val - min));
     }
 
     const beginAdjustment = () => {
@@ -46,7 +45,7 @@ export default function EqualTemperedScaleSlider(props: EqualTemperedScaleSlider
     }
 
     const handleRangeChange = () => {
-        let newScale: Scale = EQUAL_TEMPERED_SCALES.at(value - etSliderMin);
+        let newScale: Scale = EQUAL_TEMPERED_SCALES.at(value - min);
         if (newScale === props.scale)
             return;
 
@@ -56,7 +55,7 @@ export default function EqualTemperedScaleSlider(props: EqualTemperedScaleSlider
     // I'm not sure why this works so nicely. -Calvin
     // Simplified from: https://codepen.io/chriscoyier/pen/eYNQyPe
     const getNextPopupPosition = (step: number): string => {
-        let size: number = etSliderMax - etSliderMin;
+        let size: number = max - min;
 
         // Since the size of this slider is 20 we get clean
         // increments of 5. (ex: 5%, 10%, 15%, ...)
@@ -84,11 +83,12 @@ export default function EqualTemperedScaleSlider(props: EqualTemperedScaleSlider
                     type={'range'}
                     step={1}
                     value={value}
-                    min={etSliderMin}
-                    max={etSliderMax}
+                    min={min}
+                    max={max}
                     onChange={(e) => wrapSetValue(e)}
                     onFocus={() => beginAdjustment()}
                     onBlur={() => endAdjustment()}
+                    onMouseDown={() => beginAdjustment()}
                     onMouseUp={() => endAdjustment()}
                     onKeyDown={(e) => handleKeyDown(e)}
                 />
