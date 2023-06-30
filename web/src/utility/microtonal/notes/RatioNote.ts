@@ -17,17 +17,10 @@ export class RatioNote extends ScaleNote {
         let parsedRatio: string[] = ratioRegex.exec(ratio);
 
         let numerator: number = parseInt(parsedRatio[1]);
-        let denominator: number = parseInt(parsedRatio[2]);
-
-        if (denominator === 0)
-            throw new Error(DENOMINATOR_IS_ZERO_ERROR(ratio));
+        let denominator: number = parseInt(parsedRatio[2]) || 1;
 
         return numerator / denominator;
     }
 }
 
-export const DENOMINATOR_IS_ZERO_ERROR = (ratio: string): string => {
-    return (
-        `The denominator is zero in the pitch value ${ratio}.`
-    );
-};
+export const BaseRatioNote: RatioNote = new RatioNote('1/1');

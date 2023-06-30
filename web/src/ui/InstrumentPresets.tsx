@@ -1,23 +1,22 @@
 import * as React from "react";
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 import { MCActions } from "../pages/play/Reducers";
-import { MicrotonalConfig } from "../utility/MicrotonalConfig";
+import {ReactJSXElement} from "@emotion/react/types/jsx-namespace";
+import {useMCDispatch} from "../pages/play/PlayProvider";
 
-interface InstrumentPresetProps {
-    microtonalConfig: MicrotonalConfig,
-    mcDispatch: Function
-}
+export default function InstrumentPresets(): ReactJSXElement {
 
-export default function InstrumentPresets(props: InstrumentPresetProps) {
-    const [preset, setPreset] = useState("Custom")
+    const mcDispatch: Function = useMCDispatch();
 
-    const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        props.mcDispatch({type: MCActions.SET_PRESET, preset: e.target.value});
+    const [preset, setPreset] = useState("Custom");
+
+    const onChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+        mcDispatch({type: MCActions.SET_PRESET, preset: e.target.value});
     }
 
-    useEffect(() => {
-        console.log(preset)
-    }, [preset])
+    // useEffect(() => {
+    //     console.log(preset)
+    // }, [preset])
 
     return(
             <div className="flex flex-col m-2 font-agrandir text-black text-md" onChange={onChange}>

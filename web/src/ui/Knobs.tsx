@@ -78,7 +78,7 @@ export default function Knob (props: KnobProps) {
   const submitTextbox = () => {
     let val = clampValue(parseFloat(textBox));
     // If the user didn't give us a valid number, reset the textbox
-    if (isNaN(val)) {
+    if (isNaN(val) || val === props.value) {
       updateTextbox();
       return;
     }

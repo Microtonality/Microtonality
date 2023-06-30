@@ -1,19 +1,21 @@
 import {ReactJSXElement} from "@emotion/react/types/jsx-namespace";
 import * as React from "react";
+import {SettingsPanelTabs} from "./SettingsPanelProvider";
 
 interface SettingsPanelTabSwitcherProps {
     currentTab: number;
     setCurrentTab: (tab: number) => void;
 }
 
-export default function SettingsPanelTabSwitcher(props: SettingsPanelTabSwitcherProps) {
+export default function SettingsPanelTabSwitcher(props: SettingsPanelTabSwitcherProps): ReactJSXElement {
 
-    const handleKeyDown = (event: React.KeyboardEvent<HTMLLIElement>) => {
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLLIElement>): void => {
         if (event.key === 'Enter' || event.key === ' ') {
-            if (props.currentTab === 0)
-                props.setCurrentTab(1);
-            else
-                props.setCurrentTab(0);
+            props.setCurrentTab(
+                props.currentTab === SettingsPanelTabs.BASIC ?
+                    SettingsPanelTabs.SCALE :
+                    SettingsPanelTabs.BASIC
+            );
         }
     }
 

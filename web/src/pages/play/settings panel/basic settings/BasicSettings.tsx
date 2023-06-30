@@ -1,34 +1,25 @@
 import * as React from "react";
-import {MicrotonalConfig} from "../../../../utility/MicrotonalConfig";
-import TuningFrequencyEditor from "../TuningFrequencyEditor";
+import TuningFrequencyEditor from "../elements/TuningFrequencyEditor";
 import EqualTemperedScaleSlider from "./EqualTemperedScaleSlider";
-import SynthFileHandler from "./SynthFileHandler";
+import SynthFileHandler from "./synth files/SynthFileHandler";
+import {useMConfig} from "../../PlayProvider";
+import {FadeInAndOut} from "../elements/animations/Animations";
+import Animator from "../elements/animations/Animator";
+import {ReactJSXElement} from "@emotion/react/types/jsx-namespace";
 
-interface BasicSettingsProps {
-    microtonalConfig: MicrotonalConfig;
-    mcDispatch: Function;
-    displayErrorMsg: (msg: string) => void;
-}
+export default function BasicSettings(): ReactJSXElement {
 
-export default function BasicSettings(props: BasicSettingsProps) {
+    const tuningFreq: number = useMConfig().scaleConfig.tuningFrequency;
 
     return(
         <div className={'flex flex-col'}>
-            <TuningFrequencyEditor
-                tuningFrequency={props.microtonalConfig.scaleConfig.tuningFrequency}
-                mcDispatch={props.mcDispatch}
-            />
+            <TuningFrequencyEditor key={tuningFreq} />
 
-            <SynthFileHandler
-                microtonalConfig={props.microtonalConfig}
-                mcDispatch={props.mcDispatch}
-                displayErrorMsg={props.displayErrorMsg}
-            />
+            <Animator animation={FadeInAndOut}>
+                <SynthFileHandler />
+            </Animator>
 
-            <EqualTemperedScaleSlider
-                scale={props.microtonalConfig.scaleConfig.scale}
-                mcDispatch={props.mcDispatch}
-            />
+            <EqualTemperedScaleSlider />
         </div>
     )
 }

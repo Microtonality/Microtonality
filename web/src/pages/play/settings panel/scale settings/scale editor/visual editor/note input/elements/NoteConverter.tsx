@@ -1,6 +1,6 @@
 import * as React from "react";
 import {ReactJSXElement} from "@emotion/react/types/jsx-namespace";
-import {ScaleNote, CentNote} from "../../../../../../../utility/microtonal/notes";
+import {ScaleNote, CentNote} from "../../../../../../../../utility/microtonal/notes";
 
 interface NoteConverterProps {
     note: ScaleNote;
@@ -10,7 +10,14 @@ interface NoteConverterProps {
 
 // A user can convert from a ratio to a cent value and convert back.
 // Converting from any cent to a ratio is not allowed.
-export default function NoteConverter(props: NoteConverterProps) {
+export default function NoteConverter(props: NoteConverterProps): ReactJSXElement {
+
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLOrSVGElement>): void => {
+        if (event.key === 'Enter' || event.key === ' ') {
+            props.convertNote();
+            event.preventDefault();
+        }
+    }
 
     const createRatioBox = (): ReactJSXElement => {
 
@@ -27,7 +34,10 @@ export default function NoteConverter(props: NoteConverterProps) {
 
             return (
                 <div className={'note-converter-box-inactive note-converter-box-l'}
-                     onClick={() => props.convertNote()}>
+                     tabIndex={0}
+                     onClick={() => props.convertNote()}
+                     onKeyDown={handleKeyDown}
+                >
                     RATIO
                 </div>
             );
@@ -44,8 +54,12 @@ export default function NoteConverter(props: NoteConverterProps) {
 
         if (props.isRatio) {
             return (
-                <div className={'note-converter-box-inactive note-converter-box-r'}
-                     onClick={() => props.convertNote()}>
+                <div
+                    className={'note-converter-box-inactive note-converter-box-r'}
+                    tabIndex={0}
+                    onClick={() => props.convertNote()}
+                    onKeyDown={handleKeyDown}
+                >
                     CENT
                 </div>
             );

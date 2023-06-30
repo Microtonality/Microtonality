@@ -1,13 +1,21 @@
 import {Scale} from "./microtonal/Scale";
 import {OscillatorSettings, DEFAULT_OSCILLATOR_SETTINGS} from "./audio/OscillatorSettings";
-import {createPianoKeyboardShortcuts, mapScaleToKeyboardShortcuts} from "./microtonal/PianoKeyMapping";
+import {mapScaleToKeyboardShortcuts} from "./microtonal/PianoKeyMapping";
 import {EQUAL_TEMPERED_SCALES} from "./microtonal/ScaleGeneration";
 
 export interface MicrotonalConfig {
-    title?: string; // currently the title can only be changed by changing the file name itself
+    title?: string;
+    description?: string;
     keyMapping?: Record<number, number>; // Map keyboard keys (0-keysPerOctave) to scale degrees, ex. 0: 1
     scaleConfig?: ScaleConfig;
     synthConfig?: SynthConfig;
+
+    // Removes need for useEffect hook in some places if the id is unique.
+    // For this we use the uuid package for a v4 (random) uuid and any components that
+    // need to update with the microtonal config will have a key property which is the config's id.
+    // https://react.dev/learn/preserving-and-resetting-state#resetting-a-form-with-a-key.
+    // useEffect() should only be used for special cases.
+    configId?: string;
 }
 
 export interface SynthConfig {

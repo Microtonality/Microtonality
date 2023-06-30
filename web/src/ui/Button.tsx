@@ -1,5 +1,5 @@
 import * as React from "react";
-import {MutableRefObject, useRef} from "react";
+import {ReactJSXElement} from "@emotion/react/types/jsx-namespace";
 
 interface ButtonProps {
     onClick: (event: any) => void;
@@ -8,17 +8,13 @@ interface ButtonProps {
     className?: string;
 }
 
-export default function Button(props: ButtonProps) {
-
-    const ref: MutableRefObject<HTMLButtonElement> = useRef(null);
-
+export default function Button(props: ButtonProps): ReactJSXElement {
     return(
         <button
-            ref={ref}
             disabled={props.disabled}
             className={`${props.className} settings-panel-button`}
             onClick={props.onClick}
-            onMouseOut={() => ref.current.blur()}
+            onMouseOut={(e) => e.currentTarget.blur()}
         >
             {props.text}
         </button>

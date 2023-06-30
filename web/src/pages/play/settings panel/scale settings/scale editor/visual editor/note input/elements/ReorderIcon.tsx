@@ -1,4 +1,5 @@
 import * as React from "react";
+import {ReactJSXElement} from "@emotion/react/types/jsx-namespace";
 
 interface ReorderIconProps {
     isDragging: boolean;
@@ -6,10 +7,10 @@ interface ReorderIconProps {
     startDragging: (event: React.PointerEvent<HTMLDivElement>) => void;
 }
 
-export const reorderIconDiv: string = 'ml-px my-1 p-1.5 touch-none border-2 rounded-md bg-bglight group hover:border-black dark:bg-bgdark';
+export const reorderIconDiv: string = 'ml-px my-1 p-1.5 touch-none border-2 rounded-md bg-bglight group hover:border-black';
 export const reorderIconSVG: string = 'w-3 h-3 stroke-2 group-hover:stroke-black';
 
-export default function ReorderIcon(props: ReorderIconProps) {
+export default function ReorderIcon(props: ReorderIconProps): ReactJSXElement {
 
     const notDraggingDiv: string = 'cursor-grab border-gold';
     const notDraggingSVG: string = 'stroke-gold';
@@ -24,10 +25,15 @@ export default function ReorderIcon(props: ReorderIconProps) {
              onPointerDown={(e) => props.startDragging(e)}
              onPointerUp={() => props.setIsDragging(false)}
         >
-            <svg className={`${reorderIconSVG} ${curSVG}`} xmlns={'http://www.w3.org/2000/svg'}>
-                <line x1={1} y1={1} x2={11} y2={1} strokeLinecap={'round'} strokeLinejoin={'round'}/>
-                <line x1={1} y1={6} x2={11} y2={6} strokeLinecap={'round'} strokeLinejoin={'round'}/>
-                <line x1={1} y1={11} x2={11} y2={11} strokeLinecap={'round'} strokeLinejoin={'round'}/>
+            <svg
+                className={`${reorderIconSVG} ${curSVG}`}
+                xmlns={'http://www.w3.org/2000/svg'}
+                strokeLinecap={'round'}
+                strokeLinejoin={'round'}
+            >
+                <line x1={1} y1={1} x2={11} y2={1}/>
+                <line x1={1} y1={6} x2={11} y2={6}/>
+                <line x1={1} y1={11} x2={11} y2={11}/>
             </svg>
         </div>
     );

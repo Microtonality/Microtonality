@@ -4,10 +4,11 @@ import {Scale} from "../../utility/microtonal/Scale";
 import {ScaleNote} from "../../utility/microtonal/notes";
 import {parsePitchValue} from "../../utility/microtonal/scala/ScalaParser";
 import {mapScaleToKeyboardShortcuts} from "../../utility/microtonal/PianoKeyMapping";
+import {convertNote} from "../../utility/microtonal/notes/ScaleNoteUtility";
+import { v4 as UUIDv4 } from 'uuid';
 import {BASIC_SYNTH, PIANO_SYNTH, FLUTE_SYNTH, OBOE_SYNTH, CLARINET_SYNTH,
     BASSOON_SYNTH, TRUMPET_SYNTH, FRENCH_HORN_SYNTH, TROMBONE_SYNTH, TUBA_SYNTH,
     VIOLIN_SYNTH, CELLO_SYNTH} from "../../utility/audio/Instruments";
-import {convertNote} from "../../utility/microtonal/notes/ScaleNoteUtility";
 
 export interface MicrotonalConfigHistory {
     previous: Array<MicrotonalConfig>,
@@ -61,8 +62,10 @@ type Action =
     | {type: MCActions.SET_PRESET, preset: string}
 
 const MicrotonalConfigReducer = (state: MicrotonalConfigHistory, action: Action): MicrotonalConfigHistory => {
-    let newState = {...state};
+
     console.log({...action, actionString: MCActions[action.type]});
+    let newState = {...state};
+
     if (action.type === MCActions.UNDO_CONFIG) {
         if (newState.previous.length !== 0) {
             newState.next.unshift(newState.current);
@@ -215,7 +218,7 @@ const MicrotonalConfigReducer = (state: MicrotonalConfigHistory, action: Action)
 
     if (commitChange(config, configChange, true) !== null) {
         newState.previous.push(newState.current);
-        newState.current = commitChange(config, configChange);
+        newState.current = {...commitChange(config, configChange), configId: UUIDv4()};
         newState.next = [];
     }
 

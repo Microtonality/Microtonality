@@ -1,19 +1,19 @@
 import * as React from "react";
 import {DragControls, MotionValue, Reorder, useDragControls, useMotionValue} from "framer-motion";
 import ScaleNoteInput from "../note input/ScaleNoteInput";
-import {ScaleNote} from "../../../../../../utility/microtonal/notes";
-import {useState} from "react";
-import ReorderIcon from "./ReorderIcon";
+import {ScaleNote} from "../../../../../../../utility/microtonal/notes";
+import {MutableRefObject, useState} from "react";
+import ReorderIcon from "../note input/elements/ReorderIcon";
+import {ReactJSXElement} from "@emotion/react/types/jsx-namespace";
 
 interface DraggableNoteProps {
     note: ScaleNote;
     noteIndex: number;
-    listRef: React.MutableRefObject<any>;
-    mcDispatch: Function;
+    listRef: MutableRefObject<HTMLUListElement>;
     reorderScale: () => void;
 }
 
-export default function DraggableNote(props: DraggableNoteProps) {
+export default function DraggableNote(props: DraggableNoteProps): ReactJSXElement {
 
     const [isDragging, setIsDragging] = useState<boolean>(false);
     const dragControls: DragControls = useDragControls();
@@ -39,18 +39,15 @@ export default function DraggableNote(props: DraggableNoteProps) {
             onDragEnd={() => stopDragging()}
             className={`inline-flex relative select-none my-1 ${(isDragging) ? 'z-10' : 'z-0'}`}
         >
-
             <ScaleNoteInput
                 note={props.note}
                 noteIndex={props.noteIndex}
-                mcDispatch={props.mcDispatch}
             />
             <ReorderIcon
                 isDragging={isDragging}
                 setIsDragging={setIsDragging}
                 startDragging={startDragging}
             />
-
         </Reorder.Item>
     );
 };

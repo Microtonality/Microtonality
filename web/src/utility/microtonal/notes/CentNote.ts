@@ -33,3 +33,5 @@ export class CentNote extends ScaleNote {
         return Math.pow(2, cents / 1200);
     }
 }
+
+export const BaseCentNote: CentNote = new CentNote(0);

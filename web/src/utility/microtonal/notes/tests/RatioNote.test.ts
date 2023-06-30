@@ -1,4 +1,4 @@
-import {RatioNote, DENOMINATOR_IS_ZERO_ERROR} from '../RatioNote';
+import {RatioNote} from '../RatioNote';
 
 let numerator: number;
 let denominator: number;
@@ -30,12 +30,4 @@ test('Ratio.ratioToMultiplier(string) parses and returns correct value.', () => 
 
     // Assert
     expect(multiplier).toEqual(expectedMultiplier);
-})
-
-test('Ratio.ratioToMultiplier(string) throws Error when denominator is 0', () => {
-    // Arrange
-    let badRatio: string = '1/0'
-
-    // Act and Assert
-    expect(() => RatioNote.ratioToMultiplier(badRatio)).toThrowError(DENOMINATOR_IS_ZERO_ERROR(badRatio));
 })

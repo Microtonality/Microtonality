@@ -61,8 +61,8 @@
         @apply settings-tab;
 
         @apply cursor-pointer;
-        @apply border-b-2 border-b-gold focus:border-gold hover:border-gold;
-        @apply text-white focus:text-gold hover:text-gold;
+        @apply border-b-2 border-b-gold hocus:border-gold;
+        @apply text-white dark:text-neutral-200 hocus:text-gold;
     }
     .settings-tab-l {
         @apply -mr-px;
@@ -77,14 +77,16 @@
     .settings-tab-hook-parent {
         @apply absolute bottom-0;
         @apply border-none;
-        @apply bg-bglight dark:bg-bgdark;
+        @apply bg-bglight;
     }
     .settings-tab-hook-parent-l {
         @apply settings-tab-hook-parent;
+
         @apply left-full;
     }
     .settings-tab-hook-parent-r {
         @apply settings-tab-hook-parent;
+
         @apply right-full;
     }
     .settings-tab-hook {
@@ -93,10 +95,12 @@
     }
     .settings-tab-hook-l {
         @apply settings-tab-hook;
+
         @apply border-l-2 rounded-bl-full;
     }
     .settings-tab-hook-r {
         @apply settings-tab-hook;
+
         @apply border-r-2 rounded-br-full;
     }
 
@@ -106,40 +110,56 @@
         @apply disabled:pointer-events-none;
 
         /*Background*/
-        @apply bg-white disabled:bg-neutral-500;
-        @apply dark:bg-bglight dark:disabled:bg-bglight;
+        @apply bg-neutral-200 disabled:bg-neutral-500;
+        @apply dark:bg-bgdark dark:disabled:bg-bgdark;
 
         /*Border*/
         @apply border-2 rounded-md outline-0;
-        @apply border-black;
-        @apply dark:focus:border-gold dark:hover:border-gold;
+        @apply border-black dark:hocus:border-gold;
 
         /*Text*/
         @apply font-agrandir;
         @apply text-black disabled:text-neutral-800;
         @apply dark:text-gold dark:disabled:text-neutral-400;
 
+        /*Text Selection*/
         @apply selection:bg-black selection:text-gold;
         @apply dark:selection:bg-gold dark:selection:text-black
     }
 
     /*Buttons*/
     .settings-panel-button {
-        @apply p-1;
+        @apply px-2 py-1;
         @apply select-none disabled:pointer-events-none;
 
         /*Background*/
-        @apply bg-neutral-200 focus:bg-bgdark hover:bg-bgdark disabled:bg-neutral-800;
+        @apply bg-neutral-200 hocus:bg-bgdark disabled:bg-neutral-800;
         @apply dark:bg-neutral-400;
 
         /*Border*/
         @apply border-2 rounded-md outline-0;
-        @apply border-black focus:border-gold hover:border-gold;
+        @apply border-black hocus:border-gold;
 
         /*Text*/
         @apply font-agrandir;
-        @apply text-neutral-700 focus:text-gold hover:text-gold disabled:text-black;
+        @apply text-neutral-700 hocus:text-gold disabled:text-black;
         @apply 2xl:text-xl xl:text-lg md:text-sm sm:text-xs;
+    }
+
+    /*SVG Button*/
+    .settings-panel-svg-button-parent {
+        @apply h-min;
+        @apply cursor-pointer;
+
+        @apply border-2 rounded outline-0;
+        @apply border-white dark:border-black hocus:border-gold;
+    }
+    .settings-panel-svg-button {
+        @apply w-6 h-6;
+
+        @apply fill-none;
+        @apply stroke-2 stroke-white;
+        @apply dark:stroke-black group-hocus:stroke-gold;
     }
 
     /*Note Converter*/
@@ -169,6 +189,7 @@
     }
     .note-converter-box-inactive-disabled {
         @apply note-converter-box-inactive;
+
         @apply cursor-default;
     }
     .note-converter-box-l {

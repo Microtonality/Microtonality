@@ -1,177 +1,196 @@
 import {DEFAULT_SCALE, Scale} from '../Scale'
 import {ScaleNote, RatioNote, CentNote} from '../notes'
+import {BaseRatioNote} from "../notes/RatioNote";
+import {BaseCentNote} from "../notes/CentNote";
 
 enum ParserPhase {
-    TITLE = 0,
-    DESCRIPTION = 1,
-    KEYS_PER_OCTAVE = 2,
-    PITCH_VALUES = 3,
-    DONE = 4
+    DESCRIPTION,
+    KEYS_PER_OCTAVE,
+    PITCH_VALUES
 }
 
-// The ScalaParser reads Scala files and creates a Scale object.
 // For more information on the structure of Scala files,
 // refer to https://huygens-fokker.org/scala/scl_format.html.
 export function parseScalaFile(file: string): Scale {
 
-    let title: string = '';
-    let description: string = '';
-
-    // Note: The notes array includes the initial '1/1' (or '0.0' cents)
-    // base note, but does not include the octave note.
-    let keysPerOctave: number = 0;
-    let notes: ScaleNote[] = [new RatioNote('1/1')];
+    let scale: Scale = DEFAULT_SCALE;
+    let notes: ScaleNote[] = [];
     let octaveNote: ScaleNote = null;
 
-    // Read Scala file, split by line.
-    let line: string = '';
-    let lineNum: number = 0;
-    let phase: ParserPhase = ParserPhase.TITLE;
-    for (line of file.split(/[\r\n]+/)) {
+    let fileLines: string[] = file.split('\n');
+    let lineNum: number = 1;
+
+    let firstLine: string = fileLines.at(0).trim();
+    if (firstLine.startsWith('!')) {
+        scale = {...scale, title: readTitle(firstLine)};
+
+        fileLines.shift();
+        lineNum++;
+    }
+
+    let keysPerOctave: number = -1;
+    let phase: ParserPhase = ParserPhase.DESCRIPTION;
+    for (let line of fileLines) {
 
         line = line.trim();
-
-        // lineNum is initialized to 0 but incremented at the beginning of the loop.
-        // As such, the line numbers are indexed at 1 rather than 0,
-        // mainly for when the user has to read error messages.
         lineNum++;
 
-        // Read title, if there is one.
-        // We want this before we look for comments,
-        // since it is a comment and is always the first one.
-        if (phase === ParserPhase.TITLE) {
-            if (line.startsWith('!')) {
-                line = line.substring(1); // Remove '!'
-                line = line.trim();
-
-                if (line.endsWith('.scl'))
-                    line = line.substring(0, line.length - 4); // Remove '.scl'
-
-                title = line;
-                phase = ParserPhase.DESCRIPTION;
-                continue;
-            }
-
-            phase = ParserPhase.DESCRIPTION;
-        }
-
-        // Now we can skip the rest of the comments.
         if (line.startsWith('!'))
             continue;
 
-        // Read description, keys per octave, 
-        // and create note objects for each pitch value.
-        switch (phase) {
-
-            case ParserPhase.DESCRIPTION:
-                description = line;
-                phase = ParserPhase.KEYS_PER_OCTAVE;
-                continue;
-
-            case ParserPhase.KEYS_PER_OCTAVE:
-                keysPerOctave = parseInt(line);
-                if (isNaN(keysPerOctave))
-                    throw new Error(INCORRECT_KEYS_PER_OCTAVE_ERROR(lineNum));
-
-                phase = ParserPhase.PITCH_VALUES;
-                continue;
-
-            case ParserPhase.PITCH_VALUES:
-                if (line === '')
-                    throw new Error(NOT_ENOUGH_PITCH_VALUES_ERROR(keysPerOctave, notes.length - 1)); // - 1 for base note
-
-                let note: ScaleNote = parsePitchValue(line, lineNum);
-                if (note === null)
-                    throw new Error(INCORRECT_PITCH_VALUE_ERROR(line, lineNum));
-
-                if (notes.length === keysPerOctave) {
-                    octaveNote = note;
-                    phase = ParserPhase.DONE;
-                }
-                else {
-                    notes.push(note);
-                }
+        if (phase === ParserPhase.DESCRIPTION) {
+            scale = {...scale, description: line};
+            phase = ParserPhase.KEYS_PER_OCTAVE;
         }
+        else if (phase === ParserPhase.KEYS_PER_OCTAVE) {
+            keysPerOctave = parseInt(line);
+            if (isNaN(keysPerOctave))
+                throw new Error(INCORRECT_KEYS_PER_OCTAVE_ERROR(lineNum, line));
 
-        if (phase === ParserPhase.DONE)
-            break;
+            phase = ParserPhase.PITCH_VALUES;
+        }
+        else if (phase === ParserPhase.PITCH_VALUES) {
+            let note: ScaleNote = parsePitchValue(line, lineNum);
+            if (!note)
+                throw new Error(INCORRECT_PITCH_VALUE_ERROR(line, lineNum));
+
+            if (notes.length === keysPerOctave - 1) {
+                octaveNote = note;
+                break;
+            }
+
+            notes.push(note);
+        }
     }
 
-    return {...DEFAULT_SCALE, notes, title, description, octaveNote};
+    if (notes.length < keysPerOctave - 1 || !octaveNote)
+        throw new Error(NOT_ENOUGH_PITCH_VALUES_ERROR(keysPerOctave, notes.length));
+
+    notes.unshift(getBaseNote(notes.at(0) ?? octaveNote));
+
+    scale = {...scale, notes: notes, octaveNote: octaveNote};
+    return scale;
 }
 
+function readTitle(line: string): string {
+    let title: string = line;
 
+    // Remove '!'
+    title = title.substring(1);
+    title = title.trim();
+
+    // Make sure to grab the first word.
+    let words: string[] = title.split(' ');
+    title = words.at(0);
+
+    if (title.endsWith('.scl'))
+        title = title.substring(0, title.length - 4);
+
+    return title;
+}
 
 // Based on the pitch line from the Scala file, figure
 // out which kind of note it is and where exactly the value lies.
 // Then, separate the value from the comments and create a new ScaleNote object.
+//
 // Unfortunately we cannot use regex here, as there
 // are too many edge cases that would yield inconsistent results.
 // The user is allowed to put any characters they want
 // after the pitch value, so a regex could easily catch numbers
 // in the comments as well as the value itself.
-
+//
 // Note: lineNum is optional because parsePitchValue() is called from other files.
 export function parsePitchValue(line: string, lineNum?: number): ScaleNote {
 
-    let value: string = '';
-    let comments: string = '';
+    let num: string = '';
     let noteType: (typeof CentNote | typeof RatioNote) = null;
 
-    let seenChar: boolean = false;
-    let i: number;
-    for (i = 0; i < line.length; i++) {
-
-        let char: string = line.charAt(i);
-
-        if (isNaN(parseInt(char))) {
-
-            if (seenChar)
-                break;
-
-            if (value.length === 0)
-                throw new Error(COMMENT_BEFORE_PITCH_VALUE_ERROR(line, lineNum));
-
-            if (char === '.') 
-                noteType = CentNote;
-            else if (char === '/')
-                noteType = RatioNote;
-            else {
-                noteType = RatioNote;
-                break;
-            }
-
-            seenChar = true;
-
-            // Check if the next character exists or is not a number.
-            // This is for cases '1/' or '1.'
-            if ((i+1) === line.length || isNaN(parseInt(line.charAt(i+1)))) {
-                if (noteType === CentNote) {
-                    value += '0';
-                }
-                else {
-                    value += '1';
-                }
-            }
-        }
-
-        value += char;
+    if (line.startsWith('-')) {
+        num += '-';
+        noteType = CentNote;
+        line = line.substring(1);
     }
 
-    // For single digit integer ratios with no comments.
-    if (noteType === null && !isNaN(parseInt(line)))
-        noteType = RatioNote;
+    let curIndex: number = 0;
+    for (; curIndex < line.length; curIndex++) {
+        let char: string = line.charAt(curIndex);
 
-    comments = line.substring(i).trim();
+        if (!isNaN(parseInt(char))) {
+            num += char;
+            continue;
+        }
 
-    return new noteType(value, comments);
+        if (char === '.' && !num.includes('.')) {
+            noteType = CentNote;
+            num += char;
+        }
+        else if (char === '/' && !num.includes('/')) {
+            noteType = RatioNote;
+            num += char;
+        }
+        else {
+            if (num.length === 0)
+                throw new Error(COMMENT_BEFORE_PITCH_VALUE_ERROR(line, lineNum));
+
+            break;
+        }
+    }
+
+    noteType ??= RatioNote
+    num = cleanPitchValue((noteType === RatioNote), num);
+
+    return new noteType(num, line.substring(curIndex).trim());
 }
 
+export function cleanPitchValue(isRatio: boolean, num: string): string {
+    return (isRatio) ? cleanRatioValue(num) : cleanCentValue(num);
+}
+
+function cleanCentValue(cent: string): string {
+    if (cent === '' || cent === '-' || cent === '.')
+        return BaseCentNote.num;
+
+    cent = parseFloat(cent).toString();
+
+    if (!cent.includes('.'))
+        cent += '.0';
+
+    return cent;
+}
+
+function cleanRatioValue(ratio: string): string {
+    if (ratio === '' || ratio === '/')
+        return BaseRatioNote.num;
+
+    if (ratio.startsWith('-'))
+        ratio = ratio.substring(1);
+
+    if (ratio.startsWith('/'))
+        ratio = '1' + ratio;
+
+    if (ratio.endsWith('/'))
+        ratio += '1';
+    else if (!ratio.includes('/'))
+        ratio += '/1';
+
+    let cleanedNumerator: number = parseInt(ratio.slice(0, ratio.indexOf('/')));
+    let cleanedDenominator: number = parseInt(ratio.slice(ratio.indexOf('/') + 1));
+    if (cleanedDenominator === 0)
+        cleanedDenominator = 1;
+
+    return cleanedNumerator + '/' + cleanedDenominator;
+}
+
+function getBaseNote(note: ScaleNote): ScaleNote {
+    return (note instanceof RatioNote) ? BaseRatioNote : BaseCentNote;
+}
 
 // Error Messages
-export const INCORRECT_KEYS_PER_OCTAVE_ERROR = (lineNum: number): string => {
+export const INCORRECT_KEYS_PER_OCTAVE_ERROR = (lineNum: number, line: string): string => {
     return (
-        `The number of pitch values in your Scala file (at line ${lineNum}) must be an integer. (ex: 12 or 37)
+        `The number of pitch values in your Scala file must be an integer.
+        
+         Check line ${lineNum}: "${line}"
         `
     );
 };
@@ -201,7 +220,7 @@ export const COMMENT_BEFORE_PITCH_VALUE_ERROR = (line: string, lineNum?: number)
     return (
         `You cannot have comments before a pitch value.
         
-         Check pitch value at line ${lineNum}: "${line}"
+         Check line ${lineNum}: "${line}"
         `
     );
 };

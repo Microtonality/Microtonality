@@ -8,24 +8,28 @@ import {Learn} from "./pages/Learn";
 import {Download} from "./pages/Download";
 import {Contact} from "./pages/Contact";
 import {Splash} from "./pages/Splash"
+import PlayProvider from "./pages/play/PlayProvider";
+import {ReactJSXElement} from "@emotion/react/types/jsx-namespace";
 
-export default function App() {
+export default function App(): ReactJSXElement {
   return (
-    <HashRouter>
-      <Routes>
-        <Route path='/' element={<Layout />}>
-          <Route index element={<Splash />}/>
-          <Route path="learn" element={<Learn />}/>
-          <Route path="play" element={<Play />}/>
-          <Route path="download" element={<Download />}/>
-          <Route path="contact" element={<Contact />}/>
-        </Route>
-      </Routes>
-    </HashRouter>
+      <PlayProvider>
+          <HashRouter>
+              <Routes>
+                  <Route path='/' element={<Layout />}>
+                      <Route index element={<Splash />}/>
+                      <Route path="learn" element={<Learn />}/>
+                      <Route path="play" element={<Play />}/>
+                      <Route path="download" element={<Download />}/>
+                      <Route path="contact" element={<Contact />}/>
+                  </Route>
+              </Routes>
+          </HashRouter>
+      </PlayProvider>
   );
 }
 
-const Layout = () => {
+const Layout = (): ReactJSXElement => {
   return (
     <>
       <nav className="relative flex flex-wrap items-center justify-between px-2 2xl:py-7 xl:py-6 lg:py-5 md:py-4 sm:py-3 xs:py-2 bg-bglight border-b-2 border-gold">

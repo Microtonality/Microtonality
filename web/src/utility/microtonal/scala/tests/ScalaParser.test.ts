@@ -7,6 +7,7 @@ import {
     NOT_ENOUGH_PITCH_VALUES_ERROR,
     COMMENT_BEFORE_PITCH_VALUE_ERROR,
 } from '../ScalaParser';
+import {BaseRatioNote} from "../../notes/RatioNote";
 
 let title: string;
 let description: string;
@@ -18,7 +19,7 @@ let messyCentNoteComment: string;
 beforeAll(() => {
     title = 'title';
     description = 'description';
-    baseNote = new RatioNote('1/1');
+    baseNote = BaseRatioNote;
     noteComment = 'note comment';
 
     // This value hopefully covers all edge cases
@@ -119,7 +120,7 @@ test('ScalaParser.parseScalaFile(string) returns INCORRECT_KEYS_PER_OCTAVE_ERROR
     // Line number in 'file' variable above. (Indexed at 1)
     let lineNum: number = 2;
 
-    let expErrorMsg: string = INCORRECT_KEYS_PER_OCTAVE_ERROR(lineNum);
+    let expErrorMsg: string = INCORRECT_KEYS_PER_OCTAVE_ERROR(lineNum, incorrectKeysPerOctave);
 
     // Act and Assert
     expect(() => parseScalaFile(file)).toThrowError(expErrorMsg);
@@ -163,6 +164,20 @@ test('ScalaParser.parsePitchValue(string) builds CentNote.', () => {
     expect(note.abstractEquals(expectedNote)).toEqual(true);
 });
 
+test('ScalaParser.parsePitchValue(string) builds negative CentNote.', () => {
+
+    // Arrange
+    let expectedNote: CentNote = new CentNote(-(RANDOM_CENTS()), messyCentNoteComment);
+    let pitchValueLine: string = `${expectedNote.num}${expectedNote.comments}`;
+
+    // Act
+    let note: ScaleNote = parsePitchValue(pitchValueLine);
+
+    // Assert
+    expect(note).toBeInstanceOf(CentNote);
+    expect(note.abstractEquals(expectedNote)).toEqual(true);
+});
+
 test('ScalaParser.parsePitchValue(string) builds RatioNote.', () => {
 
     // Arrange
@@ -177,7 +192,7 @@ test('ScalaParser.parsePitchValue(string) builds RatioNote.', () => {
     expect(note.abstractEquals(expectedNote)).toEqual(true);
 });
 
-test('ScalaParser.parsePitchValue(string) returns COMMENT_BEFORE_PITCH_VALUE_ERROR message if there is any text besides whitespace before the pitch value.', () => {
+test('ScalaParser.parsePitchValue(string) returns COMMENT_BEFORE_PITCH_VALUE_ERROR message if there is any text besides whitespace or a minus sign before the pitch value.', () => {
 
     // Arrange
     let badPitchValue: string = 'a1';
@@ -188,8 +203,6 @@ test('ScalaParser.parsePitchValue(string) returns COMMENT_BEFORE_PITCH_VALUE_ERR
     // Act and Assert
     expect(() => parsePitchValue(badPitchValue, lineNum)).toThrowError(expErrorMsg);
 });
-
-
 
 // Utilities
 const RANDOM_CENTS = (max: number = 1000): string => {

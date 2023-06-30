@@ -1,37 +1,25 @@
 import * as React from "react";
-import { Scale } from "../../../../utility/microtonal/Scale";
-import TuningFrequencyEditor from "../TuningFrequencyEditor";
+import TuningFrequencyEditor from "../elements/TuningFrequencyEditor";
+import ScalaFileHandler from "./scala files/ScalaFileHandler";
+import {useMConfig} from "../../PlayProvider";
 import ScaleEditor from "./scale editor/ScaleEditor";
-import ScalaFileHandler from "./ScalaFileHandler";
+import Animator from "../elements/animations/Animator";
+import {FadeInAndOut} from "../elements/animations/Animations";
+import {ReactJSXElement} from "@emotion/react/types/jsx-namespace";
 
-interface ScaleSettingsProps {
-    scale: Scale;
-    tuningFrequency: number;
-    mcDispatch: Function;
-    displayErrorMsg: (msg: string) => void;
-}
+export default function ScaleSettings(): ReactJSXElement {
 
-// The ScaleSettings contains file upload and download for Scala files (.scl),
-// a TuningFrequencyEditor, and all the notes in the current scale.
-export default function ScaleSettings(props: ScaleSettingsProps) {
+    const tuningFreq: number = useMConfig().scaleConfig.tuningFrequency;
 
     return (
         <div className={'flex flex-col'}>
-                <TuningFrequencyEditor
-                    tuningFrequency={props.tuningFrequency}
-                    mcDispatch={props.mcDispatch}
-                />
+            <TuningFrequencyEditor key={tuningFreq} />
 
-                <ScalaFileHandler
-                    scale={props.scale}
-                    mcDispatch={props.mcDispatch}
-                    displayErrorMsg={props.displayErrorMsg}
-                />
+            <Animator animation={FadeInAndOut}>
+                <ScalaFileHandler />
+            </Animator>
 
-                <ScaleEditor
-                    scale={props.scale}
-                    mcDispatch={props.mcDispatch}
-                />
+            <ScaleEditor />
         </div>
     );
 };

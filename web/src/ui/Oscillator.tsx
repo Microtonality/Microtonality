@@ -6,15 +6,17 @@ import Knob from "./Knobs";
 import {ReactJSXElement} from "@emotion/react/types/jsx-namespace";
 import {MicrotonalConfig} from "../utility/MicrotonalConfig";
 import {MCActions} from "../pages/play/Reducers";
+import {useMCDispatch, useMConfig} from "../pages/play/PlayProvider";
 
 interface OscillatorProps {
     oscIndex: number;
     settings: OscillatorSettings;
-    microtonalConfig: MicrotonalConfig;
-    mcDispatch: Function;
 }
 
-export default function Oscillator(props: OscillatorProps) {
+export default function Oscillator(props: OscillatorProps): ReactJSXElement {
+
+    const microtonalConfig: MicrotonalConfig = useMConfig();
+    const mcDispatch: Function = useMCDispatch();
 
     let [localGain, setLocalGain] = useState<number>(props.settings.localGain);
     let [localGainInput, setLocalGainInput] = useState<string>(props.settings.localGain.toString());
@@ -22,19 +24,19 @@ export default function Oscillator(props: OscillatorProps) {
     const supportedWaveTypes: Array<string> = ['sine', 'square', 'triangle', 'sawtooth'];
 
     // Wave Type (dropdown menu)
-    const handleWaveTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleWaveTypeChange = (event: React.ChangeEvent<HTMLSelectElement>): void => {
         let wave: string = event.currentTarget.value;
         if (!supportedWaveTypes.includes(wave))
             return;
 
-        let newOsc = {...props.settings, waveType: wave} as OscillatorSettings;
+        let newOsc: OscillatorSettings = {...props.settings, waveType: wave} as OscillatorSettings;
         updateOscillator(newOsc);
     }
 
     const mapWaveTypes = (): ReactJSXElement[] => {
         let wavesJSX: ReactJSXElement[] = [];
 
-        supportedWaveTypes.forEach((waveType, i) => {
+        supportedWaveTypes.forEach((waveType: string, i: number): void => {
             wavesJSX.push(
                 <option value={waveType} key={i}>{waveType.toUpperCase()}</option>
             );
@@ -46,13 +48,13 @@ export default function Oscillator(props: OscillatorProps) {
     // Local Gain (slider and input field)
     useEffect(() => {
         setLocalGain(props.settings.localGain);
-    }, [props.microtonalConfig]);
+    }, [microtonalConfig]);
 
     useEffect(() => {
         setLocalGainInput(localGain.toString());
     }, [localGain]);
 
-    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>): void => {
         if (event.key === 'Enter') {
             gainInputRef.current.blur();
             submitLocalGainInput();
@@ -60,7 +62,7 @@ export default function Oscillator(props: OscillatorProps) {
         }
     }
 
-    const submitLocalGainInput = () => {
+    const submitLocalGainInput = (): void => {
         let gain: number = clampGain(parseFloat(localGainInput));
         if (isNaN(gain) || gain === localGain) {
             setLocalGainInput(localGain.toString());
@@ -78,9 +80,9 @@ export default function Oscillator(props: OscillatorProps) {
         // element instead, here being the input field just below the range.
         // This not only fixes the issue but also allows for small changes
         // to be made by the user quickly in case they are unable to set
-        // the value they want from the slider, but can still get close to that value.
+        // the value they want from the slider.
 
-        // Additionally, an input type of 'number' does not
+        // Additionally, a html input of type 'number' does not
         // allow for setting the location of the cursor.
         // As such, we must change it to a 'text' type for a bit.
         // This is to ensure that the cursor is at the end of the
@@ -97,14 +99,13 @@ export default function Oscillator(props: OscillatorProps) {
     }
 
     // Pitch Multiplier (knob and input field)
-    const handleMultiplierSubmit = (value: number) => {
-        let newOsc = {...props.settings, pitchRatio: value} as OscillatorSettings;
+    const handleMultiplierSubmit = (value: number): void => {
+        let newOsc: OscillatorSettings = {...props.settings, pitchRatio: value} as OscillatorSettings;
         updateOscillator(newOsc);
     }
 
-    // Actions
-    const updateOscillator = (osc: OscillatorSettings) => {
-        props.mcDispatch({type: MCActions.SET_OSCILLATOR, osc: osc, oscIndex: props.oscIndex});
+    const updateOscillator = (osc: OscillatorSettings): void => {
+        mcDispatch({type: MCActions.SET_OSCILLATOR, osc: osc, oscIndex: props.oscIndex});
     }
 
     return (
@@ -173,7 +174,7 @@ export default function Oscillator(props: OscillatorProps) {
                     min={0}
                     max={16}
                     value={props.settings.pitchRatio}
-                    onChange={(value) => handleMultiplierSubmit(value)}
+                    onChange={(value: number) => handleMultiplierSubmit(value)}
                     knobLabel=""
                     className=""
                     small

@@ -1,5 +1,4 @@
 import {Scale, scaleFromCents} from "./Scale";
-import {CentNote} from "./notes";
 
 export function generateEqualTemperedScale(numberOfNotes: number): Scale {
     let cents: number[] = [];
@@ -8,7 +7,7 @@ export function generateEqualTemperedScale(numberOfNotes: number): Scale {
         cents.push(1200 / numberOfNotes * i);
     }
 
-    return scaleFromCents(cents, `${numberOfNotes}-note Equal Tempered Scale`);
+    return scaleFromCents(cents, `${numberOfNotes}-TET`, `A ${numberOfNotes}-tone equal tempered scale.`);
 }
 
 const generateETScales = (): Scale[] => {
@@ -20,41 +19,3 @@ const generateETScales = (): Scale[] => {
 };
 
 export const EQUAL_TEMPERED_SCALES: Scale[] = [...generateETScales()];
-
-export const matchesEqualTemperedScale = (scale: Scale): boolean => {
-
-    let etScale: Scale;
-    for (etScale of EQUAL_TEMPERED_SCALES) {
-        if (scale.notes.length !== etScale.notes.length)
-            continue;
-
-        let earlyExit: boolean = false;
-        for (let i = 0; i < scale.notes.length; i++) {
-            if (scale.notes.at(i).num !== etScale.notes.at(i).num) {
-                earlyExit = true;
-                break;
-            }
-        }
-
-        if (earlyExit || scale.octaveNote.num !== etScale.octaveNote.num)
-            continue;
-
-        return true;
-    }
-
-    return false;
-};
-
-export function frequencyToCents(noteFrequency: number, tuningFrequency: number) {
-    return (1200 * Math.log2(noteFrequency / tuningFrequency));
-}
-
-export function frequenciesToScaleNote(tuningFrequency: number, notes: Array<number>): Array<CentNote> {
-    let scaleNotes: Array<CentNote> = [];
-
-    for (const note of notes) {
-        scaleNotes.push(new CentNote(frequencyToCents(note, tuningFrequency)));
-    }
-
-    return scaleNotes;
-}

@@ -1,9 +1,15 @@
 import * as React from 'react'
+import {ReactJSXElement} from "@emotion/react/types/jsx-namespace";
 
-export default function BorderedContainer(props: {
-    children: any
-    className?: string
-})
-{
-    return <div className={"border-gold border-2 rounded-xl bg-bglight " + props.className}>{props.children}</div>
+interface BorderedContainerProps {
+    className?: string;
+    children: ReactJSXElement | ReactJSXElement[];
+}
+
+export default function BorderedContainer(props: BorderedContainerProps): ReactJSXElement {
+    return (
+        <div className={`${props.className} border-gold border-2 rounded-xl bg-bglight`}>
+            {props.children}
+        </div>
+    );
 }

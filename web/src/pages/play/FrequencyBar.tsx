@@ -5,6 +5,7 @@ import {KeyShortcut} from "../../utility/microtonal/PianoKeyMapping";
 import {ScaleConfig} from "../../utility/MicrotonalConfig";
 import MidiReceiver from "../../utility/midi/MIDIReceiver";
 import {MCActions} from "./Reducers";
+import {useMConfig} from "./PlayProvider";
 
 interface FrequencyBarButton {
     frequency: number,
@@ -65,10 +66,8 @@ const scaleDegreeToKeyIndex = (reversedMapping: Record<number, number> , scaleDe
     return modulo(keyboardKeyNum - keyOffset, keysPerOctave);
 }
 
-
 function FrequencyBarComponent(props: {
     keyMapping: Record<number, number>,
-    scaleConfig: ScaleConfig,
     playMidiNote: Function,
     setKeyMapping: Function,
     octaveOffset: number,
@@ -77,6 +76,8 @@ function FrequencyBarComponent(props: {
     mcDispatch: Function,
     keyOffset: number,  // How many keys up should be displaying from the root key? Used for keyboard moving
 }) {
+
+    const scaleConfig: ScaleConfig = useMConfig().scaleConfig;
 
     //Stores width of frequency bar div for wrap styling
     const divRef = useRef<HTMLDivElement>(null);
@@ -128,10 +129,10 @@ function FrequencyBarComponent(props: {
                 }
                 // We now have keyIndex and editingNote (scale degree), unset the current note with this degree and then
                 // set the new key to that note
-                let oldKey = scaleDegreeToKeyIndex(reversedMapping, editingNote, props.keyOffset, props.scaleConfig.scale.notes.length, props.scaleConfig.keysPerOctave);
-                let newKey = modulo(keyIndex + props.keyOffset, props.scaleConfig.keysPerOctave);
+                let oldKey = scaleDegreeToKeyIndex(reversedMapping, editingNote, props.keyOffset, scaleConfig.scale.notes.length, scaleConfig.keysPerOctave);
+                let newKey = modulo(keyIndex + props.keyOffset, scaleConfig.keysPerOctave);
                 if (oldKey !== null) {
-                    let correctedOldKey = modulo(oldKey + props.keyOffset, props.scaleConfig.keysPerOctave);
+                    let correctedOldKey = modulo(oldKey + props.keyOffset, scaleConfig.keysPerOctave);
                     console.log(`Unsetting scaleDegree ${editingNote} bound to ${oldKey} ${props.keyboardShortcuts[oldKey].key} which is key mapping ${correctedOldKey}`)
                     props.mcDispatch({type: MCActions.UNSET_KEYBIND, keyIndex: correctedOldKey});
                 }
@@ -151,7 +152,7 @@ function FrequencyBarComponent(props: {
     // If the user is advancing forward or backwards keys, we need to rotate the frequency bar buttons around
     let scaleOffset = null;
     // We might have to search a bit in case the current lowest key isn't bound to anything
-    for (let i=0; i<props.scaleConfig.scale.notes.length; i++) {
+    for (let i = 0; i < scaleConfig.scale.notes.length; i++) {
         if (props.keyMapping[props.keyOffset + i] !== undefined) {
             scaleOffset = props.keyMapping[props.keyOffset + i];
             break;
@@ -159,15 +160,15 @@ function FrequencyBarComponent(props: {
     }
 
     // Stop before the octave note
-    for (let preScaleDegree = 0; preScaleDegree < props.scaleConfig.scale.notes.length; preScaleDegree++) {
+    for (let preScaleDegree = 0; preScaleDegree < scaleConfig.scale.notes.length; preScaleDegree++) {
         // Add the offset to rotate it
-        let scaleDegree = (preScaleDegree + scaleOffset) % props.scaleConfig.scale.notes.length;
+        let scaleDegree = (preScaleDegree + scaleOffset) % scaleConfig.scale.notes.length;
         // If we are rolling keys over, the upper keys should have their octave bumped up
-        let octaveAdditive = Math.floor((preScaleDegree + scaleOffset) / props.scaleConfig.scale.notes.length);
+        let octaveAdditive = Math.floor((preScaleDegree + scaleOffset) / scaleConfig.scale.notes.length);
         // Map the scale degree to the midi keyboard mapping
         let keyboardKeyNum = reversedMapping[scaleDegree];
         let keyboardKey;
-        let keyIndex = scaleDegreeToKeyIndex(reversedMapping, scaleDegree, props.keyOffset, props.scaleConfig.scale.notes.length, props.scaleConfig.keysPerOctave);
+        let keyIndex = scaleDegreeToKeyIndex(reversedMapping, scaleDegree, props.keyOffset, scaleConfig.scale.notes.length, scaleConfig.keysPerOctave);
         if (keyIndex === null) {
             keyboardKey = "None";
         } else {
@@ -194,7 +195,7 @@ function FrequencyBarComponent(props: {
                                         scaleDegree={scaleDegree}
                                         onClick={setEditingNote}
                                         index={preScaleDegree}
-                                        length={props.scaleConfig.scale.notes.length - 1}
+                                        length={scaleConfig.scale.notes.length - 1}
                                         divWidth={width}/>
             // </Tooltip>
         )

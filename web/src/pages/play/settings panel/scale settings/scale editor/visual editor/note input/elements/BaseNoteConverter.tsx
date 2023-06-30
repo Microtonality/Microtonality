@@ -1,24 +1,27 @@
 import * as React from "react";
 import {ReactJSXElement} from "@emotion/react/types/jsx-namespace";
+import {ScaleNote} from "../../../../../../../../utility/microtonal/notes";
+import {BaseCentNote} from "../../../../../../../../utility/microtonal/notes/CentNote";
+import {BaseRatioNote} from "../../../../../../../../utility/microtonal/notes/RatioNote";
 
 interface BaseNoteConverterProps {
     isRatio: boolean;
     setIsRatio: (val: boolean) => void;
-    setNoteValue: (val: string) => void;
+    setBaseNote: (baseNote: ScaleNote) => void;
 }
 
 // Converting the base note just involves visually
 // changing the note's value from '1/1' to '0.0'.
-export default function BaseNoteConverter(props: BaseNoteConverterProps) {
+export default function BaseNoteConverter(props: BaseNoteConverterProps): ReactJSXElement {
 
     const convertBaseNote = (): void => {
         if (props.isRatio) {
-            props.setNoteValue('0.0');
+            props.setBaseNote(BaseCentNote);
             props.setIsRatio(false);
             return;
         }
 
-        props.setNoteValue('1/1');
+        props.setBaseNote(BaseRatioNote);
         props.setIsRatio(true);
     }
 

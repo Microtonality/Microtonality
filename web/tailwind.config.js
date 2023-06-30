@@ -1,4 +1,5 @@
 const defaultTheme = require('tailwindcss/defaultTheme');
+const plugin = require('tailwindcss/plugin');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -27,9 +28,22 @@ module.exports = {
         192: '48rem',
         96: '24rem'
       },
+      keyframes: {
+        scaleIn: {
+          '0%': {transform: 'scale(0)'},
+          '100%': {transform: 'scale(1)'},
+        },
+      },
+      animation: {
+        'scale-in': 'scaleIn .15s ease-out',
+      },
     },
   },
   plugins: [
     require('@tailwindcss/typography'),
+    plugin(function({ addVariant }) {
+      addVariant('hocus', ['&:hover', '&:focus']);
+      addVariant('group-hocus', [':merge(.group):hover &', ':merge(.group):focus &'])
+    })
   ],
 }
