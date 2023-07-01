@@ -111,7 +111,7 @@ export default function Oscillator(props: OscillatorProps): ReactJSXElement {
     return (
         <div className="flex h-[95%] flex-col items-center justify-between mr-1">
 
-            <select data-te-select-init value={props.settings.waveType} className="flex h-8 w-full pt-0.5 rounded-md text-center font-agrandir text-sm" onChange={(e) => handleWaveTypeChange(e)}>
+            <select data-te-select-init value={props.settings.waveType} className="flex h-8 w-full pt-0.5 rounded-md text-center font-agrandir text-sm dark:bg-bgdark dark:text-gold" onChange={(e) => handleWaveTypeChange(e)}>
                 {mapWaveTypes()}
             </select>
 
@@ -157,7 +157,7 @@ export default function Oscillator(props: OscillatorProps): ReactJSXElement {
             />
 
             <input  
-                className={"text-center w-3/4 self-center rounded-md font-agrandir text-sm pt-0.5"} 
+                className={"text-center self-center w-3/4 text-sm settings-panel-input p-px"}
                 type="number"
                 ref={gainInputRef}
                 value={localGainInput}

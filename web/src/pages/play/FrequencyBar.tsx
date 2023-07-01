@@ -206,7 +206,7 @@ function FrequencyBarComponent(props: {
             {freqBarArr}
         </div>
         <Tooltip describeChild title="Click a box on the frequency bar, then press the desired key on your keyboard in order to bind it to the desired frequency.">
-            <button className="btn min-w-[1.75rem] w-7 aspect-square bg-white text-black rounded-full hover:bg-gray-100 mx-2">?</button>
+            <button className="btn min-w-[1.75rem] w-7 aspect-square bg-white dark:bg-bgdark text-black dark:text-gold rounded-full mx-2 dark:border-2 dark:border-gold">?</button>
         </Tooltip>
     </div>;
 }

@@ -95,8 +95,8 @@ export default function SynthSettings(): ReactJSXElement {
 
                     <div className="flex flex-col mx-2 mr-0">
                         <div className="border-gold border-2 rounded-t-xl font-agrandir-wide text-white text-center bg-neutral-700">
-                            <div>Instrument </div>
-                            <div>Presets</div>
+                            <div>INSTRUMENT </div>
+                            <div>PRESETS</div>
                         </div>
                         <div className="flex flex-col bg-neutral-700 rounded-b-xl border-gold border-2 border-t-0 h-full w-40 overflow-auto">
                             <InstrumentPresets />

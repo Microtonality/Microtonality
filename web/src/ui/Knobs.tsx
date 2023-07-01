@@ -110,7 +110,7 @@ export default function Knob (props: KnobProps) {
           <a className="2xl:text-xl xl:text-lg md:text-sm sm:text-xs font-agrandir-wide uppercase px-5 py-3 rounded block leading-normal text-center text-white">{props.knobLabel}</a>
         </div>
 
-        <div className={`aspect-square rounded-full ${props.small ? 'p-1' : 'p-2'} bg-gradient-to-b from-neutral-500 to-neutral-900 flex w-3/4`} onMouseDown={(e) => handleMouseDown(e)}>
+        <div className={`aspect-square rounded-full ${props.small ? 'p-1' : 'p-2'} bg-gradient-to-b from-neutral-500 to-neutral-900 flex w-3/4 mb-1`} onMouseDown={(e) => handleMouseDown(e)}>
           <div className={"w-full h-full rounded-full p-0.5 bg-gradient-to-b from-stone-700 to-neutral-800 flex-1"} >
             <div style={{transform: `rotate(${valueToAngle(value)}deg)`}} className={"w-full h-full flex items-start justify-center"}>
               <div className={`${props.small ? 'w-2 h-2' : 'w-3.5 h-3.5'} rounded-full bg-black`}>
@@ -119,7 +119,7 @@ export default function Knob (props: KnobProps) {
           </div>
         </div>
 
-        <input className={"text-center self-center w-3/4 rounded-md font-agrandir text-sm pt-0.5"} type="number" ref={valueInputRef} value={textBox} onChange={(e) => {setTextBoxRaw(e.target.value)}} onBlur={() => submitTextbox()} onKeyDown={(e) => handleKeyDown(e)} min={0} max={1} step={0.01} />
+        <input className={"text-center self-center w-3/4 text-sm settings-panel-input p-px"} type="number" ref={valueInputRef} value={textBox} onChange={(e) => {setTextBoxRaw(e.target.value)}} onBlur={() => submitTextbox()} onKeyDown={(e) => handleKeyDown(e)} min={0} max={1} step={0.01} />
       </div>
     );
 }

@@ -20,7 +20,7 @@ export default function InstrumentPresets(): ReactJSXElement {
 
     return(
             <div className="flex flex-col m-2 font-agrandir text-black text-md" onChange={onChange}>
-                <select className="flex rounded-md py-1 justify-center items-center">
+                <select className="flex rounded-md py-1 justify-center items-center dark:bg-bgdark dark:text-gold">
                     <option>Custom</option>
                     <option>Basic</option>
                     <option>Piano</option>
