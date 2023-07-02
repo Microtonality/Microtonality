@@ -7,7 +7,7 @@ interface PopupProps {
 
 export default function Popup(props: PopupProps): ReactJSXElement {
     return (
-        <div className={'px-2 py-1 text-white dark:text-neutral-200 select-none font-agrandir-wide border border-gold dark:border-black rounded bg-bglight'}>
+        <div className={'px-2 py-1 text-white dark:text-gold select-none font-agrandir-wide border border-gold rounded bg-bglight dark:bg-bgdark'}>
             {props.text}
         </div>
     );

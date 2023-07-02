@@ -80,7 +80,7 @@ module.exports = (env, options) => {
         devtool: isDevelopment ? 'source-map' : 'source-map',
         plugins: [
             new HtmlWebpackPlugin({
-                template: path.resolve(__dirname, 'src/index.html'),
+                template: path.resolve(__dirname, 'public/index.html'),
                 filename: 'index.html'
             }),
             new MiniCssExtractPlugin({

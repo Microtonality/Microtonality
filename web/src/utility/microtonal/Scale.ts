@@ -1,5 +1,5 @@
-import { ScaleNote, CentNote, RatioNote } from "./notes";
-import {BaseRatioNote} from "./notes/RatioNote";
+import { ScaleNote, CentNote } from "./notes";
+import {BaseOctaveNote, BaseRatioNote} from "./notes/RatioNote";
 
 // The Scale contains all the notes (starting with the 1/1)
 // and some fields used by Scala files.
@@ -15,7 +15,7 @@ export const DEFAULT_SCALE: Scale = {
     notes: [BaseRatioNote],
     title: '',
     description: '',
-    octaveNote: new RatioNote('2/1')
+    octaveNote: BaseOctaveNote
 };
 
 export function scaleAbstractEquals(scale1: Scale, scale2: Scale): boolean {

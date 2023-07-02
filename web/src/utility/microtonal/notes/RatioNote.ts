@@ -24,3 +24,4 @@ export class RatioNote extends ScaleNote {
 }
 
 export const BaseRatioNote: RatioNote = new RatioNote('1/1');
+export const BaseOctaveNote: RatioNote = new RatioNote('2/1');

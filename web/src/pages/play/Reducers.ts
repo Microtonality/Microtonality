@@ -9,6 +9,7 @@ import { v4 as UUIDv4 } from 'uuid';
 import {BASIC_SYNTH, PIANO_SYNTH, FLUTE_SYNTH, OBOE_SYNTH, CLARINET_SYNTH,
     BASSOON_SYNTH, TRUMPET_SYNTH, FRENCH_HORN_SYNTH, TROMBONE_SYNTH, TUBA_SYNTH,
     VIOLIN_SYNTH, CELLO_SYNTH} from "../../utility/audio/Instruments";
+import {rebuildScale} from "../../utility/microtonal/ScaleGeneration";
 
 export interface MicrotonalConfigHistory {
     previous: Array<MicrotonalConfig>,
@@ -64,7 +65,7 @@ type Action =
 const MicrotonalConfigReducer = (state: MicrotonalConfigHistory, action: Action): MicrotonalConfigHistory => {
 
     console.log({...action, actionString: MCActions[action.type]});
-    let newState = {...state};
+    let newState: MicrotonalConfigHistory = {...state};
 
     if (action.type === MCActions.UNDO_CONFIG) {
         if (newState.previous.length !== 0) {
@@ -72,7 +73,7 @@ const MicrotonalConfigReducer = (state: MicrotonalConfigHistory, action: Action)
             newState.current = newState.previous.pop();
         }
     }
-    if (action.type === MCActions.REDO_CONFIG) {
+    else if (action.type === MCActions.REDO_CONFIG) {
         if (newState.next.length !== 0) {
             newState.previous.push(newState.current);
             newState.current = newState.next.shift();
@@ -83,15 +84,18 @@ const MicrotonalConfigReducer = (state: MicrotonalConfigHistory, action: Action)
     let config: MicrotonalConfig = newState.current;
 
     if (action.type === MCActions.SET_CONFIG) {
-        configChange = action.config;
+        // Since this is called when a user uploads a JSON file,
+        // we need to rebuild the scale to avoid losing the typing
+        // for the notes.
+        configChange = {...action.config, scaleConfig: {...action.config.scaleConfig, scale: rebuildScale(action.config.scaleConfig.scale)}};
     }
 
     // Scale Changes
-    if (action.type === MCActions.SET_SCALE) {
+    else if (action.type === MCActions.SET_SCALE) {
         configChange = {scaleConfig: {scale: action.scale}};
         configChange.keyMapping = mapScaleToKeyboardShortcuts(configChange.scaleConfig.scale, newState.current.scaleConfig.keysPerOctave);
     }
-    if (action.type === MCActions.ADD_NOTE ||
+    else if (action.type === MCActions.ADD_NOTE ||
         action.type === MCActions.DELETE_NOTE ||
         action.type === MCActions.EDIT_NOTE ||
         action.type === MCActions.CONVERT_NOTE) {
@@ -125,7 +129,7 @@ const MicrotonalConfigReducer = (state: MicrotonalConfigHistory, action: Action)
             configChange.keyMapping = mapScaleToKeyboardShortcuts(configChange.scaleConfig.scale, newState.current.scaleConfig.keysPerOctave);
         }
     }
-    if (action.type === MCActions.EDIT_OCTAVE_NOTE ||
+    else if (action.type === MCActions.EDIT_OCTAVE_NOTE ||
         action.type === MCActions.CONVERT_OCTAVE_NOTE) {
 
         let oldOctaveNote: ScaleNote = config.scaleConfig.scale.octaveNote;
@@ -142,38 +146,38 @@ const MicrotonalConfigReducer = (state: MicrotonalConfigHistory, action: Action)
 
         configChange = {scaleConfig: {scale: {octaveNote: newOctaveNote}}};
     }
-    if (action.type === MCActions.SET_TUNING_FREQUENCY) {
+    else if (action.type === MCActions.SET_TUNING_FREQUENCY) {
         configChange = {scaleConfig: {tuningFrequency: action.tuningFrequency}};
     }
 
     // Synthesizer Changes
-    if (action.type === MCActions.SET_OSCILLATOR) {
+    else if (action.type === MCActions.SET_OSCILLATOR) {
         let newOscillators = [...config.synthConfig.oscillators];
         newOscillators.splice(action.oscIndex, 1, action.osc);
         configChange = {synthConfig: {oscillators: newOscillators}};
     }
-    if (action.type === MCActions.SET_ATTACK) {
+    else if (action.type === MCActions.SET_ATTACK) {
         configChange = {synthConfig: {attack: action.attack}};
     }
-    if (action.type === MCActions.SET_DECAY) {
+    else if (action.type === MCActions.SET_DECAY) {
         configChange = {synthConfig: {decay: action.decay}};
     }
-    if (action.type === MCActions.SET_SUSTAIN) {
+    else if (action.type === MCActions.SET_SUSTAIN) {
         configChange = {synthConfig: {sustain: action.sustain}};
     }
-    if (action.type === MCActions.SET_RELEASE) {
+    else if (action.type === MCActions.SET_RELEASE) {
         configChange = {synthConfig: {release: action.release}};
     }
-    if (action.type === MCActions.SET_MASTER_GAIN) {
+    else if (action.type === MCActions.SET_MASTER_GAIN) {
         configChange = {synthConfig: {gain: action.gain}};
     }
-    if (action.type === MCActions.UNSET_KEYBIND) {
+    else if (action.type === MCActions.UNSET_KEYBIND) {
         configChange = {keyMapping: {[action.keyIndex]: null}}
     }
-    if (action.type === MCActions.SET_KEYBIND) {
+    else if (action.type === MCActions.SET_KEYBIND) {
         configChange = {keyMapping: {[action.keyIndex]: action.scaleDegree}}
     }
-    if (action.type === MCActions.SET_PRESET) {
+    else if (action.type === MCActions.SET_PRESET) {
         switch(action.preset) {
             case "Basic":
                 configChange = {synthConfig: BASIC_SYNTH}
@@ -212,7 +216,7 @@ const MicrotonalConfigReducer = (state: MicrotonalConfigHistory, action: Action)
                 configChange = {synthConfig: CELLO_SYNTH}
                 break;
             default:
-                
+                break;
         }
     }
 
