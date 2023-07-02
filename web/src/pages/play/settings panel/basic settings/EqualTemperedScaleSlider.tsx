@@ -15,6 +15,7 @@ import {
 } from "../elements/animations/Animations";
 import Animator from "../elements/animations/Animator";
 import {ReactJSXElement} from "@emotion/react/types/jsx-namespace";
+import {userIsSupported} from "../../DeviceAndBrowserSupport";
 
 export default function EqualTemperedScaleSlider(): ReactJSXElement {
 
@@ -28,10 +29,10 @@ export default function EqualTemperedScaleSlider(): ReactJSXElement {
 
     const [displayValuePopup, setDisplayValuePopup] = useState<boolean>(false);
     const [popupPosition, setPopupPosition] = useState<{ left: number }>({ left: 0 });
-    const popupTransition: Transition = ((!useReducedMotion()) ? SpringTransition : InstantTransition);
+    const popupTransition: Transition = ((useReducedMotion() || !userIsSupported()) ? InstantTransition : SpringTransition);
     const popupAnimationMap: AnimationMap = {
         ...FadeInAndOut,
-        enter: {...popupPosition, ...FadeInAndOut.enter},
+        enter: {...FadeInAndOut.enter, ...popupPosition},
         transition: popupTransition,
     };
 

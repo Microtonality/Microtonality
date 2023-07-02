@@ -14,6 +14,7 @@ import {FadeInAndOut, GrowY} from "../../elements/animations/Animations";
 import Animator from "../../elements/animations/Animator";
 import {ReactJSXElement} from "@emotion/react/types/jsx-namespace";
 import SaveButton from "../../elements/SaveButton";
+import {isFirefox} from "react-device-detect";
 
 export default function ScalaFileEditor(): ReactJSXElement {
 
@@ -34,6 +35,8 @@ export default function ScalaFileEditor(): ReactJSXElement {
 
     const originalScala: string[] = getScala();
     const [tempScalaFile, setTempScalaFile] = useState<string[]>(originalScala);
+
+    const textareaClassName: string = `settings-panel-input resize-none ${(isFirefox) ? 'whitespace-pre overflow-x-scroll' : 'whitespace-nowrap overflow-x-auto'}`;
     const textareaRows: number = tempScalaFile.length;
     const textareaCols: number = window.innerWidth;
 
@@ -118,8 +121,9 @@ export default function ScalaFileEditor(): ReactJSXElement {
                 className={'relative'}
                 animation={GrowY}
             >
+
                 <textarea
-                    className={'settings-panel-input whitespace-nowrap resize-none overflow-x-scroll'}
+                    className={textareaClassName}
                     rows={textareaRows}
                     cols={textareaCols}
                     value={tempScalaFile.join('')}

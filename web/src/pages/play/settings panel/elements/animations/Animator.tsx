@@ -3,6 +3,7 @@ import * as React from "react";
 import {ReactJSXElement} from "@emotion/react/types/jsx-namespace";
 import {MutableRefObject} from "react";
 import {AnimationMap, FadeInAndOut} from "./Animations";
+import {userIsSupported} from "../../../DeviceAndBrowserSupport";
 
 interface AnimatorProps {
     className?: string;
@@ -16,7 +17,7 @@ export default function Animator(props: AnimatorProps): ReactJSXElement {
 
     const reducedMotion: boolean = useReducedMotion();
     const animationMap: AnimationMap = (
-        (!reducedMotion) ? props.animation : FadeInAndOut
+        (reducedMotion || !userIsSupported()) ? FadeInAndOut : props.animation
     );
 
     return (

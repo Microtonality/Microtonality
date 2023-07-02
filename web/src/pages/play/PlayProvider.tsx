@@ -6,6 +6,7 @@ import {MicrotonalConfigHistory, MicrotonalConfigReducer} from "./Reducers";
 import {createMicrotonalConfig, MicrotonalConfig} from "../../utility/MicrotonalConfig";
 import {ErrorMsgContext, ErrorMsgDispatchContext, MCDispatchContext, MCHistoryContext} from "./PlayContext";
 import {Scale} from "../../utility/microtonal/Scale";
+import {browserIsSupported, deviceIsSupported} from "./DeviceAndBrowserSupport";
 
 // More information on Contexts and Providers:
 // https://react.dev/learn/scaling-up-with-reducer-and-context
@@ -30,7 +31,14 @@ export default function PlayProvider(props: PlayProviderProps): ReactJSXElement 
         } as MicrotonalConfigHistory
     );
 
-    const [errorMsg, displayErrorMsg] = useState<string>(HIDE_ERROR);
+    const initErrorMsg = (): string => {
+        if (!deviceIsSupported())
+            return UNSUPPORTED_DEVICE_ERROR();
+        if (!browserIsSupported())
+            return UNSUPPORTED_BROWSER_ERROR();
+        return HIDE_ERROR;
+    }
+    const [errorMsg, displayErrorMsg] = useState<string>(initErrorMsg());
 
     return (
         <MCHistoryContext.Provider value={microtonalConfigHistory}>
@@ -53,3 +61,24 @@ export function useMCDispatch(): Function { return useContext(MCDispatchContext)
 export function useErrorMsg(): string { return useContext(ErrorMsgContext); }
 export function useSetErrorMsg(): Function { return useContext(ErrorMsgDispatchContext); }
 
+const UNSUPPORTED_DEVICE_ERROR = (): string => {
+    return (
+        `Your current device is not supported. 
+        
+         It is recommended you use a desktop for the best experience.
+         
+         There may be unintended behavior and display issues on other devices.
+        `
+    );
+};
+
+const UNSUPPORTED_BROWSER_ERROR = (): string => {
+    return (
+        `Your current browser is not supported. 
+        
+         It is recommended you use Chrome, Chromium, Firefox, or Opera for the best experience.
+         
+         There may be unintended behavior and display issues on other browsers.
+        `
+    );
+};

@@ -39,11 +39,19 @@ export default function SettingsPanelProvider(props: SettingsPanelProviderProps)
     const [scaleEditorTab, setScaleEditorTab] = useState<ScaleEditorTab>(ScaleEditorTab.VISUAL);
 
     useEffect((): void => {
-        setMConfigData(initMConfigData());
+        if (microtonalConfig.title && microtonalConfig.description) {
+            if (microtonalConfig.title !== mConfigData.title &&
+                microtonalConfig.description !== mConfigData.description)
+                setMConfigData(initMConfigData());
+        }
     }, [microtonalConfig.configId]);
 
     useEffect((): void => {
-        setScalaData(initScalaData());
+        if (scale.title && scale.description) {
+            if (scale.title !== scalaData.title &&
+                scale.description !== scalaData.description)
+                setScalaData(initScalaData());
+        }
     }, [scale.title, scale.description]);
 
     return (
