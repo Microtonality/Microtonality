@@ -15,6 +15,10 @@ interface PlayProviderProps {
     children: ReactJSXElement;
 }
 
+// This is used to help prop drilling throughout
+// the entirety of the Play page and its placement in
+// DOM allows the synth to maintain state if the user
+// happened to click to another page. (check usages)
 export default function PlayProvider(props: PlayProviderProps): ReactJSXElement {
 
     const [microtonalConfigHistory, mcDispatch] = useReducer(

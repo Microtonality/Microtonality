@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Dispatch, SetStateAction, useContext, useState} from "react";
+import {Dispatch, SetStateAction, useContext, useEffect, useState} from "react";
 import {ReactJSXElement} from "@emotion/react/types/jsx-namespace";
 import {
     MConfigData,
@@ -20,19 +20,31 @@ interface SettingsPanelProviderProps {
     children: ReactJSXElement | ReactJSXElement[];
 }
 
+// This is mainly used to update the title and description
+// of both the config and scala files without updating the config history.
 export default function SettingsPanelProvider(props: SettingsPanelProviderProps): ReactJSXElement {
 
     const microtonalConfig: MicrotonalConfig = useMConfig();
-    const [mConfigData, setMConfigData] = useState<MConfigData>(
-        {title: microtonalConfig.title, description: microtonalConfig.description} as MConfigData
-    );
+    const initMConfigData = (): MConfigData => {
+        return {title: microtonalConfig.title, description: microtonalConfig.description} as MConfigData;
+    }
+    const [mConfigData, setMConfigData] = useState<MConfigData>(initMConfigData());
 
     const scale: Scale = microtonalConfig.scaleConfig.scale;
-    const [scalaData, setScalaData] = useState<ScalaData>(
-        {title: scale.title, description: scale.description} as ScalaData
-    );
+    const initScalaData = (): ScalaData => {
+        return {title: scale.title, description: scale.description} as ScalaData;
+    }
+    const [scalaData, setScalaData] = useState<ScalaData>(initScalaData());
 
     const [scaleEditorTab, setScaleEditorTab] = useState<ScaleEditorTab>(ScaleEditorTab.VISUAL);
+
+    useEffect((): void => {
+        setMConfigData(initMConfigData());
+    }, [microtonalConfig.configId]);
+
+    useEffect((): void => {
+        setScalaData(initScalaData());
+    }, [scale.title, scale.description]);
 
     return (
         <MConfigDataContext.Provider value={mConfigData}>
