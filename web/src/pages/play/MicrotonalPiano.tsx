@@ -4,7 +4,7 @@ import FrequencyBarComponent from "./FrequencyBar";
 import OctaveButtons from "./OctaveButtons";
 import {MicrotonalConfig} from "../../utility/MicrotonalConfig";
 import ReactPianoWrapper from "./ReactPianoWrapper";
-import {createPianoKeyboardShortcuts} from "../../utility/microtonal/PianoKeyMapping";
+import {KeyShortcut, createPianoKeyboardShortcuts} from "../../utility/microtonal/PianoKeyMapping";
 import Knobs from '../../ui/Knobs'
 import MidiReceiver from "../../utility/midi/MIDIReceiver";
 import {MCActions} from "./Reducers";
@@ -31,8 +31,16 @@ export default function MicrotonalPiano(props: MicrotonalPianoProps) {
     }, [microtonalConfig])
 
     const generateKeyboardShortcuts = () => {
-        return createPianoKeyboardShortcuts(microtonalConfig.scaleConfig.rootKey + octaveOffset.keyOffset + octaveOffset.octave * microtonalConfig.scaleConfig.keysPerOctave,
-            octaveOffset.keyboardLength);
+        let shortcuts: KeyShortcut[] = createPianoKeyboardShortcuts(
+            microtonalConfig.scaleConfig.rootKey + octaveOffset.keyOffset + octaveOffset.octave * microtonalConfig.scaleConfig.keysPerOctave,
+            octaveOffset.keyboardLength
+        );
+
+        let caps: KeyShortcut[] = shortcuts.map<KeyShortcut>((shortcut): KeyShortcut => {
+            return {key: shortcut.key.toUpperCase(), midiNumber: shortcut.midiNumber} as KeyShortcut;
+        });
+
+        return shortcuts.concat(caps);
     }
 
     let [keyboardShortcuts, setKeyboardShortcuts] = useState(generateKeyboardShortcuts());
