@@ -1,11 +1,10 @@
-import {KeyboardShortcuts, Piano as ReactPiano} from "react-piano";
+import {Piano as ReactPiano} from "react-piano";
 import * as React from "react";
-import {ScaleConfig, SynthConfig} from "../../utility/MicrotonalConfig";
-import {useEffect} from "react";
-import {createPianoKeyboardShortcuts, KeyShortcut} from "../../utility/microtonal/PianoKeyMapping";
-import {AdditiveSynthesizer} from "../../utility/audio/AdditiveSynthesizer";
+import {ScaleConfig} from "../../utility/MicrotonalConfig";
+import {KeyShortcut} from "../../utility/microtonal/PianoKeyMapping";
 import MidiReceiver from "../../utility/midi/MIDIReceiver";
 import {useMConfig} from "./PlayProvider";
+import { useEffect, useState } from "react";
 
 interface ReactPianoWrapperProps {
     midiReceiver: MidiReceiver,
@@ -32,6 +31,43 @@ export default function ReactPianoWrapper(props: ReactPianoWrapperProps) {
 
     const scaleConfig: ScaleConfig = useMConfig().scaleConfig;
 
+    // React Piano does not let you override its inputs,
+    // so we remove the component's pointer events with Tailwind when a key is down.
+    // This prevents the mouse from messing with notes that are being played.
+    //
+    // You can force an edge case by holding the mouse over
+    // the edge of a key, pressing that key on your keyboard,
+    // and moving the mouse outside the key. But this still works.
+    const [usingKeys, setUsingKeys] = useState(false);
+    const playableKeys: string[] = props.keyboardShortcuts.map((key: KeyShortcut): string => (key.key));
+    const currentKeys: string[] = [];
+
+    useEffect(() => {
+        function onKeyDown(event: KeyboardEvent): void {
+            if (!playableKeys.includes(event.key) || currentKeys.includes(event.key))
+                return;
+    
+            currentKeys.push(event.key);
+            setUsingKeys(true);
+        }
+    
+        function onKeyUp(event: KeyboardEvent): void {
+            if (!currentKeys.includes(event.key))
+                return;
+    
+            currentKeys.splice(currentKeys.indexOf(event.key), 1);
+            setUsingKeys(currentKeys.length > 0);
+        }
+
+        window.addEventListener('keydown', onKeyDown);
+        window.addEventListener('keyup', onKeyUp);
+    
+        return function cleanup() {
+            window.removeEventListener('keydown', onKeyDown);
+            window.removeEventListener('keyup', onKeyUp);
+        }
+    });
+
     return <>
         <style dangerouslySetInnerHTML={{__html: `
           .ReactPiano__Keyboard > div.ReactPiano__Key--accidental:nth-child(n+${scaleConfig.keysPerOctave + 1}) {
@@ -44,14 +80,16 @@ export default function ReactPianoWrapper(props: ReactPianoWrapperProps) {
             background: ${activeKey};
           }
         `}} />
+
         <div className="w-2/3">
             <ReactPiano
-            // activeNotes={synthesizer.activeNotes} TODO: Hook up midi events
-            noteRange={{ first: props.rootKey + props.keyOffset, last: props.rootKey + props.keyOffset + props.keyboardLength }}
-            playNote={(note: any) => {props.midiReceiver.noteOn(note, DEFAULT_VELOCITY)}}
-            stopNote={(note: any) => {props.midiReceiver.noteOff(note)}}
-            keyboardShortcuts={props.keyboardShortcuts}
-        />
+                className={(usingKeys) ? 'pointer-events-none' : ''}
+                // activeNotes={props.synthesizer.activeNotes} // TODO: Hook up midi events
+                noteRange={{ first: props.rootKey + props.keyOffset, last: props.rootKey + props.keyOffset + props.keyboardLength }}
+                playNote={(note: any) => {props.midiReceiver.noteOn(note, DEFAULT_VELOCITY)}}
+                stopNote={(note: any) => {props.midiReceiver.noteOff(note)}}
+                keyboardShortcuts={props.keyboardShortcuts}
+            />
         </div>
     </>
 }
